@@ -3,18 +3,19 @@
   :url "https://github.com/celestial-ops/supernal"
   :license  {:name "Apache License, Version 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
+                 [org.bouncycastle/bcprov-jdk16 "1.46"]
                  [org.clojure/core.incubator "0.1.2"]
                  [com.taoensso/timbre "1.5.2"]
-                 [org.bouncycastle/bcprov-jdk16 "1.46"]
                  [ch.qos.logback/logback-classic "1.0.9"]
                  [org.codehaus.groovy/groovy "2.1.2"]
                  [prismatic/plumbing "0.0.1"]
                  [pallet-thread "0.1.0"]
-                 [net.schmizz/sshj "0.8.1"]]
+                 [net.schmizz/sshj "0.8.1"] 
+                 ]
 
   :exclusions [org.clojure/clojure]
 
-  :plugins  [[jonase/eastwood "0.0.2"] [lein-pedantic "0.0.5"] [lein-midje "3.0.0"] [lein-bin "0.3.2"] ]
+  :plugins  [[jonase/eastwood "0.0.2"] [lein-pedantic "0.0.5"] [lein-midje "3.0.0"] [lein-tar "2.0.0"]  ]
 
 
   :profiles {:dev 
@@ -30,10 +31,10 @@
              "supernal"
              ["run" "-m" "supernal.launch" "fixtures/supernal-demo.clj"] 
             }
- 
-  :bin {:name "supernal"}
 
   :aot [supernal.launch]
+
+  :resource-paths  ["src/main/resources/"]
 
   :main supernal.launch
   )
