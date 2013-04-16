@@ -105,12 +105,13 @@
   "Executions template form"
   [role f opts] 
   (let [opts-m (apply hash-map opts) rsym (gensym)]
-    (if-not (opts-m :join)
-      `(map (fn [~rsym ] 
-              (bound-future (fn [] ~(concat f (list rsym))))) (env-get ~role ~opts-m))
+    (if (get opts-m :join true)
       `(wait-on 
          (map (fn [~rsym ] 
-                (bound-future (fn [] ~(concat f (list rsym))))) (env-get ~role ~opts-m))))))
+                (bound-future (fn [] ~(concat f (list rsym))))) (env-get ~role ~opts-m)))
+      `(map (fn [~rsym ] 
+              (bound-future (fn [] ~(concat f (list rsym))))) (env-get ~role ~opts-m))
+      )))
 
 (defmacro execute [name* args role & opts]
   "Executes a lifecycle defintion on a given role"
