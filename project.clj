@@ -30,6 +30,8 @@
              "supernal"
              ["run" "-m" "supernal.launch" "fixtures/supernal-demo.clj"] 
             }
+ 
+  :bin {:name "supernal"}
 
   :aot [supernal.launch]
 
