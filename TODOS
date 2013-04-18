@@ -1,4 +1,8 @@
-add plugable env (QA,DEV,PROD) support (a role mapping function/multimethod)
+* Add plugable env (QA,DEV,PROD) support (a role mapping function/multimethod)
+
+* Support rollbacks 
+
+* A plugable role->host mapping
 
 
 
