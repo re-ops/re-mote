@@ -21,6 +21,7 @@
   :profiles {:dev 
              {:dependencies [[midje "1.5.1"] [junit/junit "4.8.1"] ]
               :jvm-opts ~(vec (map (fn [[p v]] (str "-D" (name p) "=" v)) {:disable-conf "true"}))}
+             :resource-paths  ["pkg/"]
              }
 
 
@@ -34,7 +35,6 @@
 
   :aot [supernal.launch]
 
-  :resource-paths  ["src/main/resources/"]
 
   :main supernal.launch
   )
