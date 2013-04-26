@@ -56,25 +56,17 @@
          (throw e#)
          ))))
 
-(defn batch
-  "Batches a seq of cmd's"
-  [& args]
-  (let [remote (last args) cmds (butlast args)]
+(defn execute
+  "Executes a cmd on a remote host"
+  [cmd remote]
     (with-ssh remote 
-      (doseq [cmd cmds]
-        (let [session (doto (.startSession ssh) (.allocateDefaultPTY)) command (.exec session cmd) ]
+      (let [session (doto (.startSession ssh) (.allocateDefaultPTY)) command (.exec session cmd) ]
           (debug (<< "[~(remote :host)]:") cmd) 
           (log-output (.getInputStream command) (remote :host))
           (log-output (.getErrorStream command) (remote :host))
           (.join command 60 TimeUnit/SECONDS) 
           (when-not (= 0 (.getExitStatus command))
-            (throw (Exception. (<< "Failed to execute ~{cmd} on ~{remote}")))))))))
-
-(defn execute 
-  "Executes a cmd on a remote host"
-  [cmd remote]
-  (batch cmd remote))
-
+            (throw (Exception. (<< "Failed to execute ~{cmd} on ~{remote}")))))))
 
 (def listener 
   (proxy [TransferListener] []
