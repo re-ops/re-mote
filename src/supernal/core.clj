@@ -24,10 +24,10 @@
        [pallet.thread.executor :as pallet]
        [supernal.sshj :as sshj]) 
   (:use 
+    [taoensso.timbre :only (error)]
     [clojure.core.strint :only (<<)]
     [supernal.topsort :only (kahn-sort)] 
-    [pallet.thread.executor :only (executor)]
-    (clojure.pprint)))
+    [pallet.thread.executor :only (executor)]))
 
 
 (defn gen-ns [ns*]
@@ -74,8 +74,10 @@
                           (into #{} (map #(resolve- %) v#)))) {} '~plan)) {:plan '~plan})))
 
 (defn run-cycle [cycle* args remote]
-  (doseq [t cycle*]
-    (t args remote)))
+  (try 
+    (doseq [t cycle*]
+     (t args remote))
+    (catch Throwable e (error e))))
 
 (defn run-id [args]
   (assoc args :run-id (java.util.UUID/randomUUID)))
