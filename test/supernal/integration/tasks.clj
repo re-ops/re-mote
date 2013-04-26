@@ -1,4 +1,4 @@
-(ns supernal.integration.supernal
+(ns supernal.integration.tasks
   "Test basic dsl uses https://github.com/narkisr/puppet-supernal" 
   (:use 
     midje.sweet
