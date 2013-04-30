@@ -34,30 +34,30 @@
    ((into #{} (keys (archive-types nil nil))) (last (split file #"\."))))
 
 (ns- deploy 
-  (task update-code
+  (task update-code :desc "updates deployed code"
     (let [{:keys [src app-name run-id]} args]
       (debug "updating code on" remote) 
       (copy src (releases app-name run-id)))) 
  
-  (task post-update
+  (task post-update :desc "runs post code update actions"
     (let [{:keys [src app-name run-id]} args file (last (split src #"/")) 
           basepath (releases app-name run-id)]
       (when-let [ext (archive? file)]
         (debug ext)
         (run ((archive-types (<< "~{basepath}~{file}") basepath) ext)))))
 
-  (task start 
+  (task start :desc "starts deployed service"
     (debug "starting service on" remote)) 
  
-  (task symlink
+  (task symlink :desc "links current version to current"
     (let [{:keys [app-name run-id]} args]
       (run (<< "rm -f ~(current app-name)"))
       (run (<< "ln -s ~(releases app-name run-id) ~(current app-name)"))))
 
-  (task stop
+  (task stop :desc "stops deployed service"
     (debug "stopping service on" remote))
      
-  (task pre-update
+  (task pre-update :desc "pre code update actions"
     (let [{:keys [app-name run-id]} args release-id (date-fmt)]
       (swap! run-ids assoc run-id release-id)
       (run (<< "mkdir ~(releases app-name run-id) -p"))

@@ -42,8 +42,9 @@
 
 (defn task 
   "Maps a task defition into a functions named name* under ns* namesapce" 
-  [ns* name* body]
-  (list 'intern (list symbol ns*) (list symbol name*) (concat '(fn [args remote]) (apply-remote body))))
+  [ns* name* body meta*]
+  (list 'intern (list symbol ns*) (list symbol name*) 
+      (list 'with-meta (concat '(fn [args remote]) (apply-remote body)) meta*)))
 
 (defmacro ns- 
   "Tasks ns macro, a group of tasks is associated with matching functions under the supernal.user ns"
@@ -52,7 +53,10 @@
      (create-ns '~(gen-ns ns*))
      ~@(map 
          (fn [[_ name* & body]]
-           (task (str (gen-ns ns*)) (str name*) body)) tasks))) 
+           (let [[k d & r] body]
+             (if (keyword? k)
+               (task (str (gen-ns ns*)) (str name*) r {k d})
+               (task (str (gen-ns ns*)) (str name*) body {})))) tasks))) 
 
 (defn gen-lifecycle [ns*]
   (symbol (str ns* "-lifecycle")))
@@ -76,7 +80,7 @@
 (defn run-cycle [cycle* args remote]
   (try 
     (doseq [t cycle*]
-     (t args remote))
+      (t args remote))
     (catch Throwable e (error e))))
 
 (defn run-id [args]
@@ -94,7 +98,7 @@
   (executor {:prefix "supernal" :thread-group-name "supernal" :pool-size 4 :daemon true}))
 
 (defn bound-future [f]
- {:pre [(ifn? f)]}; saves lots of errors
+  {:pre [(ifn? f)]}; saves lots of errors
   (pallet/execute pool f))
 
 (defn wait-on [futures]
