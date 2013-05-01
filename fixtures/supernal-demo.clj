@@ -10,6 +10,6 @@
     (debug "stopping service" remote)
     (run "hostname")))
 
-(def artifact "git://github.com/narkisr/swag.git")
+;; (def artifact "git://github.com/narkisr/swag.git")
 
-(execute basic-deploy {:app-name "foo" :src artifact} :web :join true)
+;; (execute basic-deploy {:app-name "foo" :src artifact} :web :join true)

@@ -11,6 +11,7 @@
                  [prismatic/plumbing "0.0.1"]
                  [pallet-thread "0.1.0"]
                  [net.schmizz/sshj "0.8.1"] 
+                 [org.clojars.runa/cliopatra "1.1.0"]
                  ]
 
   :exclusions [org.clojure/clojure]
