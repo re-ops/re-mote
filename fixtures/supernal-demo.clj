@@ -6,7 +6,7 @@
    })
 
 (ns- deploy 
-  (task stop
+  (task stop :desc "Stoping server foo"
     (debug "stopping service" remote)
     (run "hostname")))
 
