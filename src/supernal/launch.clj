@@ -23,7 +23,7 @@
    (doseq [[n ts] (list-tasks)]
      (println (.replace n "supernal.user." "") ":") 
      (doseq [[name* fn*] ts]
-       (println " " name* "-" (meta (resolve (:ns (meta fn*)) 'stop))) 
+       (println " " name* "-" (:desc (meta (var-get fn* ))))
        )
      ))
 
@@ -41,7 +41,6 @@
    :opts-spec [] 
    :bind-args-to [script]}
   (load-string (slurp script))
-  (println (ns-resolve supernal.user.deploy))
   (tasks-print)
   )
 
@@ -51,7 +50,6 @@
     (use '[supernal.core :only (ns- execute execute-task run copy env)])
     (use '[supernal.baseline])
     (use '[taoensso.timbre :only (warn debug)]) 
-    ;; (println (list-tasks))
     (command/dispatch 'supernal.launch args)
     ))
 
