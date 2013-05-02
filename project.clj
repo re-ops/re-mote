@@ -31,7 +31,7 @@
              "runtest"
              ["midje" ":filter" "-integration"] 
              "supernal"
-             ["run" "-m" "supernal.launch" "fixtures/supernal-demo.clj"] 
+             ["run" "-m" "supernal.launch"] 
             }
 
   :aot [supernal.launch]
