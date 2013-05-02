@@ -10,6 +10,7 @@
    limitations under the License.)
 
 (ns supernal.launch
+  (:refer-clojure :exclude  [list])
   (:require  [cliopatra.command :as command :refer  [defcommand]])
   (:gen-class true))
 
@@ -18,9 +19,12 @@
   (map (juxt identity (comp ns-publics symbol))
      (filter #(.startsWith % "supernal.user") (map #(-> % ns-name str) (all-ns)))))
 
-#_(defn tasks-print []
-   (doseq [[n ts]]
-     (println (.replace n "supernal.user" "")) 
+(defn tasks-print []
+   (doseq [[n ts] (list-tasks)]
+     (println (.replace n "supernal.user." "") ":") 
+     (doseq [[name* fn*] ts]
+       (println " " name* "-" (meta (resolve (:ns (meta fn*)) 'stop))) 
+       )
      ))
 
 (defcommand run
@@ -28,16 +32,25 @@
   {
    :opts-spec [] 
    :bind-args-to [script]}
-  (println "running task from" script)
   (load-string (slurp script))
+  )
+
+(defcommand list
+  "List available tasks"
+  {
+   :opts-spec [] 
+   :bind-args-to [script]}
+  (load-string (slurp script))
+  (println (ns-resolve supernal.user.deploy))
+  (tasks-print)
   )
 
 (defn -main [& args]
   (binding [*ns* (create-ns 'supernal.adhoc)] 
     (use '[clojure.core])
+    (use '[supernal.core :only (ns- execute execute-task run copy env)])
     (use '[supernal.baseline])
     (use '[taoensso.timbre :only (warn debug)]) 
-    (use '[supernal.core :only (ns- execute execute-task run copy env)])
     ;; (println (list-tasks))
     (command/dispatch 'supernal.launch args)
     ))
