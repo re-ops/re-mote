@@ -2,6 +2,8 @@
 
 A remote multi server automation tool (like Capistrano/Fabric) in Clojure.
 
+[![Build Status](https://travis-ci.org/celestial-ops/supernal.png)](https://travis-ci.org/celestial-ops/supernal)
+
 # Goals and motivation
  
  * A clear roles to host matching model which can be extended easily.
