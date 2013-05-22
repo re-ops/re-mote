@@ -150,4 +150,10 @@
   [src dst]
   (partial sshj/copy src dst))
 
+(defn has-keys? [m keys]
+  (apply = (map count [keys (select-keys m keys)])))
 
+(defn ssh-config 
+   "Applies custom ssh configuration (key and user)" 
+   [c] {:pre [(has-keys? c [:user :key])]}
+  (reset! sshj/config c))
