@@ -67,15 +67,20 @@
       res
       (throw (Exception. (<< "No symbol ~{k} found in ns ~{pre}"))))))
 
+(def cycles (atom #{}))
+
 (defmacro lifecycle 
   "Generates a topological sort from a lifecycle plan"
   [name* plan]
-  `(def ~name*
-     (with-meta
-       (kahn-sort 
-         (reduce (fn [r# [k# v#]] 
-                   (assoc r# (resolve- k#) 
-                          (into #{} (map #(resolve- %) v#)))) {} '~plan)) {:plan '~plan})))
+  `(do
+     (def ~name*
+       (with-meta
+         (kahn-sort 
+           (reduce (fn [r# [k# v#]] 
+                     (assoc r# (resolve- k#) 
+                            (into #{} (map #(resolve- %) v#)))) {} '~plan)) {:plan '~plan}))
+     (swap! cycles conj (var ~name*)) 
+     ))
 
 (defn run-cycle [cycle* args remote]
   (try 
@@ -154,6 +159,6 @@
   (apply = (map count [keys (select-keys m keys)])))
 
 (defn ssh-config 
-   "Applies custom ssh configuration (key and user)" 
-   [c] {:pre [(has-keys? c [:user :key])]}
+  "Applies custom ssh configuration (key and user)" 
+  [c] {:pre [(has-keys? c [:user :key])]}
   (reset! sshj/config c))
