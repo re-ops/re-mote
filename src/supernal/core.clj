@@ -58,9 +58,6 @@
                (task (str (gen-ns ns*)) (str name*) r {k d})
                (task (str (gen-ns ns*)) (str name*) body {})))) tasks))) 
 
-(defn gen-lifecycle [ns*]
-  (symbol (str ns* "-lifecycle")))
-
 (defn resolve- [sym]
   (let [[pre k] (.split (str sym) "/")]
     (if-let [res (ns-resolve (symbol (str "supernal.user." pre)) (symbol k))]
@@ -71,14 +68,14 @@
 
 (defmacro lifecycle 
   "Generates a topological sort from a lifecycle plan"
-  [name* plan]
+  [name* {:keys [doc] :as opts} plan]
   `(do
      (def ~name*
        (with-meta
          (kahn-sort 
            (reduce (fn [r# [k# v#]] 
                      (assoc r# (resolve- k#) 
-                            (into #{} (map #(resolve- %) v#)))) {} '~plan)) {:plan '~plan}))
+                            (into #{} (map #(resolve- %) v#)))) {} '~plan)) {:plan '~plan :doc ~doc}))
      (swap! cycles conj (var ~name*)) 
      ))
 
