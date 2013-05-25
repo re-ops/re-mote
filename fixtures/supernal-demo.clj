@@ -10,6 +10,11 @@
     (debug "stopping service" remote)
     (run "hostname")))
 
+(ns- play
+  (task stop :desc "Stoping server foo"
+    (debug "stopping service" remote)
+    (run "hostname"))
+ )
 ;; (def artifact "git://github.com/narkisr/swag.git")
 
 ;; (execute basic-deploy {:app-name "foo" :src artifact} :web :join true)
