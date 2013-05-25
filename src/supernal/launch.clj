@@ -36,25 +36,23 @@
   (seq (filter #(% full-name) (map readable-form (into {} (list-tasks))))))
 
 (defn lifecycle-exists? [name*]
-  ((into #{} (map #(-> % meta :name str ) (deref (var-get (find-var 'supernal.core/cycles))))) name*)
-  )
+  ((into #{} (map #(-> % meta :name str ) (deref (var-get (find-var 'supernal.core/cycles))))) name*))
 
+(defmacro adhoc-eval [e]
+   `(binding [*ns* (find-ns 'supernal.adhoc)] (eval ~e)))
 
 (defcommand run 
   "Run a single task or an entire lifecycle"
   {:opts-spec [["-r" "--role" "Target Role" :required true]
-               ["-a" "--args" "Task/Cycle arguments" :default {}]]
+               ["-a" "--args" "Task/Cycle arguments" :default "{}"]]
    :bind-args-to [script name*]}
   (load-string (slurp script))
   (let [args* (read-string args)]
     (when (lifecycle-exists? name*)
-      (binding [*ns* (find-ns 'supernal.adhoc)] 
-        (eval (clojure.core/list 'execute (symbol name*) args* (keyword role) :join true)))) 
+     (adhoc-eval (clojure.core/list 'execute (symbol name*) args* (keyword role) :join true))) 
     (when (task-exists? name*) 
-      (binding [*ns* (find-ns 'supernal.adhoc)] 
-        (eval (clojure.core/list 'execute-task (symbol name*) args* (keyword role) :join true))))))
+      (adhoc-eval (clojure.core/list 'execute-task (symbol name*) args* (keyword role) :join true)))))
 
-;; (-main "run" "fixtures/supernal-demo.clj" "basic-deploy" "-r" "web") 
 
 (defcommand list
   "List available tasks"
@@ -74,6 +72,6 @@
 
 
 (comment 
-  (println cycles)
+ (-main "run" "fixtures/supernal-demo.clj" "basic-deploy" "-r" "web") 
   )
 
