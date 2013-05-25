@@ -17,8 +17,7 @@
   :exclusions [org.clojure/clojure]
 
   :plugins  [
-      [jonase/eastwood "0.0.2"] [lein-pedantic "0.0.5"] [lein-midje "3.0.0"]
-       [lein-tag "0.1.0"] [lein-tar "2.0.0"] ]
+      [jonase/eastwood "0.0.2"] [lein-pedantic "0.0.5"] [lein-midje "3.0.0"] [lein-tag "0.1.0"] [lein-tar "2.0.0"] ]
 
 
   :profiles {:dev 
@@ -37,7 +36,6 @@
             }
 
   :aot [supernal.launch]
-
 
   :main supernal.launch
   )
