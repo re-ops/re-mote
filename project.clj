@@ -18,19 +18,15 @@
 
   :plugins  [
       [jonase/eastwood "0.0.2"] [lein-pedantic "0.0.5"] [lein-midje "3.0.0"]
-       [lein-tag "0.1.0"] [lein-tar "2.0.0"] [lein-bin "0.3.4"]]
+       [lein-tag "0.1.0"] [lein-tar "2.0.0"] ]
 
 
   :profiles {:dev 
              {:dependencies [[midje "1.5.1"] [junit/junit "4.8.1"] ]
               :jvm-opts ~(vec (map (fn [[p v]] (str "-D" (name p) "=" v)) {:disable-conf "true"}))
-              :resource-paths  ["pkg/"]
+              :resource-paths  ["pkg/etc/"]
               } 
              }
-
-  :bin  {:name "runme"
-         :bin-path "~/bin"
-         :bootclasspath true}
 
   :aliases {"autotest"
             ["midje" ":autotest" ":filter" "-integration"] 
