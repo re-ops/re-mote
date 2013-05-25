@@ -64,7 +64,7 @@
       (run (<< "chown ~(remote :user) ~(releases app-name run-id)"))))) 
 
 
-(lifecycle basic-deploy
+(lifecycle basic-deploy {:doc "basic deployment scheme"}
   {deploy/update-code #{deploy/post-update deploy/symlink}
    deploy/stop #{deploy/update-code}
    deploy/pre-update #{deploy/update-code}
@@ -72,4 +72,4 @@
    deploy/post-update #{deploy/start}
    deploy/start #{}})
 
-(lifecycle basic-rollback {})
+(lifecycle basic-rollback {:doc "basic deployment roleback"} {})
