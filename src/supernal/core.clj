@@ -112,16 +112,17 @@
     (Thread/sleep 1000)
     )) 
 
+(defmacro map-futures [f rsym role opts-m] 
+  `(doall (map (fn [~rsym] 
+     (bound-future (fn [] ~(concat f (list rsym))))) (env-get ~role ~opts-m))))
+
 (defmacro execute-template 
   "Executions template form"
   [role f opts] 
   (let [opts-m (apply hash-map opts) rsym (gensym)]
     (if (get opts-m :join true)
-      `(wait-on 
-         (map (fn [~rsym ] 
-                (bound-future (fn [] ~(concat f (list rsym))))) (env-get ~role ~opts-m)))
-      `(map (fn [~rsym ] 
-              (bound-future (fn [] ~(concat f (list rsym))))) (env-get ~role ~opts-m))
+      `(wait-on (map-futures ~f ~rsym ~role ~opts-m))
+      `(map-futures ~f ~rsym ~role ~opts-m)
       )))
 
 (defmacro execute [name* args role & opts]
