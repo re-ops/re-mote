@@ -12,6 +12,7 @@
                  [pallet-thread "0.1.0"]
                  [net.schmizz/sshj "0.8.1"] 
                  [org.clojars.runa/cliopatra "1.1.0"]
+                 [narkisr/clansi "1.2.0"]
                  ]
 
   :exclusions [org.clojure/clojure]
