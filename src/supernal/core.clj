@@ -42,8 +42,9 @@
 
 (defn task 
   "Maps a task defition into a functions named name* under ns* namesapce" 
-  [ns* name* body]
-  (list 'intern (list symbol ns*) (list symbol name*) (concat '(fn [args remote]) (apply-remote body))))
+  [ns* name* body meta*]
+  (list 'intern (list symbol ns*) (list symbol name*) 
+      (list 'with-meta (concat '(fn [args remote]) (apply-remote body)) meta*)))
 
 (defmacro ns- 
   "Tasks ns macro, a group of tasks is associated with matching functions under the supernal.user ns"
@@ -52,10 +53,10 @@
      (create-ns '~(gen-ns ns*))
      ~@(map 
          (fn [[_ name* & body]]
-           (task (str (gen-ns ns*)) (str name*) body)) tasks))) 
-
-(defn gen-lifecycle [ns*]
-  (symbol (str ns* "-lifecycle")))
+           (let [[k d & r] body]
+             (if (keyword? k)
+               (task (str (gen-ns ns*)) (str name*) r {k d})
+               (task (str (gen-ns ns*)) (str name*) body {})))) tasks))) 
 
 (defn resolve- [sym]
   (let [[pre k] (.split (str sym) "/")]
@@ -63,20 +64,25 @@
       res
       (throw (Exception. (<< "No symbol ~{k} found in ns ~{pre}"))))))
 
+(def cycles (atom #{}))
+
 (defmacro lifecycle 
   "Generates a topological sort from a lifecycle plan"
-  [name* plan]
-  `(def ~name*
-     (with-meta
-       (kahn-sort 
-         (reduce (fn [r# [k# v#]] 
-                   (assoc r# (resolve- k#) 
-                          (into #{} (map #(resolve- %) v#)))) {} '~plan)) {:plan '~plan})))
+  [name* {:keys [doc] :as opts} plan]
+  `(do
+     (def ~name*
+       (with-meta
+         (kahn-sort 
+           (reduce (fn [r# [k# v#]] 
+                     (assoc r# (resolve- k#) 
+                            (into #{} (map #(resolve- %) v#)))) {} '~plan)) {:plan '~plan :doc ~doc}))
+     (swap! cycles conj (var ~name*)) 
+     ))
 
 (defn run-cycle [cycle* args remote]
   (try 
     (doseq [t cycle*]
-     (t args remote))
+      (t args remote))
     (catch Throwable e (error e))))
 
 (defn run-id [args]
@@ -94,7 +100,7 @@
   (executor {:prefix "supernal" :thread-group-name "supernal" :pool-size 4 :daemon true}))
 
 (defn bound-future [f]
- {:pre [(ifn? f)]}; saves lots of errors
+  {:pre [(ifn? f)]}; saves lots of errors
   (pallet/execute pool f))
 
 (defn wait-on [futures]
@@ -103,16 +109,17 @@
     (Thread/sleep 1000)
     )) 
 
+(defmacro map-futures [f rsym role opts-m] 
+  `(doall (map (fn [~rsym] 
+     (bound-future (fn [] ~(concat f (list rsym))))) (env-get ~role ~opts-m))))
+
 (defmacro execute-template 
   "Executions template form"
   [role f opts] 
   (let [opts-m (apply hash-map opts) rsym (gensym)]
     (if (get opts-m :join true)
-      `(wait-on 
-         (map (fn [~rsym ] 
-                (bound-future (fn [] ~(concat f (list rsym))))) (env-get ~role ~opts-m)))
-      `(map (fn [~rsym ] 
-              (bound-future (fn [] ~(concat f (list rsym))))) (env-get ~role ~opts-m))
+      `(wait-on (map-futures ~f ~rsym ~role ~opts-m))
+      `(map-futures ~f ~rsym ~role ~opts-m)
       )))
 
 (defmacro execute [name* args role & opts]
@@ -150,6 +157,6 @@
   (apply = (map count [keys (select-keys m keys)])))
 
 (defn ssh-config 
-   "Applies custom ssh configuration (key and user)" 
-   [c] {:pre [(has-keys? c [:user :key])]}
+  "Applies custom ssh configuration (key and user)" 
+  [c] {:pre [(has-keys? c [:user :key])]}
   (reset! sshj/config c))

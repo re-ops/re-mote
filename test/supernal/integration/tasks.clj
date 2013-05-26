@@ -8,7 +8,7 @@
 
 (env 
   {:roles {
-      :web #{{:host "192.168.1.26" :user "vagrant" :sudo true}}}
+      :web #{{:host "192.168.2.26" :user "vagrant" :sudo true}}}
    })
 
 (ns- deploy 

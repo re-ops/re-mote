@@ -10,13 +10,76 @@
    limitations under the License.)
 
 (ns supernal.launch
+  (:use 
+    [clansi.core :only (style)]
+    [clojure.core.strint :only (<<)]) 
+  (:refer-clojure :exclude  [list])
+  (:require  [cliopatra.command :as command :refer  [defcommand]])
   (:gen-class true))
 
-(defn -main [& [script & r]]
+(defn list-tasks []
+  (map (juxt identity (comp ns-publics symbol))
+     (filter #(.startsWith % "supernal.user") (map #(-> % ns-name str) (all-ns)))))
+
+(defn clear-prefix [ns-]
+ (.replace ns- "supernal.user." ""))
+
+(defn readable-form [[ns- ts]]
+  (reduce (fn [r name*] (conj r (<< "~(clear-prefix ns-)/~{name*}" ))) #{} (keys ts)))
+
+(defn task-exists? [full-name]
+  (seq (filter #(% full-name) (map readable-form (into {} (list-tasks))))))
+
+(defn get-cycles [] (deref (var-get (find-var 'supernal.core/cycles))))
+
+(defn lifecycle-exists? [name*]
+  ((into #{} (map #(-> % meta :name str ) (get-cycles))) name*))
+
+(defmacro adhoc-eval [e]
+   `(binding [*ns* (find-ns 'supernal.adhoc)] (eval ~e)))
+
+(defcommand run 
+  "Run a single task or an entire lifecycle"
+  {:opts-spec [["-r" "--role" "Target Role" :required true]
+               ["-a" "--args" "Task/Cycle arguments" :default "{}"]]
+   :bind-args-to [script name*]}
+  (load-string (slurp script))
+  (let [args* (read-string args)]
+    (when (lifecycle-exists? name*)
+     (adhoc-eval (clojure.core/list 'execute (symbol name*) args* (keyword role) :join true))) 
+    (when (task-exists? name*) 
+      (adhoc-eval (clojure.core/list 'execute-task (symbol name*) args* (keyword role) :join true)))))
+
+(defn print-tasks []
+  (println (style "Tasks:" :blue))
+  (doseq [[n ts] (list-tasks)]
+    (println " " (style (<< "~(clear-prefix n):") :yellow))
+    (doseq [[name* fn*] ts]
+      (println "  " (style name* :green) (<< "- ~(:desc (meta (var-get fn*)))")))))
+
+(defn print-cycles []
+  (println (style "Lifecycles:" :blue))
+  (doseq [c (get-cycles)]
+    (let [{:keys [name]} (meta c) {:keys [doc]} (meta (var-get c))]
+      (println " "  (style name :green) (<< "- ~{doc}")))))
+
+(defcommand list
+  "Lists available tasks and lifecycles"
+  {:opts-spec [] :bind-args-to [script]}
+  (load-string (slurp script))
+  (print-cycles) 
+  (print-tasks))
+
+(defn -main [& args]
   (binding [*ns* (create-ns 'supernal.adhoc)] 
     (use '[clojure.core])
+    (use '[supernal.core :only (ns- execute execute-task run copy env cycles)])
     (use '[supernal.baseline])
     (use '[taoensso.timbre :only (warn debug)]) 
-    (use '[supernal.core :only (ns- execute execute-task run copy env)])
-    (load-string (slurp script))
-    ))
+    (command/dispatch 'supernal.launch args)))
+
+
+(comment 
+  (-main "run" "fixtures/supernal-demo.clj" "basic-deploy" "-r" "web") 
+  )
+
