@@ -96,11 +96,15 @@
   [name]
   (-> name (split '#"\.") first))
 
+(def classifiers 
+  [[:git #{#(re-find #".*.git$" %)}] 
+   [:http #{#(re-find #"^(http|https)" %)}] 
+   [:file #{#(re-find #"^file.*" %)}]])
 
 (defn copy-dispatch 
   ([uri _ _] (copy-dispatch uri))
   ([uri _] (copy-dispatch uri)) 
-  ([uri] (keyword (first (split uri '#":")))) )
+  ([uri]  (first (first (filter #(some (fn [c] (c uri) ) (second %)) classifiers )))))
 
 (defmulti dest-path
   "Calculates a uri destination path"
