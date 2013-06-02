@@ -1,4 +1,4 @@
-(defproject supernal "0.2.0"
+(defproject supernal "0.2.1"
   :description "A remote multi server automation tool (like Capistrano/Fabric)"
   :url "https://github.com/celestial-ops/supernal"
   :license  {:name "Apache License, Version 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
@@ -19,15 +19,19 @@
 
   :plugins  [
       [jonase/eastwood "0.0.2"] [lein-pedantic "0.0.5"] [lein-midje "3.0.0"] 
-      [lein-tag "0.1.0"] [lein-tar "2.0.0"] ]
+      [lein-tag "0.1.0"] [lein-tar "2.0.0"] [lein-set-version "0.3.0"] ]
 
 
-  :profiles {:dev 
-             {:dependencies [[midje "1.5.1"] [junit/junit "4.8.1"] ]
+  :profiles {:dev { 
+              :dependencies [[midje "1.5.1"] [junit/junit "4.8.1"] ]
               :jvm-opts ~(vec (map (fn [[p v]] (str "-D" (name p) "=" v)) {:disable-conf "true"}))
               :resource-paths  ["pkg/etc/"]
-              } 
-             }
+              
+              :set-version {
+                :updates [{:path "src/supernal/launch.clj" :search-regex #"\"Supernal \d+\.\d+\.\d+\""}]
+              }
+             } 
+            }
 
   :aliases {"autotest"
             ["midje" ":autotest" ":filter" "-integration"] 
