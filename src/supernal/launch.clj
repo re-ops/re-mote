@@ -73,7 +73,7 @@
 (defcommand version 
   "List supernal version and info" 
   {:opts-spec [] :bind-args-to [script]}
-  (println "Supernal 0.2.1"))
+  (println "Supernal 0.2.2"))
 
 (defn -main [& args]
   (binding [*ns* (create-ns 'supernal.adhoc)] 
