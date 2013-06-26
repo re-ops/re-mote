@@ -117,7 +117,7 @@
      (bound-future (fn [] ~(concat f (list rsym))))) (env-get ~role ~opts-m))))
 
 (defmacro execute-template 
-  "Executions template form"
+  "Executions template form, note that join is true by default!"
   [role f opts] 
   (let [opts-m (apply hash-map opts) rsym (gensym)]
     (if (get opts-m :join true)
