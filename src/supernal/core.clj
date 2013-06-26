@@ -80,10 +80,7 @@
      ))
 
 (defn run-cycle [cycle* args remote]
-  (try 
-    (doseq [t cycle*]
-      (t args remote))
-    (catch Throwable e (error e))))
+    (doseq [t cycle*] (t args remote)))
 
 (defn run-id [args]
   (assoc args :run-id (java.util.UUID/randomUUID)))
@@ -106,8 +103,14 @@
 (defn wait-on [futures]
   "Waiting on a sequence of futures, limited by a constant pool of threads"
   (while (some identity (map (comp not future-done?) futures))
-    (Thread/sleep 1000)
-    )) 
+    (Thread/sleep 1000))
+   futures
+  ) 
+
+(defn deref-all 
+   "derefs all futures in order to grab errors" 
+   [futures]
+  (doseq [f futures] @f))
 
 (defmacro map-futures [f rsym role opts-m] 
   `(doall (map (fn [~rsym] 
@@ -118,7 +121,7 @@
   [role f opts] 
   (let [opts-m (apply hash-map opts) rsym (gensym)]
     (if (get opts-m :join true)
-      `(wait-on (map-futures ~f ~rsym ~role ~opts-m))
+      `(deref-all (wait-on (map-futures ~f ~rsym ~role ~opts-m)))
       `(map-futures ~f ~rsym ~role ~opts-m)
       )))
 

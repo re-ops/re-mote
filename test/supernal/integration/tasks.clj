@@ -4,7 +4,7 @@
     midje.sweet
     [supernal.baseline :only (basic-deploy)]
     [taoensso.timbre :only (warn debug)]
-    [supernal.core :only (ns- execute execute-task run copy env)]))
+    [supernal.core :only (ns- execute execute-task run copy env deref-all lifecycle)]))
 
 (env 
   {:roles {
@@ -13,6 +13,7 @@
 
 (ns- deploy 
   (task stop
+     (debug "here")
      (debug "stopping service" remote)
      (run "hostname")))
 
@@ -20,17 +21,25 @@
     (task zero-div
       (/ 1 0)))
 
+(lifecycle includes-error {:doc "Includes an error"} {deploy/stop #{error/zero-div} })
+
 (def artifact "git://github.com/narkisr/swag.git")
 
-(fact "basic deployment tasks" :integration :supernal
-    (execute basic-deploy {:app-name "foo" :src artifact} :web ))
+(fact "basic deployment tasks no join" :integration :supernal
+   (deref-all (execute basic-deploy {:app-name "foo" :src artifact} :web)) => nil)
 
 (fact "single task" :integration :supernal
-   (execute-task deploy/stop {:app-name "foo" :src artifact} :web))
+   (execute-task deploy/stop {:app-name "foo" :src artifact} :web) => nil)
 
 (fact "env option" :integration :supernal
-   (let [e {:roles {:web #{{:host "192.168.1.26" :user "vagrant" :sudo true}}} }]
-      (execute-task deploy/stop {:app-name "foo" :src artifact} :web :env e)))
+   (let [e {:roles {:web #{{:host "192.168.2.26" :user "vagrant" :sudo true}}} }]
+     (execute-task deploy/stop {:app-name "foo" :src artifact} :web :env e) => nil))
 
-(fact "with error" :integration :supernal
-  (execute-task error/zero-div {:app-name "foo" :src artifact} :web))
+(fact "joinless error" :integration :supernal
+  (execute-task error/zero-div {:app-name "foo" :src artifact} :web) => (throws java.util.concurrent.ExecutionException))
+
+(fact "task join with error" :integration :supernal
+  (execute-task error/zero-div {:app-name "foo" :src artifact} :web :join true) => (throws java.util.concurrent.ExecutionException))
+
+(fact "lifecycle with join" :integration :supernal
+   (execute includes-error {:app-name "foo" :src artifact} :web :join true) => (throws java.util.concurrent.ExecutionException))
