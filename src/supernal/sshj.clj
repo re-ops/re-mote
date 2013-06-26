@@ -120,7 +120,6 @@
   )
 
 (defmethod copy-remote :git [uri dest remote] 
-  (println (<< "git clone ~{uri} ~(dest-path uri dest)"))
   (execute (<< "git clone ~{uri} ~(dest-path uri dest)") remote))
 (defmethod copy-remote :http [uri dest remote] 
   (execute (<< "wget -O ~(dest-path uri dest) ~{uri}") remote))
