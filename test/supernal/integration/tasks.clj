@@ -26,7 +26,7 @@
 (def artifact "git://github.com/narkisr/swag.git")
 
 (fact "basic deployment tasks no join" :integration :supernal
-   (deref-all (execute basic-deploy {:app-name "foo" :src artifact} :web)) => nil)
+   (deref-all (execute basic-deploy {:app-name "foo" :src artifact} :web :join false)) => nil)
 
 (fact "single task" :integration :supernal
    (execute-task deploy/stop {:app-name "foo" :src artifact} :web) => nil)
@@ -36,10 +36,11 @@
      (execute-task deploy/stop {:app-name "foo" :src artifact} :web :env e) => nil))
 
 (fact "joinless error" :integration :supernal
-  (execute-task error/zero-div {:app-name "foo" :src artifact} :web) => (throws java.util.concurrent.ExecutionException))
+  (deref-all (execute-task error/zero-div {:app-name "foo" :src artifact} :web :join false)) =>
+      (throws java.util.concurrent.ExecutionException))
 
 (fact "task join with error" :integration :supernal
-  (execute-task error/zero-div {:app-name "foo" :src artifact} :web :join true) => (throws java.util.concurrent.ExecutionException))
+  (execute-task error/zero-div {:app-name "foo" :src artifact} :web) => (throws java.util.concurrent.ExecutionException))
 
 (fact "lifecycle with join" :integration :supernal
-   (execute includes-error {:app-name "foo" :src artifact} :web :join true) => (throws java.util.concurrent.ExecutionException))
+   (execute includes-error {:app-name "foo" :src artifact} :web) => (throws java.util.concurrent.ExecutionException))
