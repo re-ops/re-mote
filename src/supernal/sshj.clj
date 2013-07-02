@@ -11,6 +11,7 @@
 
 (ns supernal.sshj
   (:use 
+    [clojure.java.io :only (reader output-stream)]
     [clojure.string :only (join split)]
     [clojure.java.shell :only [sh]]
     [clojure.core.strint :only (<<)]
@@ -25,7 +26,9 @@
     (net.schmizz.sshj SSHClient)
     (net.schmizz.sshj.userauth.keyprovider FileKeyProvider)
     (net.schmizz.sshj.transport.verification PromiscuousVerifier)
-    ))
+    )
+   (:require [aws.sdk.s3 :as s3]) 
+  )
 
 (defn default-config []
   {:key (<< "~(System/getProperty \"user.home\")/.ssh/id_rsa" ) :user "root" })
@@ -35,7 +38,7 @@
 (defn log-output 
   "Output log stream" 
   [out host]
-  (doseq [line (line-seq (clojure.java.io/reader out))] (debug  (<< "[~{host}]:") line)))
+  (doseq [line (line-seq (reader out))] (debug  (<< "[~{host}]:") line)))
 
 (def ^:dynamic timeout (* 1000 60 10))
 
@@ -96,10 +99,14 @@
   [name]
   (-> name (split '#"\.") first))
 
+(def s3-regex #"^s3:\/\/(.*)\/(.*)")
+
 (def classifiers 
   [[:git #{#(re-find #".*.git$" %)}] 
+   [:s3 #{#(re-find s3-regex %)}] 
    [:http #{#(re-find #"^(http|https)" %)}] 
    [:file #{#(re-find #"^file.*" %)}]])
+
 
 (defn copy-dispatch 
   ([uri _ _] (copy-dispatch uri))
@@ -123,6 +130,8 @@
   (execute (<< "git clone ~{uri} ~(dest-path uri dest)") remote))
 (defmethod copy-remote :http [uri dest remote] 
   (execute (<< "wget -O ~(dest-path uri dest) ~{uri}") remote))
+(defmethod copy-remote :http [uri dest remote] 
+  (execute (<< "s3cmd get ~{uri} ~(dest-path uri dest)") remote))
 (defmethod copy-remote :file [uri dest remote] (upload (subs uri 6) dest remote))
 (defmethod copy-remote :default [uri dest remote] (copy-remote (<< "file:/~{uri}") dest remote))
 
@@ -142,6 +151,13 @@
     (when-not (= 0 exit) 
       (throw (Exception. (<< "Failed to execute: ~{cmd}"))))))
 
+(def ^:dynamic s3-creds  {:access-key "" :secret-key ""})
+
+(defn s3-copy [bucket k dest]
+  (let [{:keys [content]} (s3/get-object s3-creds bucket k)]
+    (with-open [w (output-stream (<< "~{dest}/~{k}"))]
+      (clojure.java.io/copy content w))))
+
 (defmulti copy-localy
   "A general local copy"
   copy-dispatch)
@@ -150,6 +166,8 @@
   (sh- "git" "clone" uri  (<< "~{dest}/~(no-ext (fname uri))")))
 (defmethod copy-localy :http [uri dest] 
   (sh- "wget" "-O" (<< "~{dest}/~(fname uri) ~{uri}")))
+(defmethod copy-localy :s3 [uri dest] 
+  (let [[_ bucket k] (re-find s3-regex)] (s3-copy bucket k dest)))
 (defmethod copy-localy :file [uri dest] (sh- "cp" (subs uri 6) dest))
 (defmethod copy-localy :default [uri dest] (copy-localy (<< "file:/~{uri}") dest))
 
