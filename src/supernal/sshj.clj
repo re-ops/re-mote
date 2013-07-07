@@ -130,7 +130,7 @@
   (execute (<< "git clone ~{uri} ~(dest-path uri dest)") remote))
 (defmethod copy-remote :http [uri dest remote] 
   (execute (<< "wget -O ~(dest-path uri dest) ~{uri}") remote))
-(defmethod copy-remote :http [uri dest remote] 
+(defmethod copy-remote :s3 [uri dest remote] 
   (execute (<< "s3cmd get ~{uri} ~(dest-path uri dest)") remote))
 (defmethod copy-remote :file [uri dest remote] (upload (subs uri 6) dest remote))
 (defmethod copy-remote :default [uri dest remote] (copy-remote (<< "file:/~{uri}") dest remote))
