@@ -77,7 +77,7 @@
     (file [name* size]
       (proxy [StreamCopier$Listener ] []
         (reportProgress [transferred]
-          (debug (<< "transferred ~(float (/ (* transferred 100) size))% of ~{name*}")))))))
+          (debug (<< "transferred ~(int (/ (* transferred 100) size))% of ~{name*}")))))))
 
 (defn upload [src dst remote]
   (with-ssh remote
