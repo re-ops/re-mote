@@ -111,7 +111,8 @@
 (defn copy-dispatch 
   ([uri _ _] (copy-dispatch uri))
   ([uri _] (copy-dispatch uri)) 
-  ([uri]  (first (first (filter #(some (fn [c] (c uri) ) (second %)) classifiers )))))
+  ([uri] {:pre [uri]}
+   (first (first (filter #(some (fn [c] (c uri) ) (second %)) classifiers )))))
 
 (defmulti dest-path
   "Calculates a uri destination path"
