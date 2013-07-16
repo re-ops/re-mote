@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-java -cp "lib/target/*":"etc/" supernal.launch "$@"
+java -cp "/usr/share/supernal/lib/target/*":"/usr/share/supernal/etc/" supernal.launch "$@"
