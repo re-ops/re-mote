@@ -43,5 +43,7 @@
 
   :aot [supernal.launch]
 
+  :target-path "target/"
+
   :main supernal.launch
   )
