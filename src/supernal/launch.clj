@@ -38,17 +38,32 @@
 (defmacro adhoc-eval [e]
    `(binding [*ns* (find-ns 'supernal.adhoc)] (eval ~e)))
 
+(defn shout! [output]
+   (println (style output :red))
+   (System/exit 1))
+
+(defn validated-args [args]
+  (when-not (contains? args :app-name) (shout! "args must include :app-name (application name)"))
+  (when-not (contains? args :src) (shout! "args must include :src (deployed content uri) )"))
+  )
+
 (defcommand run 
-  "Run a single task or an entire lifecycle"
+  " Run a single task or an entire lifecycle:
+
+                  sup run {script} {task/lifecycle} -r {role} -a  \"{:src \"{uri}\", :app-name \"{name}\"}\"
+
+                 * standalone tasks should be prefixed (deploy/start)."
   {:opts-spec [["-r" "--role" "Target Role" :required true]
-               ["-a" "--args" "Task/Cycle arguments" :default "{}"]]
+               ["-a" "--args" "Task/Cycle arguments {:src \"uri\" :app-name \"name\"}" :default "{}"]]
    :bind-args-to [script name*]}
   (load-string (slurp script))
   (let [args* (read-string args)]
-    (when (lifecycle-exists? name*)
-     (adhoc-eval (clojure.core/list 'execute (symbol name*) args* (keyword role) :join true))) 
-    (when (task-exists? name*) 
-      (adhoc-eval (clojure.core/list 'execute-task (symbol name*) args* (keyword role) :join true)))))
+    (validated-args args*)
+    (if (lifecycle-exists? name*)
+     (adhoc-eval (clojure.core/list 'execute (symbol name*) args* (keyword role) :join true))
+      (if (task-exists? name*) 
+        (adhoc-eval (clojure.core/list 'execute-task (symbol name*) args* (keyword role) :join true)) 
+        (shout! (<< "No matching lifecycle or task named ~{name*} found!"))))))
 
 (defn print-tasks []
   (println (style "Tasks:" :blue))
@@ -64,14 +79,20 @@
       (println " "  (style name :green) (<< "- ~{doc}")))))
 
 (defcommand list
-  "Lists available tasks and lifecycles"
+  "Lists available tasks and lifecycles:
+
+                  sup list {script} 
+  "
   {:opts-spec [] :bind-args-to [script]}
   (load-string (slurp script))
   (print-cycles) 
   (print-tasks))
 
 (defcommand version 
-  "List supernal version and info" 
+  "List supernal version and info:
+
+                  sup version 
+  " 
   {:opts-spec [] :bind-args-to [script]}
   (println "Supernal 0.2.7"))
 
