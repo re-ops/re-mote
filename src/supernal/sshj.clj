@@ -42,12 +42,12 @@
 
 (def ^:dynamic timeout (* 1000 60 10))
 
-(defnk ssh-strap [host {user (@config :user)}]
+(defnk ssh-strap [host {user (@config :user)} {ssh-port 22}]
   (doto (SSHClient.)
     (.addHostKeyVerifier (PromiscuousVerifier.))
     (.loadKnownHosts)
     (.setTimeout timeout)
-    (.connect host)
+    (.connect host ssh-port)
     (.authPublickey user #^"[Ljava.lang.String;" (into-array [(@config :key)]))))
 
 (defmacro with-ssh [remote & body]
