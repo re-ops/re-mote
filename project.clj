@@ -17,10 +17,8 @@
 
   :exclusions [org.clojure/clojure]
 
-  :plugins  [
-      [jonase/eastwood "0.0.2"] [lein-midje "3.0.0"] 
-      [lein-tag "0.1.0"] [lein-tar "2.0.0"] [lein-set-version "0.3.0"] ]
-
+  :plugins  [[jonase/eastwood "0.0.2"] [lein-midje "3.0.0"] [lein-tag "0.1.0"]
+             [lein-tar "2.0.0"] [lein-set-version "0.3.0"] ]
 
   :profiles {:dev { 
               :dependencies [[midje "1.5.1"] [junit/junit "4.8.1"] ]
