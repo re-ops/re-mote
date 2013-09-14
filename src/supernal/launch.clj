@@ -10,11 +10,13 @@
    limitations under the License.)
 
 (ns supernal.launch
-  (:use 
-    [clansi.core :only (style)]
-    [clojure.core.strint :only (<<)]) 
   (:refer-clojure :exclude  [list])
-  (:require  [cliopatra.command :as command :refer  [defcommand]])
+  (:require  
+    [clojure.walk :refer (keywordize-keys)]
+    [clojure.string :refer (split)]
+    [clojure.core.strint :refer (<<)]  
+    [clansi.core :refer (style)]
+    [cliopatra.command :as command :refer  [defcommand]])
   (:gen-class true))
 
 (defn list-tasks []
@@ -42,23 +44,23 @@
    (println (style output :red))
    (System/exit 1))
 
-(defn validated-args [args]
-  (when-not (contains? args :app-name) (shout! "args must include :app-name (application name)"))
-  (when-not (contains? args :src) (shout! "args must include :src (deployed content uri) )"))
-  )
+(defn split-args 
+  [args]
+  {:pre [(= (first (re-find #"(\w+\=[^\s]+,?)*" args)) args)]}
+  (keywordize-keys (into {} (map #(into [] (split % #"=")) (split args #"," )))))
 
 (defcommand run 
-  " Run a single task or an entire lifecycle:
+  " Run a single task or an entire lifecycle
 
-                  sup run {script} {task/lifecycle} -r {role} -a  \"{:src \"{uri}\", :app-name \"{name}\"}\"
+                  sup run {task/lifecycle} -r {role} -a src=\"{uri}\",app-name=\"{name}\"\"
 
                  * standalone tasks should be prefixed (deploy/start)."
-  {:opts-spec [["-r" "--role" "Target Role" :required true]
-               ["-a" "--args" "Task/Cycle arguments {:src \"uri\" :app-name \"name\"}" :default "{}"]]
-   :bind-args-to [script name*]}
+  {:opts-spec [["-s" "--script" "Script to run" :default "deploy.clj"]
+               ["-r" "--role" "Target Role" :required true]
+               ["-a" "--args" "Task/Cycle arguments src=\"uri\" app-name=\"name\"" :default ""]]
+   :bind-args-to [name*]}
   (load-string (slurp script))
-  (let [args* (read-string args)]
-    (validated-args args*)
+  (let [args* (split-args args)]
     (if (lifecycle-exists? name*)
      (adhoc-eval (clojure.core/list 'execute (symbol name*) args* (keyword role) :join true))
       (if (task-exists? name*) 
@@ -81,9 +83,9 @@
 (defcommand list
   "Lists available tasks and lifecycles:
 
-                  sup list {script} 
+                  sup list
   "
-  {:opts-spec [] :bind-args-to [script]}
+  {:opts-spec [["-s" "--script" "Script to run" :default "deploy.clj"]]}
   (load-string (slurp script))
   (print-cycles) 
   (print-tasks))
