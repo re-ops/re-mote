@@ -96,7 +96,7 @@
                   sup version 
   " 
   {:opts-spec [] :bind-args-to [script]}
-  (println "Supernal 0.2.9"))
+  (println "Supernal 0.3.0"))
 
 (defn -main [& args]
   (binding [*ns* (create-ns 'supernal.adhoc)] 
