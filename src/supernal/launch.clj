@@ -99,7 +99,7 @@
 (defn -main [& args]
   (binding [*ns* (create-ns 'supernal.adhoc)] 
     (use '[clojure.core])
-    (use '[supernal.core :only (ns- execute execute-task run copy env cycles)])
+    (use '[supernal.core :only (ns- execute execute-task run copy env cycles lifecycle)])
     (use '[supernal.baseline])
     (use '[taoensso.timbre :only (warn debug)]) 
     (command/dispatch 'supernal.launch args)))
