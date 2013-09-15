@@ -60,7 +60,7 @@
                ["-a" "--args" "Task/Cycle arguments src=\"uri\" app-name=\"name\"" :default ""]]
    :bind-args-to [name*]}
   (load-string (slurp script))
-  (let [args* (split-args args)]
+  (let [args* (if (empty? args) {} (split-args args))]
     (if (lifecycle-exists? name*)
      (adhoc-eval (clojure.core/list 'execute (symbol name*) args* (keyword role) :join true))
       (if (task-exists? name*) 
