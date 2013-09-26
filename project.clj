@@ -24,13 +24,17 @@
               :dependencies [[midje "1.5.1"] [junit/junit "4.8.1"] ]
               :jvm-opts ~(vec (map (fn [[p v]] (str "-D" (name p) "=" v)) {:disable-conf "true"}))
               :resource-paths  ["pkg/etc/"]
-              
+              :source-paths  ["dev"]           
               :set-version {
                 :updates [{:path "src/supernal/launch.clj" :search-regex #"\"Supernal \d+\.\d+\.\d+\""}]
               }
              } 
             }
 
+  :repl-options {
+    :init-ns user               
+  }
+  
   :aliases {"autotest"
             ["midje" ":autotest" ":filter" "-integration"] 
             "runtest"
