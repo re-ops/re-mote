@@ -1,4 +1,4 @@
-#_(comment 
+(comment 
    Celestial, Copyright 2012 Ronen Narkis, narkisr.com
    Licensed under the Apache License,
    Version 2.0  (the "License") you may not use this file except in compliance with the License.
@@ -64,7 +64,11 @@
       (run (<< "chown ~(remote :user) ~(releases app-name run-id)"))))) 
 
 
-(lifecycle basic-deploy {:doc "basic deployment scheme"}
+(lifecycle base-rollback {:doc "base deployment roleback"} {})
+
+(lifecycle base-success {:doc "base deployment success"} {})
+
+(lifecycle base-deploy {:doc "base deployment scheme" :failure base-success :success base-rollback}
   {deploy/update-code #{deploy/post-update deploy/symlink}
    deploy/stop #{deploy/update-code}
    deploy/pre-update #{deploy/update-code}
@@ -72,4 +76,3 @@
    deploy/post-update #{deploy/start}
    deploy/start #{}})
 
-(lifecycle basic-rollback {:doc "basic deployment roleback"} {})
