@@ -50,11 +50,11 @@
   (keywordize-keys (into {} (map #(into [] (split % #"=")) (split args #"," )))))
 
 (defcommand run 
-  " Run a single task or an entire lifecycle
+  "run a single task or an entire lifecycle
 
-                  sup run {task/lifecycle} -r {role} -a src=\"{uri}\",app-name=\"{name}\"\"
+   sup run {task/lifecycle} -r {role} -a src=\"{uri}\",app-name=\"{name}\"\"
 
-                 * standalone tasks should be prefixed (deploy/start)."
+   * standalone tasks should be prefixed (deploy/start)."
   {:opts-spec [["-s" "--script" "Script to run" :default "deploy.clj"]
                ["-r" "--role" "Target Role" :required true]
                ["-a" "--args" "Task/Cycle arguments src=\"uri\" app-name=\"name\"" :default ""]]
@@ -81,9 +81,9 @@
       (println " "  (style name :green) (<< "- ~{doc}")))))
 
 (defcommand list
-  "Lists available tasks and lifecycles:
+  "lists available tasks and lifecycles:
 
-                  sup list
+   sup list
   "
   {:opts-spec [["-s" "--script" "Script to run" :default "deploy.clj"]]}
   (load-string (slurp script))
@@ -91,9 +91,9 @@
   (print-tasks))
 
 (defcommand version 
-  "List supernal version and info:
+  "list supernal version and info:
 
-                  sup version 
+   sup version 
   " 
   {:opts-spec [] :bind-args-to [script]}
   (println "Supernal 0.3.0"))
