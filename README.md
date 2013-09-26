@@ -1,6 +1,6 @@
 # Intro
 
-A remote multi server automation tool (like Capistrano/Fabric) in Clojure.
+A remote multi server automation tool (Capistrano/Fabric) in Clojure.
 
 
 [![Build Status](https://travis-ci.org/celestial-ops/supernal.png)](https://travis-ci.org/celestial-ops/supernal)
@@ -59,7 +59,7 @@ Code deployment example, first we define our tasks:
 Then we define the lifecycle (how they relate to each other):
 
 ```clojure
-(lifecycle basic-deploy
+(lifecycle base-deploy
   {deploy/update-code #{deploy/post-update deploy/symlink}
    deploy/stop #{deploy/update-code}
    deploy/pre-update #{deploy/update-code}
@@ -78,7 +78,7 @@ Execution and environment:
 
 (def artifact "git://github.com/narkisr/swag.git")
 
-(execute basic-deploy {:app-name "foo" :src artifact} :web)
+(execute base-deploy {:app-name "foo" :src artifact} :web)
 ```
 
 # Copyright and license

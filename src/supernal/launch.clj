@@ -108,6 +108,6 @@
 
 
 (comment 
-  (-main "run" "fixtures/supernal-demo.clj" "basic-deploy" "-r" "web") 
+  (-main "run" "fixtures/supernal-demo.clj" "base-deploy" "-r" "web") 
   )
 

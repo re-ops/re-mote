@@ -1,8 +1,8 @@
 (ns supernal.integration.tasks
-  "Test basic dsl uses https://github.com/narkisr/puppet-supernal" 
+  "Test basic dsl usage https://github.com/narkisr/puppet-supernal" 
   (:use 
     midje.sweet
-    [supernal.baseline :only (basic-deploy)]
+    [supernal.baseline :only (base-deploy)]
     [taoensso.timbre :only (warn debug)]
     [supernal.core :only (ns- execute execute-task run copy env deref-all lifecycle)]))
 
@@ -25,8 +25,8 @@
 
 (def artifact "git://github.com/narkisr/swag.git")
 
-(fact "basic deployment tasks no join" :integration :supernal
-   (deref-all (execute basic-deploy {:app-name "foo" :src artifact} :web :join false)) => nil)
+(fact "base deployment tasks no join" :integration :supernal
+   (deref-all (execute base-deploy {:app-name "foo" :src artifact} :web :join false)) => nil)
 
 (fact "single task" :integration :supernal
    (execute-task deploy/stop {:app-name "foo" :src artifact} :web) => nil)
