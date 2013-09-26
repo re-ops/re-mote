@@ -66,25 +66,35 @@
 
 (def cycles (atom #{}))
 
+
 (defmacro lifecycle 
   "Generates a topological sort from a lifecycle plan"
-  [name* {:keys [doc] :as opts} plan]
+  [name* {:keys [doc failure success] :as opts} plan]
   `(do
      (def ~name*
        (with-meta
          (kahn-sort 
-           (reduce (fn [r# [k# v#]] 
-                     (assoc r# (resolve- k#) 
-                            (into #{} (map #(resolve- %) v#)))) {} '~plan)) {:plan '~plan :doc ~doc}))
-     (swap! cycles conj (var ~name*)) 
-     ))
+           (reduce (fn [r# [k# v#]] (assoc r# (resolve- k#) (into #{} (map #(resolve- %) v#)))) {} '~plan))
+         {:plan '~plan :doc ~doc :failure ~failure :success ~success }))
+     (swap! cycles conj (var ~name*))))
+
+(declare run-cycle)
+
+(defn run-hook 
+   "runs hook on remote" 
+   [h args cycle* remote]
+  (when-let [hook ((meta cycle*) h)] (run-cycle hook args remote)))
 
 (defn run-cycle [cycle* args remote]
-    (doseq [t cycle*] (t args remote)))
+  (doseq [t cycle*] 
+    (try (t args remote)
+      (catch Throwable e 
+        (run-hook :failure (assoc args :failed-task t) cycle* remote)
+        (throw e))))
+   (run-hook :success args cycle* remote))
 
 (defn run-id [args]
   (assoc args :run-id (java.util.UUID/randomUUID)))
-
 
 (defmacro env-get 
   "Get instance list from env"
@@ -104,17 +114,17 @@
   "Waiting on a sequence of futures, limited by a constant pool of threads"
   (while (some identity (map (comp not future-done?) futures))
     (Thread/sleep 1000))
-   futures
+  futures
   ) 
 
 (defn deref-all 
-   "derefs all futures in order to grab errors" 
-   [futures]
+  "derefs all futures in order to grab errors" 
+  [futures]
   (doseq [f futures] @f))
 
 (defmacro map-futures [f rsym role opts-m] 
   `(doall (map (fn [~rsym] 
-     (bound-future (fn [] ~(concat f (list rsym))))) (env-get ~role ~opts-m))))
+                 (bound-future (fn [] ~(concat f (list rsym))))) (env-get ~role ~opts-m))))
 
 (defmacro execute-template 
   "Executions template form, note that join is true by default!"
@@ -134,6 +144,9 @@
   [name* args role & opts]
   `(execute-template ~role ((resolve- '~name*) (run-id ~args)) ~opts))
 
+(defmacro hooks [cycle* & pairs]
+  `(intern *ns* (symbol "hooks-") {~cycle* ~(apply hash-map pairs)}))
+ 
 (defmacro env 
   "A hash of running enviroment info and roles"
   [hash*]
