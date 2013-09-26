@@ -7,8 +7,7 @@
 (fact "neted remotes application"
       (apply-remote '(let [1 2] (copy 1 2))) => '(let [1 2] ((copy 1 2) remote)))
 
-(fact "task description lookup"
-      (:desc (meta supernal.user.deploy/update-code)) => "updates deployed code")
+
 
 (env 
   {:roles {
@@ -18,7 +17,7 @@
   (task runme (debug "here")))
 
 (ns- error 
-  (task zero-div (/ 1 0)))
+  (task zero-div :desc "meant to fail" (/ 1 0)))
 
 (defn rollback-run [task] (debug "rolling back" task))
 
@@ -34,3 +33,6 @@
   (execute includes-error {:app-name "foo" :src ""} :web) => (throws java.util.concurrent.ExecutionException) 
   (provided 
     (rollback-run #'supernal.user.error/zero-div)  => nil :times 1))
+
+(fact "task description lookup"
+   (:desc (meta supernal.user.error/zero-div)) => "meant to fail")
