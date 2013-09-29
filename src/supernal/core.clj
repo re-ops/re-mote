@@ -84,7 +84,8 @@
 (defn run-hook 
    "runs hook on remote" 
    [h args cycle* remote]
-  (when-let [hook ((meta cycle*) h)] (run-cycle hook args remote)))
+  (when-let [hook (h (meta cycle*))] 
+    (run-cycle hook args remote)))
 
 (defn run-cycle [cycle* args remote]
   (doseq [t cycle*] 
