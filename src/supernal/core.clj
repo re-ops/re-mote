@@ -64,6 +64,7 @@
       res
       (throw (Exception. (<< "No symbol ~{k} found in ns ~{pre}"))))))
 
+; used in launch
 (def cycles (atom #{}))
 
 
