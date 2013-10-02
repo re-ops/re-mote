@@ -1,4 +1,4 @@
-(defproject supernal "0.3.1"
+(defproject supernal "0.3.2"
   :description "A remote multi server automation tool (like Capistrano/Fabric)"
   :url "https://github.com/celestial-ops/supernal"
   :license  {:name "Apache License, Version 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
