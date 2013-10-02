@@ -45,7 +45,6 @@
 (defnk ssh-strap [host {user (@config :user)} {ssh-port 22}]
   (doto (SSHClient.)
     (.addHostKeyVerifier (PromiscuousVerifier.))
-    (.loadKnownHosts)
     (.setTimeout timeout)
     (.connect host ssh-port)
     (.authPublickey user #^"[Ljava.lang.String;" (into-array [(@config :key)]))))
