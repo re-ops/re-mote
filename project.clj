@@ -13,6 +13,7 @@
                  [net.schmizz/sshj "0.8.1"] 
                  [clj-aws-s3 "0.3.6"]
                  [me.raynes/conch "0.5.0"]
+                 [org.clojure/core.async "0.1.267.0-0d7780-alpha"]
                  [narkisr/cliopatra "1.1.0"]
                  [narkisr/clansi "1.2.0"] ]
 

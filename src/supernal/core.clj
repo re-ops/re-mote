@@ -20,14 +20,14 @@
   * Zeromq (jeromq) agent for improved perforemance over basic ssh
   "
   (:require 
-       [clojure.walk :as walk]
-       [pallet.thread.executor :as pallet]
-       [supernal.sshj :as sshj]) 
-  (:use 
-    [taoensso.timbre :only (error)]
-    [clojure.core.strint :only (<<)]
-    [supernal.topsort :only (kahn-sort)] 
-    [pallet.thread.executor :only (executor)]))
+    [taoensso.timbre :refer (error)]
+    [clojure.walk :as walk]
+    [pallet.thread.executor :as pallet]
+    [clojure.core.strint :refer (<<)]
+    [supernal.topsort :refer (kahn-sort)] 
+    [pallet.thread.executor :refer (executor)]
+    [clojure.core.async :refer (<!! thread thread-call) :as async]
+    [supernal.sshj :as sshj]))
 
 
 (defn gen-ns [ns*]
@@ -66,7 +66,6 @@
 
 ; used in launch
 (def cycles (atom #{}))
-
 
 (defmacro lifecycle 
   "Generates a topological sort from a lifecycle plan"
@@ -125,10 +124,9 @@
   (doseq [f futures] @f))
 
 (defmacro map-futures [f rsym role opts-m] 
-  `(doall (map (fn [~rsym] 
-                 (bound-future (fn [] ~(concat f (list rsym))))) (env-get ~role ~opts-m))))
+  `(doall (map (fn [~rsym] (bound-future (fn [] ~(concat f (list rsym))))) (env-get ~role ~opts-m))))
 
-(defmacro execute-template 
+#_(defmacro execute-template 
   "Executions template form, note that join is true by default!"
   [role f opts] 
   (let [opts-m (apply hash-map opts) rsym (gensym)]
@@ -137,18 +135,25 @@
       `(map-futures ~f ~rsym ~role ~opts-m)
       )))
 
+(defmacro execute-template [role f opts]
+  (let [opts-m (apply hash-map opts) rsym (gensym)]
+    `(<!! (async/into [] 
+      (async/merge (map #(thread-call (~f %)) (env-get ~role ~opts-m)))))))
+
 (defmacro execute [name* args role & opts]
   "Executes a lifecycle defintion on a given role"
-  `(execute-template ~role (run-cycle ~name* (run-id ~args)) ~opts))
+  `(execute-template ~role (partial run-cycle ~name* (run-id ~args)) ~opts))
+
+;; (clojure.pprint/pprint (macroexpand '(execute includes-error {:app-name "foo" :src artifact} :web)))
 
 (defmacro execute-task 
   "Executes a single task on a given role"
   [name* args role & opts]
-  `(execute-template ~role ((resolve- '~name*) (run-id ~args)) ~opts))
+  `(execute-template ~role (partial (resolve- '~name*) (run-id ~args)) ~opts))
 
 (defmacro hooks [cycle* & pairs]
   `(intern *ns* (symbol "hooks-") {~cycle* ~(apply hash-map pairs)}))
- 
+
 (defmacro env 
   "A hash of running enviroment info and roles"
   [hash*]
