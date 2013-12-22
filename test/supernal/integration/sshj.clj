@@ -1,10 +1,11 @@
 (ns supernal.integration.sshj
   "Basic sshj functionlity"
-  (:use 
-    midje.sweet
-    [clojure.core.strint :only (<<)]
-    [clojure.java.io :only (file)]
-    [supernal.sshj :only (copy execute sh-)]))
+  (:import clojure.lang.ExceptionInfo)
+  (:require 
+    [clojure.core.strint :refer (<<)]
+    [clojure.java.io :refer (file)]
+    [supernal.sshj :refer (copy execute sh-)])
+  (:use midje.sweet))
 
 
 (def remote {:host "192.168.2.26" :user "vagrant"})
@@ -37,3 +38,12 @@
       (.exists (file "/tmp/project.clj")) => truthy
       (sh- "rm" "/tmp/project.clj"))
 
+(defn with-m?  [m]
+  (fn [actual]
+    (= (.getMessage actual) m)))
+
+(fact "shell timeout" :integration :shell
+   (sh- "sleep" "10" {:timeout 1000}) => 
+     (throws ExceptionInfo (with-m? "timed out while executing: sleep"))
+   (sh- "sleep" "1") => nil
+   (sh- "sleep" "-1") => (throws ExceptionInfo (with-m? "Failed to execute: sleep")))
