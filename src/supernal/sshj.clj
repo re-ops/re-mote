@@ -157,7 +157,6 @@
       0 nil
       (throw (ExceptionInfo. (<< "Failed to execute: ~{cmd}") opts)))))
 
-(sh- "ls" "-la")
 (def ^:dynamic s3-creds  {:access-key "" :secret-key ""})
 
 (defn s3-copy [bucket k dest]
