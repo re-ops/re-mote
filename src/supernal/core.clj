@@ -22,7 +22,6 @@
   (:require 
     [taoensso.timbre :refer (error)]
     [clojure.walk :as walk]
-    [pallet.thread.executor :as pallet]
     [clojure.core.strint :refer (<<)]
     [supernal.topsort :refer (kahn-sort)] 
     [pallet.thread.executor :refer (executor)]
@@ -104,41 +103,12 @@
     `(get-in ~env-m [:roles ~role])
     `(get-in @~'env- [:roles ~role])))
 
-(def pool
-  (executor {:prefix "supernal" :thread-group-name "supernal" :pool-size 4 :daemon true}))
-
-(defn bound-future [f]
-  {:pre [(ifn? f)]}; saves lots of errors
-  (pallet/execute pool f))
-
-(defn wait-on [futures]
-  "Waiting on a sequence of futures, limited by a constant pool of threads"
-  (while (some identity (map (comp not future-done?) futures))
-    (Thread/sleep 1000))
-  futures
-  ) 
-
-(defn deref-all 
-  "derefs all futures in order to grab errors" 
-  [futures]
-  (doseq [f futures] @f))
-
-(defmacro map-futures [f rsym role opts-m] 
-  `(doall (map (fn [~rsym] (bound-future (fn [] ~(concat f (list rsym))))) (env-get ~role ~opts-m))))
-
-#_(defmacro execute-template 
-  "Executions template form, note that join is true by default!"
-  [role f opts] 
-  (let [opts-m (apply hash-map opts) rsym (gensym)]
-    (if (get opts-m :join true)
-      `(deref-all (wait-on (map-futures ~f ~rsym ~role ~opts-m)))
-      `(map-futures ~f ~rsym ~role ~opts-m)
-      )))
-
 (defmacro execute-template [role f opts]
   (let [opts-m (apply hash-map opts) rsym (gensym)]
     `(<!! (async/into [] 
-      (async/merge (map #(thread-call (~f %)) (env-get ~role ~opts-m)))))))
+      (async/merge 
+        (map 
+          #(thread (try {:ok (~f %)} (catch Throwable e# {:fail e#}))) (env-get ~role ~opts-m)))))))
 
 (defmacro execute [name* args role & opts]
   "Executes a lifecycle defintion on a given role"

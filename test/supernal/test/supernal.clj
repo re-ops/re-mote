@@ -2,7 +2,7 @@
   (:use 
      midje.sweet
     [taoensso.timbre :only (warn debug)]
-    [supernal.core :only (ns- execute env deref-all lifecycle apply-remote)]))
+    [supernal.core :only (ns- execute env lifecycle apply-remote)]))
 
 (fact "neted remotes application"
       (apply-remote '(let [1 2] (copy 1 2))) => '(let [1 2] ((copy 1 2) remote)))
