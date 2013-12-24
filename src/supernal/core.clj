@@ -114,8 +114,6 @@
   "Executes a lifecycle defintion on a given role"
   `(execute-template ~role (partial run-cycle ~name* (run-id ~args)) ~opts))
 
-;; (clojure.pprint/pprint (macroexpand '(execute includes-error {:app-name "foo" :src artifact} :web)))
-
 (defmacro execute-task 
   "Executes a single task on a given role"
   [name* args role & opts]
