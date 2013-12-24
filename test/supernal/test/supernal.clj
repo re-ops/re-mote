@@ -7,8 +7,6 @@
 (fact "neted remotes application"
       (apply-remote '(let [1 2] (copy 1 2))) => '(let [1 2] ((copy 1 2) remote)))
 
-
-
 (env 
   {:roles {
       :web #{{:host "192.168.2.26" :user "vagrant" :sudo true}}}})
