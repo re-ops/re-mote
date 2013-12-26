@@ -108,7 +108,10 @@
     `(<!! (async/into [] 
       (async/merge 
         (map 
-          #(thread (try {:ok ((bound-fn* ~f) %) :remote %} (catch Throwable e# {:fail e# :remove %}))) (env-get ~role ~opts-m)))))))
+          #(thread-call 
+            (bound-fn [] 
+              (try {:ok (~f %) :remote %} 
+                 (catch Throwable e# {:fail e# :remove %})))) (env-get ~role ~opts-m)))))))
 
 (defmacro execute [name* args role & opts]
   "Executes a lifecycle defintion on a given role"
