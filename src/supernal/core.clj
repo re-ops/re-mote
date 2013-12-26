@@ -24,7 +24,6 @@
     [clojure.walk :as walk]
     [clojure.core.strint :refer (<<)]
     [supernal.topsort :refer (kahn-sort)] 
-    [pallet.thread.executor :refer (executor)]
     [clojure.core.async :refer (<!! thread thread-call) :as async]
     [supernal.sshj :as sshj]))
 

@@ -9,7 +9,6 @@
                  [ch.qos.logback/logback-classic "1.0.9"]
                  [org.codehaus.groovy/groovy "2.1.2"]
                  [prismatic/plumbing "0.0.1"]
-                 [pallet-thread "0.1.0"]
                  [net.schmizz/sshj "0.8.1"] 
                  [clj-aws-s3 "0.3.6"]
                  [me.raynes/conch "0.5.0"]
