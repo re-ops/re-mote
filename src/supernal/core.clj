@@ -20,14 +20,12 @@
   * Zeromq (jeromq) agent for improved perforemance over basic ssh
   "
   (:require 
-       [clojure.walk :as walk]
-       [pallet.thread.executor :as pallet]
-       [supernal.sshj :as sshj]) 
-  (:use 
-    [taoensso.timbre :only (error)]
-    [clojure.core.strint :only (<<)]
-    [supernal.topsort :only (kahn-sort)] 
-    [pallet.thread.executor :only (executor)]))
+    [taoensso.timbre :refer (error)]
+    [clojure.walk :as walk]
+    [clojure.core.strint :refer (<<)]
+    [supernal.topsort :refer (kahn-sort)] 
+    [clojure.core.async :refer (<!! thread thread-call) :as async]
+    [supernal.sshj :as sshj]))
 
 
 (defn gen-ns [ns*]
@@ -67,7 +65,6 @@
 ; used in launch
 (def cycles (atom #{}))
 
-
 (defmacro lifecycle 
   "Generates a topological sort from a lifecycle plan"
   [name* {:keys [doc failure success] :as opts} plan]
@@ -105,50 +102,28 @@
     `(get-in ~env-m [:roles ~role])
     `(get-in @~'env- [:roles ~role])))
 
-(def pool
-  (executor {:prefix "supernal" :thread-group-name "supernal" :pool-size 4 :daemon true}))
-
-(defn bound-future [f]
-  {:pre [(ifn? f)]}; saves lots of errors
-  (pallet/execute pool f))
-
-(defn wait-on [futures]
-  "Waiting on a sequence of futures, limited by a constant pool of threads"
-  (while (some identity (map (comp not future-done?) futures))
-    (Thread/sleep 1000))
-  futures
-  ) 
-
-(defn deref-all 
-  "derefs all futures in order to grab errors" 
-  [futures]
-  (doseq [f futures] @f))
-
-(defmacro map-futures [f rsym role opts-m] 
-  `(doall (map (fn [~rsym] 
-                 (bound-future (fn [] ~(concat f (list rsym))))) (env-get ~role ~opts-m))))
-
-(defmacro execute-template 
-  "Executions template form, note that join is true by default!"
-  [role f opts] 
+(defmacro execute-template [role f opts]
   (let [opts-m (apply hash-map opts) rsym (gensym)]
-    (if (get opts-m :join true)
-      `(deref-all (wait-on (map-futures ~f ~rsym ~role ~opts-m)))
-      `(map-futures ~f ~rsym ~role ~opts-m)
-      )))
+    `(<!! (async/into [] 
+      (async/merge 
+        (map 
+          #(thread-call 
+            (bound-fn [] 
+              (try {:ok (~f %) :remote %} 
+                 (catch Throwable e# {:fail e# :remove %})))) (env-get ~role ~opts-m)))))))
 
 (defmacro execute [name* args role & opts]
   "Executes a lifecycle defintion on a given role"
-  `(execute-template ~role (run-cycle ~name* (run-id ~args)) ~opts))
+  `(execute-template ~role (partial run-cycle ~name* (run-id ~args)) ~opts))
 
 (defmacro execute-task 
   "Executes a single task on a given role"
   [name* args role & opts]
-  `(execute-template ~role ((resolve- '~name*) (run-id ~args)) ~opts))
+  `(execute-template ~role (partial (resolve- '~name*) (run-id ~args)) ~opts))
 
 (defmacro hooks [cycle* & pairs]
   `(intern *ns* (symbol "hooks-") {~cycle* ~(apply hash-map pairs)}))
- 
+
 (defmacro env 
   "A hash of running enviroment info and roles"
   [hash*]

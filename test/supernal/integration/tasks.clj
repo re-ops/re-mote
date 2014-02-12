@@ -4,7 +4,7 @@
     midje.sweet
     [supernal.baseline :only (base-deploy)]
     [taoensso.timbre :only (warn debug)]
-    [supernal.core :only (ns- execute execute-task run copy env deref-all lifecycle)]))
+    [supernal.core :only (ns- execute execute-task run copy env lifecycle)]))
 
 (env 
   {:roles {
@@ -25,22 +25,22 @@
 
 (def artifact "git://github.com/narkisr/swag.git")
 
+(defn extract-error [{:keys [fail]}]
+  {:fail (-> fail bean :message)})
+
+(def ok [{:ok nil, :remote  {:host "192.168.2.26", :sudo true, :user "vagrant"}}])
 (fact "base deployment tasks no join" :integration :supernal
-   (deref-all (execute base-deploy {:app-name "foo" :src artifact} :web :join false)) => nil)
+   (execute base-deploy {:app-name "foo" :src artifact} :web) => ok)
 
 (fact "single task" :integration :supernal
-   (execute-task deploy/stop {:app-name "foo" :src artifact} :web) => nil)
+   (execute-task deploy/stop {:app-name "foo" :src artifact} :web) => ok)
 
 (fact "env option" :integration :supernal
    (let [e {:roles {:web #{{:host "192.168.2.26" :user "vagrant" :sudo true}}} }]
-     (execute-task deploy/stop {:app-name "foo" :src artifact} :web :env e) => nil))
+     (execute-task deploy/stop {:app-name "foo" :src artifact} :web :env e) => ok))
 
-(fact "joinless error" :integration :supernal
-  (deref-all (execute-task error/zero-div {:app-name "foo" :src artifact} :web :join false)) =>
-      (throws java.util.concurrent.ExecutionException))
+(fact "task with error" :integration :supernal
+  (map extract-error (execute-task error/zero-div {:app-name "foo" :src artifact} :web)) => [{:fail "Divide by zero"}])
 
-(fact "task join with error" :integration :supernal
-  (execute-task error/zero-div {:app-name "foo" :src artifact} :web) => (throws java.util.concurrent.ExecutionException))
-
-(fact "lifecycle with join" :integration :supernal
-   (execute includes-error {:app-name "foo" :src artifact} :web) => (throws java.util.concurrent.ExecutionException))
+(fact "lifecycle with error" :integration :supernal
+   (map extract-error (execute includes-error {:app-name "foo" :src artifact} :web)) => [{:fail "Divide by zero"}])

@@ -10,25 +10,24 @@
   limitations under the License.)
 
 (ns supernal.sshj
-  (:use 
-    [clojure.java.io :only (reader output-stream)]
-    [clojure.string :only (join split)]
-    [clojure.java.shell :only [sh]]
-    [clojure.core.strint :only (<<)]
-    [taoensso.timbre :only (warn debug info error)]
-    [clojure.string :only (split)]
-    [plumbing.core :only (defnk)] 
-    ) 
+  (:require 
+    [me.raynes.conch :as c]
+    [aws.sdk.s3 :as s3]
+    [clojure.java.io :refer (reader output-stream)]
+    [clojure.string :refer (join split)]
+    [clojure.java.shell :refer [sh]]
+    [clojure.core.strint :refer (<<)]
+    [taoensso.timbre :refer (warn debug info error)]
+    [clojure.string :refer (split)]
+    [plumbing.core :refer (defnk)]) 
   (:import 
+    clojure.lang.ExceptionInfo
     (java.util.concurrent TimeUnit)
     (net.schmizz.sshj.common StreamCopier$Listener)
     (net.schmizz.sshj.xfer FileSystemFile TransferListener)
     (net.schmizz.sshj SSHClient)
     (net.schmizz.sshj.userauth.keyprovider FileKeyProvider)
-    (net.schmizz.sshj.transport.verification PromiscuousVerifier)
-    )
-   (:require [aws.sdk.s3 :as s3]) 
-  )
+    (net.schmizz.sshj.transport.verification PromiscuousVerifier)))
 
 (defn default-config []
   {:key (<< "~(System/getProperty \"user.home\")/.ssh/id_rsa" ) :user "root" })
@@ -61,14 +60,14 @@
 (defn execute
   "Executes a cmd on a remote host"
   [cmd remote]
-    (with-ssh remote 
-      (let [session (doto (.startSession ssh) (.allocateDefaultPTY)) command (.exec session cmd) ]
-          (debug (<< "[~(remote :host)]:") cmd) 
-          (log-output (.getInputStream command) (remote :host))
-          (log-output (.getErrorStream command) (remote :host))
-          (.join command 60 TimeUnit/SECONDS) 
-          (when-not (= 0 (.getExitStatus command))
-            (throw (Exception. (<< "Failed to execute ~{cmd} on ~{remote}")))))))
+  (with-ssh remote 
+    (let [session (doto (.startSession ssh) (.allocateDefaultPTY)) command (.exec session cmd) ]
+      (debug (<< "[~(remote :host)]:") cmd) 
+      (log-output (.getInputStream command) (remote :host))
+      (log-output (.getErrorStream command) (remote :host))
+      (.join command 60 TimeUnit/SECONDS) 
+      (when-not (= 0 (.getExitStatus command))
+        (throw (Exception. (<< "Failed to execute ~{cmd} on ~{remote}")))))))
 
 (def listener 
   (proxy [TransferListener] []
@@ -141,15 +140,22 @@
   (when-not (empty? out) 
     (doseq [line (.split out "\n")] (info line))))
 
+(defn- options [args]
+  (let [log-proc (fn [out proc] (info out))
+        defaults {:verbose true :timeout (* 60 1000) :out log-proc :err log-proc}]
+    (if (map? (last args))
+      [(butlast args) (merge defaults (last args))] 
+      [args defaults])))
+
 (defn sh- 
-  "Runs a command localy and logs it "
-  [& cmds]
-  (let [{:keys [out err exit]} (apply sh cmds) cmd (join " " cmds)]
-    (info cmd)
-    (log-res out) 
-    (log-res err) 
-    (when-not (= 0 exit) 
-      (throw (Exception. (<< "Failed to execute: ~{cmd}"))))))
+  "Runs a command localy and logs its output streams"
+  [cmd & args]
+  (let [[args opts] (options args) ]
+    (info cmd (join " " args))
+    (case (deref (:exit-code (c/run-command cmd args opts)))
+      :timeout (throw (ExceptionInfo. (<< "timed out while executing: ~{cmd}") opts))
+      0 nil
+      (throw (ExceptionInfo. (<< "Failed to execute: ~{cmd}") opts)))))
 
 (def ^:dynamic s3-creds  {:access-key "" :secret-key ""})
 

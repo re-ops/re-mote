@@ -1,4 +1,4 @@
-(defproject supernal "0.3.2"
+(defproject supernal "0.4.0"
   :description "A remote multi server automation tool (like Capistrano/Fabric)"
   :url "https://github.com/celestial-ops/supernal"
   :license  {:name "Apache License, Version 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
@@ -9,9 +9,10 @@
                  [ch.qos.logback/logback-classic "1.0.9"]
                  [org.codehaus.groovy/groovy "2.1.2"]
                  [prismatic/plumbing "0.0.1"]
-                 [pallet-thread "0.1.0"]
                  [net.schmizz/sshj "0.8.1"] 
                  [clj-aws-s3 "0.3.6"]
+                 [me.raynes/conch "0.5.0"]
+                 [org.clojure/core.async "0.1.267.0-0d7780-alpha"]
                  [narkisr/cliopatra "1.1.0"]
                  [narkisr/clansi "1.2.0"] ]
 
