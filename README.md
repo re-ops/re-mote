@@ -17,6 +17,13 @@ A remote multi server automation tool (Capistrano/Fabric) in Clojure.
 
  * Inspired by Capistrano but more flexible.
 
+# Install 
+
+```bash 
+$ wget -qO - http://bit.ly/barbecue-ops  | sudo apt-key add -
+$ sudo add-apt-repository 'deb http://celestial-ops.com/barbecue quantal main'
+$ sudo apt-get update && sudo apt-get install supernal
+```
 
 # Usage
 
