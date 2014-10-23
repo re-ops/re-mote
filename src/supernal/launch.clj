@@ -49,12 +49,23 @@
   {:pre [(= (first (re-find #"(\w+\=[^\s]+,?)*" args)) args)]}
   (keywordize-keys (into {} (map #(into [] (split % #"=")) (split args #"," )))))
 
+(defn summarize
+  [rs]
+  (let [success (filter #(contains? % :ok) rs) fail (filter #(contains? % :fail) rs)]
+    (println (style "Run summary:" :blue) "\n") 
+    (doseq [r success]
+      (println " " (style "✔" :green) (get-in r [:remote :host])))
+    (doseq [r fail]
+      (println " " (style "x" :red) (get-in r [:remote :host]) "-" (.getMessage (r :fail))))
+    (println (<< "\nTotal: ~(count success) successful, ~(count fail) failed!")))
+  )
+
 (defcommand run 
   "run a single task or an entire lifecycle
 
-   sup run {task/lifecycle} -r {role} -a src=\"{uri}\",app-name=\"{name}\"\"
+  sup run {task/lifecycle} -s {script} -r {role} -a src=\"{uri}\",app-name=\"{name}\"\"
 
-   * standalone tasks should be prefixed (deploy/start)."
+  * standalone tasks should be prefixed (deploy/start)."
   {:opts-spec [["-s" "--script" "Script to run" :default "deploy.clj"]
                ["-r" "--role" "Target Role" :required true]
                ["-a" "--args" "Task/Cycle arguments src=\"uri\" app-name=\"name\"" :default ""]]
@@ -62,7 +73,7 @@
   (load-string (slurp script))
   (let [args* (if (empty? args) {} (split-args args))]
     (if (lifecycle-exists? name*)
-     (adhoc-eval (clojure.core/list 'execute (symbol name*) args* (keyword role) :join true))
+      (summarize (adhoc-eval (clojure.core/list 'execute (symbol name*) args* (keyword role) :join true)))
       (if (task-exists? name*) 
         (adhoc-eval (clojure.core/list 'execute-task (symbol name*) args* (keyword role) :join true)) 
         (shout! (<< "No matching lifecycle or task named ~{name*} found!"))))))
@@ -83,7 +94,7 @@
 (defcommand list
   "lists available tasks and lifecycles:
 
-   sup list
+  sup list
   "
   {:opts-spec [["-s" "--script" "Script to run" :default "deploy.clj"]]}
   (load-string (slurp script))
@@ -93,7 +104,7 @@
 (defcommand version 
   "list supernal version and info:
 
-   sup version 
+  sup version 
   " 
   {:opts-spec [] :bind-args-to [script]}
   (println "Supernal 0.3.2"))
