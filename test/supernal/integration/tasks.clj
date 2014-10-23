@@ -29,6 +29,7 @@
   {:fail (-> fail bean :message)})
 
 (def ok [{:ok nil, :remote  {:host "192.168.2.26", :sudo true, :user "vagrant"}}])
+
 (fact "base deployment tasks no join" :integration :supernal
    (execute base-deploy {:app-name "foo" :src artifact} :web) => ok)
 
