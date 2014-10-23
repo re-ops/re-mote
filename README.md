@@ -27,7 +27,11 @@ $ sudo apt-get update && sudo apt-get install supernal
 
 # Usage
 
-Code deployment example, first we define our tasks:
+We will follow a basic code deployment scenario
+
+## Defining tasks
+
+We define tasks using a Clojure DSL where each task is enclosed within a namespace:
 
 ```clojure
 ; baseline.clj
@@ -63,7 +67,7 @@ Code deployment example, first we define our tasks:
       (run (<< "chown ~(remote :user) ~(releases app-name run-id)"))))) 
 ```
 
-Then we define the lifecycle (how they relate to each other):
+We define how the task relate to each other using a lifecycle definition (basicly a graph):
 
 ```clojure
 (lifecycle base-deploy
@@ -75,17 +79,73 @@ Then we define the lifecycle (how they relate to each other):
    deploy/start #{}})
 ```
 
-Execution and environment:
+Lastly we define our running enviroment which includes the mapping from roles to specific hosts:
 
 ```clojure
 (env 
   {:roles {
       :web #{{:host "foobar" :user "vagrant" :sudo true}}}
    })
+```
 
+## Launch
+We can either launch it using programatic api:
+
+```clojure
 (def artifact "git://github.com/narkisr/swag.git")
 
 (execute base-deploy {:app-name "foo" :src artifact} :web)
+```
+
+Or using the sup binary:
+
+```bash
+$ lein supernal run -s fixtures/deploy.clj base-deploy -r web
+```
+
+## Sup binary
+
+The sup binary supports listing and running of single tasks/lifecycles:
+
+```bash 
+# using deploy.clj 
+$ sup list 
+Lifecycles:
+  base-rollback - base deployment roleback
+  base-deploy - base deployment scheme
+  base-success - base deployment success
+Tasks:
+  deploy:
+   stop - Stoping server foo
+   pre-update - pre code update actions
+   start - starts deployed service
+   post-update - runs post code update actions
+   symlink - links current version to current
+   update-code - updates deployed code
+```
+
+sup will use deploy.clj by default we can specify a custom filename:
+
+```bash
+$ sup list -s foo.clj
+```
+
+Launching a complete lifecycle on a role:
+
+```bash 
+$ sup run deploy -r web 
+```
+
+We can also launch single tasks:
+
+```bash
+$ sup run deploy/stop -r web 
+```
+
+Passing args to task/lifecycle:
+
+```bash
+$ sup run {task/lifecycle} -r web  -a "src='foo',app-name='bla'"
 ```
 
 # Copyright and license
