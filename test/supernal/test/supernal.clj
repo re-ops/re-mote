@@ -28,7 +28,8 @@
     {hookable/runme #{error/zero-div}})
 
 (fact "failure hook"
-  (execute includes-error {:app-name "foo" :src ""} :web) => (throws java.util.concurrent.ExecutionException) 
+  (:remote (first (execute includes-error {:app-name "foo" :src ""} :web))) => 
+     {:host "192.168.2.26", :sudo true, :user "vagrant"}
   (provided 
     (rollback-run #'supernal.user.error/zero-div)  => nil :times 1))
 
