@@ -27,7 +27,7 @@ $ sudo apt-get update && sudo apt-get install supernal
 
 # Usage
 
-We will follow a basic code deployment scenario
+We will follow a basic code deployment scenario, note that supernal uses SSH under to hood and expects the running user ssh key to be autorized on the remote machine end (see ssh-copy-id and authorized file).
 
 ## Defining tasks
 
