@@ -2,6 +2,7 @@
   {:roles {
       :web #{
              {:host "192.168.2.26" :user "vagrant" :sudo true}
+            {:host "192.168.2.28" :user "vagrant" :sudo true}
              {:host "192.168.2.27" :user "vagrant" :sudo true}}}
    })
 
