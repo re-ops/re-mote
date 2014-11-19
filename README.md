@@ -100,7 +100,7 @@ We can either launch it using programatic api:
 Or using the sup binary:
 
 ```bash
-$ lein supernal run -s fixtures/deploy.clj base-deploy -r web
+$ sup run -s fixtures/deploy.clj base-deploy -r web
 ```
 
 ## Sup binary
