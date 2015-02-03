@@ -46,7 +46,7 @@
 
 (defn split-args 
   [args]
-  {:pre [(= (first (re-find #"(\w+\=[^\s]+,?)*" args)) args)]}
+  {:pre [(= (first (re-find #"((\w|\-)+\=[^\s]+,?)*" args)) args)]}
   (keywordize-keys (into {} (map #(into [] (split % #"=")) (split args #"," )))))
 
 (defn summarize
