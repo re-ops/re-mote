@@ -25,7 +25,9 @@
     [clojure.core.strint :refer (<<)]
     [supernal.topsort :refer (kahn-sort)] 
     [clojure.core.async :refer (<!! thread thread-call) :as async]
-    [supernal.sshj :as sshj]))
+    [supernal.sshj :as sshj])
+  (:import [clojure.lang ExceptionInfo]) 
+  )
 
 
 (defn gen-ns [ns*]
@@ -89,7 +91,7 @@
     (try (t args remote)
       (catch Throwable e 
         (run-hook :failure (assoc args :failed-task t) cycle* remote)
-        (throw e))))
+        (throw (Exception. (str "Failed to run " t " due to " (str e)) e)))))
    (run-hook :success args cycle* remote))
 
 (defn run-id [args]
