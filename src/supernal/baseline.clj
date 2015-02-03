@@ -39,7 +39,7 @@
       (debug "updating code on" remote) 
       (copy src (releases app-name run-id)))) 
  
-  (task post-update :desc "runs post code update actions"
+  (task post-update :desc "post code update, extracting archives by default"
     (let [{:keys [src app-name run-id]} args file (last (split src #"/")) 
           basepath (releases app-name run-id)]
       (when-let [ext (archive? file)]
