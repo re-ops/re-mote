@@ -9,7 +9,7 @@
                  [ch.qos.logback/logback-classic "1.0.9"]
                  [org.codehaus.groovy/groovy "2.1.2"]
                  [prismatic/plumbing "0.0.1"]
-                 [net.schmizz/sshj "0.8.1"] 
+                 [com.hierynomus/sshj "0.12.0"] 
                  [clj-aws-s3 "0.3.6"]
                  [me.raynes/conch "0.5.0"]
                  [org.clojure/core.async "0.1.267.0-0d7780-alpha"]
