@@ -46,5 +46,7 @@
 
   :target-path "target/"
 
+  :signing {:gpg-key "narkisr@gmail.com"}
+
   :main supernal.launch
   )
