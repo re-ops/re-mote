@@ -5,10 +5,12 @@
     [clojure.core.strint :refer (<<)]
     [clojure.java.io :refer (file)]
     [supernal.sshj :refer (copy execute sh-)])
-  (:use midje.sweet))
+  (:use 
+    supernal.integration.common
+    midje.sweet))
 
 
-(def remote {:host "192.168.2.26" :user "vagrant"})
+(def remote {:host (base-net ".26") :user "vagrant"})
 
 (def git-uri "git://github.com/narkisr/cap-demo.git")
 
