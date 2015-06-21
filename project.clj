@@ -3,7 +3,6 @@
   :url "https://github.com/celestial-ops/supernal"
   :license  {:name "Apache License, Version 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.bouncycastle/bcprov-jdk16 "1.46"]
                  [org.clojure/core.incubator "0.1.2"]
                  [com.taoensso/timbre "1.5.2"]
                  [ch.qos.logback/logback-classic "1.0.9"]
