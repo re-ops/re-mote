@@ -4,7 +4,7 @@
   :license  {:name "Apache License, Version 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/core.incubator "0.1.3"]
-                 [com.taoensso/timbre "2.6.3"]
+                 [com.taoensso/timbre "4.0.1"]
                  [ch.qos.logback/logback-classic "1.1.3"]
                  [org.codehaus.groovy/groovy "2.4.3"]
                  [prismatic/plumbing "0.0.1"]
