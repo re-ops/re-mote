@@ -8,8 +8,6 @@
 
 (ns- deploy 
   (task stop :desc "Stoping server foo"
-
-    (debug (get-in @taoensso.timbre/config [:fmt-output-fn]))
     (debug "stopping service" remote)
     (run "hostname")))
 
