@@ -12,6 +12,7 @@
 (ns supernal.launch
   (:refer-clojure :exclude  [list])
   (:require  
+    [taoensso.timbre :refer (warn debug)]
     [clojure.walk :refer (keywordize-keys)]
     [clojure.string :refer (split)]
     [clojure.core.strint :refer (<<)]  
@@ -109,12 +110,28 @@
   {:opts-spec [] :bind-args-to [script]}
   (println "Supernal 0.5.1"))
 
+(defn formatting [{:keys [level ?err_ vargs_ msg_ ?ns-str hostname_ timestamp_]}]
+  (let [date (force timestamp_)]
+    (format "%s %s\n" date (or (force msg_) ""))))
+
+(defn slf4j-fix []
+  (let [cl (.getContextClassLoader  (Thread/currentThread))]
+    (-> cl  
+        (.loadClass "org.slf4j.LoggerFactory")
+        (.getMethod "getLogger"  (into-array java.lang.Class [(.loadClass cl "java.lang.String")]))
+        (.invoke nil (into-array java.lang.Object ["ROOT"])))))
+
+
+(slf4j-fix)
+
 (defn -main [& args]
   (binding [*ns* (create-ns 'supernal.adhoc)] 
     (use '[clojure.core])
     (use '[supernal.core :only (ns- execute execute-task run copy env cycles lifecycle)])
     (use '[supernal.baseline])
-    (use '[taoensso.timbre :only (warn debug)]) 
+    (taoensso.timbre/merge-config! {:output-fn  formatting })
+    (taoensso.timbre/merge-config! {:timestamp-opts  {:pattern "dd/MM/YY HH:MM:ss"}})
+    (taoensso.timbre/set-level! :trace)
     (command/dispatch 'supernal.launch args)))
 
 
