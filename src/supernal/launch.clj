@@ -129,6 +129,7 @@
     (use '[clojure.core])
     (use '[supernal.core :only (ns- execute execute-task run copy env cycles lifecycle)])
     (use '[supernal.baseline])
+    (use '[taoensso.timbre :only (warn debug info error)])
     (taoensso.timbre/merge-config! {:output-fn  formatting })
     (taoensso.timbre/merge-config! {:timestamp-opts  {:pattern "dd/MM/YY HH:MM:ss"}})
     (taoensso.timbre/set-level! :trace)
