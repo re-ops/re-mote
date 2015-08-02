@@ -25,6 +25,10 @@
 (fact "remote http get" :integration :sshj
        (copy http-uri "/tmp" {} remote) => nil
        (execute "rm /tmp/redis-sandbox-0.3.4.tar.gz" remote))
+
+(fact "basic auth get" :integration :sshj
+       (copy "https://admin:foo@192.168.3.25/1" "/tmp" {:unsecure true} remote) => nil
+       (execute "cat /tmp/1 | grep this" remote))
  
 (fact "local file copy to remote" :integration :sshj
       (copy "project.clj" "/tmp" {} remote) => nil 

@@ -126,10 +126,12 @@
   copy-dispatch
   )
 
+(defn wget-options [{:keys [unsecure]}] (if unsecure "--no-check-certificate" ""))
+
 (defmethod copy-remote :git [uri dest opts remote]
   (execute (<< "git clone ~{uri} ~(dest-path uri dest)") remote))
 (defmethod copy-remote :http [uri dest opts remote] 
-  (execute (<< "wget --no-check-certificate -O ~(dest-path uri dest) ~{uri}") remote))
+  (execute (<< "wget ~(wget-options opts) -O ~(dest-path uri dest) ~{uri}") remote))
 (defmethod copy-remote :s3 [uri dest opts remote] 
   (execute (<< "s3cmd get ~{uri} ~(dest-path uri dest)") remote))
 (defmethod copy-remote :file [uri dest opts remote] (upload (subs uri 6) dest remote))
