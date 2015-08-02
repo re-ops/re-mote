@@ -5,7 +5,7 @@
      supernal.integration.common
     [supernal.baseline :only (base-deploy)]
     [taoensso.timbre :only (warn debug)]
-    [supernal.core :only (ns- execute execute-task run copy env lifecycle)]))
+    [supernal.core :only (ns- execute execute-task run env lifecycle)]))
 
 
 

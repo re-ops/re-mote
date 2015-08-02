@@ -37,7 +37,7 @@
   (task update-code :desc "updates deployed code"
     (let [{:keys [src app-name run-id]} args]
       (debug "updating code on" remote) 
-      (copy src (releases app-name run-id)))) 
+      (copy src (releases app-name run-id) {}))) 
  
   (task post-update :desc "post code update, extracting archives by default"
     (let [{:keys [src app-name run-id]} args file (last (split src #"/")) 

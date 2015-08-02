@@ -107,7 +107,8 @@
 
 
 (defn copy-dispatch 
-  ([uri _ _] (copy-dispatch uri))
+  ([uri _ _ _] (copy-dispatch uri))
+  ([uri _ _] (copy-dispatch uri)) 
   ([uri _] (copy-dispatch uri)) 
   ([uri] {:pre [uri]}
    (first (first (filter #(some (fn [c] (c uri) ) (second %)) classifiers )))))
@@ -125,14 +126,14 @@
   copy-dispatch
   )
 
-(defmethod copy-remote :git [uri dest remote] 
+(defmethod copy-remote :git [uri dest opts remote]
   (execute (<< "git clone ~{uri} ~(dest-path uri dest)") remote))
-(defmethod copy-remote :http [uri dest remote] 
-  (execute (<< "wget -O ~(dest-path uri dest) ~{uri}") remote))
-(defmethod copy-remote :s3 [uri dest remote] 
+(defmethod copy-remote :http [uri dest opts remote] 
+  (execute (<< "wget --no-check-certificate -O ~(dest-path uri dest) ~{uri}") remote))
+(defmethod copy-remote :s3 [uri dest opts remote] 
   (execute (<< "s3cmd get ~{uri} ~(dest-path uri dest)") remote))
-(defmethod copy-remote :file [uri dest remote] (upload (subs uri 6) dest remote))
-(defmethod copy-remote :default [uri dest remote] (copy-remote (<< "file:/~{uri}") dest remote))
+(defmethod copy-remote :file [uri dest opts remote] (upload (subs uri 6) dest remote))
+(defmethod copy-remote :default [uri dest opts remote] (copy-remote (<< "file:/~{uri}") dest opts remote))
 
 (defn log-res 
   "Logs a cmd result"
@@ -168,20 +169,20 @@
   "A general local copy"
   copy-dispatch)
 
-(defmethod copy-localy :git [uri dest] 
+(defmethod copy-localy :git [uri dest opts] 
   (sh- "git" "clone" uri  (<< "~{dest}/~(no-ext (fname uri))")))
-(defmethod copy-localy :http [uri dest] 
-  (sh- "wget" "-O" (<< "~{dest}/~(fname uri) ~{uri}")))
-(defmethod copy-localy :s3 [uri dest] 
+(defmethod copy-localy :http [uri dest opts] 
+  (sh- "wget" "--no-check-certificate" "-O" (<< "~{dest}/~(fname uri) ~{uri}")))
+(defmethod copy-localy :s3 [uri dest opts] 
   (let [[_ bucket k] (re-find s3-regex)] (s3-copy bucket k dest)))
-(defmethod copy-localy :file [uri dest] (sh- "cp" (subs uri 6) dest))
-(defmethod copy-localy :default [uri dest] (copy-localy (<< "file:/~{uri}") dest))
+(defmethod copy-localy :file [uri dest opts] (sh- "cp" (subs uri 6) dest))
+(defmethod copy-localy :default [uri dest opts] (copy-localy (<< "file:/~{uri}") dest {}))
 
 (defn copy 
   "A general copy utility for both remote and local uri's http/git/file protocols are supported
   assumes a posix system with wget/git, for remote requires key based ssh access."
-  ([uri dest] (copy-localy uri dest)) 
-  ([uri dest remote] (copy-remote uri dest remote)))
+  ([uri dest opts] (copy-localy uri dest opts)) 
+  ([uri dest opts remote] (copy-remote uri dest opts remote)))
 
 (test #'no-ext)
 ; (execute "ping -c 1 google.com" {:host "localhost" :user "ronen"}) 
