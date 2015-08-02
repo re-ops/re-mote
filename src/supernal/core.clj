@@ -145,8 +145,8 @@
 
 (defn copy
   "Copies src uri (either http/file/git) into a remote destination path" 
-  [src dst opts]
-  (partial sshj/copy src dst opts))
+  ([src dst] (partial sshj/copy src dst {}))
+  ([src dst opts] (partial sshj/copy src dst opts)))
 
 (defn has-keys? [m keys]
   (apply = (map count [keys (select-keys m keys)])))
