@@ -1,3 +1,12 @@
+# supernal 0.6.0 (03/08/15):
+
+## Fixes:
+
+## Features
+
+* Adding support for passing options hash to copy.
+* Implementing unsecure mode for https copy.
+
 # supernal 0.5.3 (26/06/15):
 
 ## Fixes:

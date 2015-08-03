@@ -108,7 +108,7 @@
   sup version 
   " 
   {:opts-spec [] :bind-args-to [script]}
-  (println "Supernal 0.5.3"))
+  (println "Supernal 0.6.0"))
 
 (defn formatting [{:keys [level ?err_ vargs_ msg_ ?ns-str hostname_ timestamp_]}]
   (let [date (force timestamp_)]
