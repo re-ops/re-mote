@@ -94,7 +94,16 @@ Lastly we define our running enviroment which includes the mapping from roles to
   {:roles {
       :web #{{:host "foobar" :user "vagrant" :sudo true}}}
    })
+
 ```
+
+By default your ~/.ssh/id_rsa key is used, in order to override:
+
+```clojure
+; setting custom ssh info
+(supernal.core/ssh-config {:key "/home/foo/id_rsa" :user "bar"})
+```
+
 
 ## Launch
 We can either launch it using programatic api:
