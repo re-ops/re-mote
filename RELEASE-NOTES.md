@@ -1,3 +1,11 @@
+# supernal 0.6.1 (13/03/16):
+
+## Fixes:
+
+## Features
+
+* Adding log collection support.
+
 # supernal 0.6.0 (03/08/15):
 
 ## Fixes:
