@@ -39,6 +39,22 @@
   [out host]
   (doseq [line (line-seq (reader out))] (debug  (<< "[~{host}]:") line)))
 
+(def logs (atom {}))
+
+(defn collect-log
+  "Collect log output into logs atom"
+  [uuid]
+   (fn [out host]
+     (swap! logs (fn [m] (assoc m uuid (doall (line-seq (reader out))))))))
+
+(defn get-log 
+  "Getting log entry and clearing it"
+  [uuid]
+   (when-let [res (get @logs uuid)] 
+      (swap! logs (fn [m] (dissoc m uuid)))
+      res
+     ))
+
 (def ^:dynamic timeout (* 1000 60 10))
 
 (defnk ssh-strap [host {user (@config :user)} {ssh-port 22}]
@@ -59,12 +75,12 @@
 
 (defn execute
   "Executes a cmd on a remote host"
-  [cmd remote]
+  [cmd remote & {:keys [out-fn err-fn] :or {out-fn log-output err-fn log-output}}]
   (with-ssh remote 
     (let [session (doto (.startSession ssh) (.allocateDefaultPTY)) command (.exec session cmd) ]
       (debug (<< "[~(remote :host)]:") cmd) 
-      (log-output (.getInputStream command) (remote :host))
-      (log-output (.getErrorStream command) (remote :host))
+      (out-fn (.getInputStream command) (remote :host))
+      (err-fn (.getErrorStream command) (remote :host))
       (.join command 60 TimeUnit/SECONDS) 
       (when-not (= 0 (.getExitStatus command))
         (throw (Exception. (<< "Failed to execute ~{cmd} on ~{remote}")))))))
@@ -187,5 +203,7 @@
   ([uri dest opts remote] (copy-remote uri dest opts remote)))
 
 (test #'no-ext)
-; (execute "ping -c 1 google.com" {:host "localhost" :user "ronen"}) 
+
+; (execute "ping -c 1 google.com" {:host "localhost" :user "ronen"} :out-fn (collect-log "foo")) 
+; (get-log "foo")
 ; (upload "/home/ronen/Downloads/PCBSD9.1-x64-DVD.iso" "/tmp" {:host "localhost" :user "ronen"})
