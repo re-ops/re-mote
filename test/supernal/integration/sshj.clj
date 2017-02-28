@@ -27,7 +27,7 @@
        (execute "rm /tmp/redis-sandbox-0.3.4.tar.gz" remote))
 
 (fact "basic auth get" :integration :sshj
-       (copy "https://admin:foo@192.168.3.25/1" "/tmp" {:unsecure true} remote) => nil
+       (copy "https://admin:foo@192.168.2.25/1" "/tmp" {:unsecure true} remote) => nil
        (execute "cat /tmp/1 | grep this" remote))
  
 (fact "local file copy to remote" :integration :sshj
@@ -50,6 +50,6 @@
 
 (fact "shell timeout" :integration :shell
    (sh- "sleep" "10" {:timeout 1000}) => 
-     (throws ExceptionInfo (with-m? "timed out while executing: sleep"))
+     (throws ExceptionInfo (with-m? "Program returned non-zero exit code :timeout"))
    (sh- "sleep" "1") => nil
-   (sh- "sleep" "-1") => (throws ExceptionInfo (with-m? "Failed to execute: sleep")))
+   (sh- "sleep" "-1") => (throws ExceptionInfo (with-m? "Program returned non-zero exit code 1")))
