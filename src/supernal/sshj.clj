@@ -82,8 +82,7 @@
       (out-fn (.getInputStream command) (remote :host))
       (err-fn (.getErrorStream command) (remote :host))
       (.join command 60 TimeUnit/SECONDS)
-      (when-not (= 0 (.getExitStatus command))
-        (throw (Exception. (<< "Failed to execute ~{cmd} on ~{remote}")))))))
+      (.getExitStatus command))))
 
 (def listener
   (proxy [TransferListener] []
@@ -204,6 +203,4 @@
 
 (test #'no-ext)
 
-; (execute "ping -c 1 google.com" {:host "localhost" :user "ronen"} :out-fn (collect-log "foo"))
-; (get-log "foo")
-; (upload "/home/ronen/Downloads/PCBSD9.1-x64-DVD.iso" "/tmp" {:host "localhost" :user "ronen"})
+(defn gen-uuid [] (.replace (str (java.util.UUID/randomUUID)) "-" ""))
