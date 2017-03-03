@@ -40,8 +40,6 @@
 
 (setup-logging)
  
-
-
 (defprotocol Report
  (summary [this target])
  (log- [this m])
@@ -58,8 +56,7 @@
        (info code " >")
        (doseq [{:keys [host]} hosts]
          (info  "  " host)))
-      [this (select-keys m [:hosts])]
-     )
+      [this (select-keys m [:hosts])])
 
    (pretty [this {:keys [success failure] :as m}]
      (info "Successful:")
@@ -70,3 +67,5 @@
        (clojure.pprint/pprint fail))
      [this (select-keys m [:hosts])]))
  
+(defn refer-out []
+  (require '[supernal.repl.output :as out :refer (log- pretty)]))

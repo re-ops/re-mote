@@ -64,3 +64,6 @@
   Tracing
   (ping [this {:keys [hosts]} target]
     [this (run-hosts auth hosts (script ("ping" "-c" 1 ~target)))]))
+
+(defn refer-base []
+  (require '[supernal.repl.base :as base :refer (run | initialize pick ping ls)]))

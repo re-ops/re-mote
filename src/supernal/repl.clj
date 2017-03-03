@@ -13,15 +13,16 @@
   "Repl utilities for supernal"
   (:require
     [taoensso.timbre :refer (refer-timbre set-level!)]
-    [supernal.repl.base :refer (run | initialize)]
-    [supernal.repl.output :refer (pretty)]
+    [supernal.repl.base :refer (refer-base)]
+    [supernal.repl.output :refer (refer-out)]
     [supernal.repl.stats :refer (idle)])
   (:import [supernal.repl.base Hosts]) 
   )
 
-(refer-timbre)
+(refer-base)
+(refer-out)
 
 (def hosts (Hosts. {:user "vagrant"} ["192.168.2.25" "192.168.2.26" "192.168.2.27"]))
 
-;; (run (initialize hosts) | (ping "google.com") | (log-) | (ls "/home/vagrant/" "-la") | (log-))
+(run (initialize hosts) | (ping "google.com") | (log-) | (ls "/home/vagrant/" "-la") | (log-))
 ;; (run (initialize hosts) | (idle) | (pretty))

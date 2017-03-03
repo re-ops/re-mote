@@ -14,8 +14,8 @@
                  [org.clojure/core.async "0.3.441"]
                  [narkisr/cliopatra "1.1.0"]
                  [narkisr/clansi "1.2.0"]
-                 [com.palletops/stevedore "0.8.0"] 
                  ; repl
+                 [com.palletops/stevedore "0.8.0-beta.7"] 
                  [io.aviso/pretty "0.1.33"]
                  [progrock "0.1.1"]]
 
