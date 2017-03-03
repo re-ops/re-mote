@@ -16,13 +16,17 @@
     [supernal.repl.base :refer (refer-base)]
     [supernal.repl.output :refer (refer-out)]
     [supernal.repl.stats :refer (idle)])
-  (:import [supernal.repl.base Hosts]) 
-  )
+  (:import [supernal.repl.base Hosts]))
 
 (refer-base)
 (refer-out)
 
-(def hosts (Hosts. {:user "vagrant"} ["192.168.2.25" "192.168.2.26" "192.168.2.27"]))
+(def hosts (Hosts. {:user "vagrant"} ["192.168.2.25" "192.168.2.26"]))
 
-(run (initialize hosts) | (ping "google.com") | (log-) | (ls "/home/vagrant/" "-la") | (log-))
-;; (run (initialize hosts) | (idle) | (pretty))
+(def with-missing (Hosts. {:user "vagrant"} ["192.168.2.25" "192.168.2.26" "192.168.2.27"]))
+
+(defn ex1 [] 
+  (run (initialize hosts) | (ls "/" "-la") | (pretty)))
+
+(defn ex2 [] 
+  (run (initialize hosts) | (idle)))

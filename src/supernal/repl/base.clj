@@ -1,5 +1,6 @@
 (ns supernal.repl.base
   (:require
+    [clojure.java.io :refer (reader)]
     [taoensso.timbre :refer (refer-timbre )]
     [pallet.stevedore.bash]
     [pallet.stevedore :refer (script)]

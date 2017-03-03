@@ -23,18 +23,19 @@
 
   :plugins  [[jonase/eastwood "0.0.2"] [lein-midje "3.1.3"] [lein-tag "0.1.0"]
              [lein-ancient "0.6.7" :exclusions [org.clojure/clojure]]
-             [lein-tar "2.0.0"] [lein-set-version "0.3.0"] ]
+             [lein-tar "2.0.0"] [lein-set-version "0.3.0"] [lein-gorilla "0.4.0"]]
 
-  :profiles {:dev {
-              :dependencies [[midje "1.8.3"] [junit/junit "4.12"] ]
-              :jvm-opts ~(vec (map (fn [[p v]] (str "-D" (name p) "=" v)) {:disable-conf "true"}))
-              :resource-paths  ["pkg/etc/"]
-              :source-paths  ["dev"]
-              :set-version {
-                :updates [{:path "src/supernal/launch.clj" :search-regex #"\"Supernal \d+\.\d+\.\d+\""}]
-              }
-             }
-            }
+  :profiles {
+    :dev {
+       :dependencies [[midje "1.8.3"] [junit/junit "4.12"] ]
+       :jvm-opts ~(vec (map (fn [[p v]] (str "-D" (name p) "=" v)) {:disable-conf "true"}))
+       :resource-paths  ["pkg/etc/"]
+       :source-paths  ["dev"]
+       :set-version {
+          :updates [{:path "src/supernal/launch.clj" :search-regex #"\"Supernal \d+\.\d+\.\d+\""}]
+       }
+     }
+   }
 
   :repl-options {
     :init-ns user

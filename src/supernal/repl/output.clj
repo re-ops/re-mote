@@ -11,6 +11,7 @@
 
 (ns supernal.repl.output
   (:require 
+    [clansi.core :refer (style)]
     [clojure.string :as s]
     [taoensso.timbre :refer (refer-timbre set-level! merge-config!)])
   (:import [supernal.repl.base Hosts]) )
@@ -18,14 +19,11 @@
 (refer-timbre)
 
 (defn output-fn
-  "Default (fn [data]) -> string output fn.
-  Use`(partial default-output-fn <opts-map>)` to modify default opts."
+  "output for repl result"
   ([data] (output-fn nil data))
   ([opts data] ; For partials
-   (let [{:keys [no-stacktrace? stacktrace-fonts]} opts
-         {:keys [level ?err #_vargs msg_ ?ns-str ?file hostname_
-                 timestamp_ ?line]} data]
-     (str (s/upper-case (name level))  " " (force msg_)))))
+   (let [ {:keys [level ?err #_vargs msg_ ?ns-str ?file hostname_ timestamp_ ?line]} data]
+     (str   (style "> " :green) (force msg_)))))
 
 (defn disable-coloring
    "See https://github.com/ptaoussanis/timbre"
