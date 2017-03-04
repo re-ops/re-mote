@@ -1,7 +1,7 @@
 (ns supernal.validate
- (:require 
+ (:require
   [clojure.string :refer (trim)])
- (:import 
+ (:import
    [javax.crypto Cipher])
 )
 

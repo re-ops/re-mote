@@ -10,16 +10,20 @@
   limitations under the License.)
 
 (ns supernal.repl.stats
-  (:require 
+  (:require
     [supernal.repl.base :refer (run-hosts)]
     [pallet.stevedore :refer (script)])
   (:import [supernal.repl.base Hosts]))
 
-(defprotocol Cpu
-  (idle [this hosts]))
+(defprotocol Stats
+  (cpu [this hosts])
+  (ram [this hosts]))
 
 (extend-type Hosts
-  Cpu
-  (idle [this {:keys [hosts]}]
-     (let [stat (script (pipe ("mpstat" "2" "1") ("awk" "'{ print $12 }'") ("tail" "-1")))]
+  Stats
+  (cpu [this {:keys [hosts]}]
+     (let [stat (script (pipe ("mpstat" "1" "1") ("awk" "'NR==4 { print $4 \" \" $6 \" \" $13 }'")))]
+       [this (run-hosts (:auth this) hosts stat)]))
+  (ram [this {:keys [hosts]}]
+     (let [stat (script (pipe  ("free" "-m")  ("awk" "'NR==2 { print $4 \" \" $5 \" \" $6 }'")))]
        [this (run-hosts (:auth this) hosts stat)])))

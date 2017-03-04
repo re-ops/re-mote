@@ -1,5 +1,7 @@
 (ns supernal.repl.base
   (:require
+    [clojure.tools.trace :as t]
+    [clojure.core.async :refer (<!! thread thread-call) :as async]
     [clojure.java.io :refer (reader)]
     [taoensso.timbre :refer (refer-timbre )]
     [pallet.stevedore.bash]
@@ -18,13 +20,18 @@
     (catch Throwable e
        {:host host :code :fail :error (.getMessage e)})))
 
+(defn map-async 
+  "Map functions in seperate theads and merge the results"
+  [f ms]
+  (<!! (async/into [] (async/merge (map #(thread-call (bound-fn []  (f %))) ms)))))
+
 (defn get-logs [hosts]
    (map (fn [{:keys [uuid] :as m}] (assoc m :out (get-log uuid))) hosts))
 
 (defn run-hosts [auth hosts script]
-  (let [results (map (partial execute-uuid auth script ) hosts)
-          grouped (group-by :code results)]
-      {:hosts hosts :success (merge (get-logs (grouped 0))) :failure (dissoc grouped 0)}))
+  (let [results (map-async (partial execute-uuid auth script ) hosts)
+        grouped (group-by :code results)]
+      {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
 
 (defmacro | [source fun & funs]
   (let [f (first fun) args (rest fun)]
