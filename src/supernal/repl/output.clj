@@ -11,12 +11,13 @@
 
 (ns supernal.repl.output
   (:require
+    [supernal.repl.base :refer (get-logs)]
     [taoensso.timbre.appenders.3rd-party.rolling :refer (rolling-appender)] 
     [clojure.pprint :refer [print-table]]
     [clansi.core :refer (style)]
     [clojure.string :as s]
     [taoensso.timbre :refer (refer-timbre set-level! merge-config!)])
-  (:import [supernal.repl.base Hosts]) )
+  (:import [supernal.repl.base Hosts]))
 
 (refer-timbre)
 
@@ -72,11 +73,11 @@
    (pretty [this {:keys [success failure] :as m}]
      (println "")
      (println (style "Run summary:" :blue) "\n")
-     (doseq [r success]
-       (println " " (style "✔" :green) (select-keys r [:remote :out])))
+     (doseq [{:keys [host]} success]
+       (println " " (style "✔" :green) host))
      (doseq [[c rs] failure]
-       (doseq [r rs]
-         (println " " (style "x" :red) (:host r) "-" (or (:out r) (:error r)))))
+       (doseq [{:keys [host error out]} (get-logs rs)]
+         (println " " (style "x" :red) host "-" (if out (str c ",") "") (or out error))))
      (println "")
      [this m]))
 

@@ -1,5 +1,6 @@
 (ns supernal.repl.base
   (:require
+    [clojure.string :refer (split join)]
     [clojure.tools.trace :as t]
     [clojure.core.async :refer (<!! thread thread-call) :as async]
     [clojure.java.io :refer (reader)]
@@ -49,6 +50,21 @@
 (defprotocol Tracing
   (ping [this target]))
 
+
+(defn get-logs [hosts]
+  (doall 
+    (map 
+      (fn [{:keys [uuid] :as m}] 
+        (if-not uuid m
+          (dissoc (assoc m :out (join "" (get-log uuid))) :uuid))) hosts)))
+
+(defn collect
+  "Collecting output into a hash, must be defined outside protocoal because of var args"
+  [this {:keys [success] :as res} k & ks]
+    (let [zipped (fn [{:keys [out] :as m}] (assoc m k (zipmap ks (split out #"\s"))))
+          success' (map zipped (get-logs success))] 
+      [this (assoc res :success success')]))
+ 
 (defprotocol Select
   (initialize [this])
   (pick [this m f]))
@@ -72,3 +88,4 @@
 
 (defn refer-base []
   (require '[supernal.repl.base :as base :refer (run | initialize pick ping ls)]))
+

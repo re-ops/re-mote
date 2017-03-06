@@ -12,9 +12,7 @@
 (ns supernal.repl.stats
   "General stats"
   (:require
-    [clojure.string :refer (split join)]
-    [supernal.sshj :refer (get-log)]
-    [supernal.repl.base :refer (run-hosts)]
+    [supernal.repl.base :refer (run-hosts collect)]
     [pallet.stevedore :refer (script)])
   (:import [supernal.repl.base Hosts]))
 
@@ -22,15 +20,6 @@
   (cpu [this])
   (free [this]))
 
-(defn get-logs [hosts]
-  (doall (map (fn [{:keys [uuid] :as m}] (dissoc (assoc m :out (join "" (get-log uuid))) :uuid)) hosts)))
-
-(defn collect
-  "Collecting output into a hash, must be defined outside protocoal because of var args"
-  [this {:keys [success] :as res} k & ks]
-    (let [zipped (fn [{:keys [out] :as m}] (assoc m k (zipmap ks (split out #"\s"))))
-          success' (map zipped (get-logs success))] 
-      [this (assoc res :success success')]))
 
 (defn cpu-script []
    (script 
