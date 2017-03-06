@@ -10,6 +10,7 @@
   limitations under the License.)
 
 (ns supernal.repl.stats
+  "General stats"
   (:require
     [clojure.string :refer (split join)]
     [supernal.sshj :refer (get-log)]

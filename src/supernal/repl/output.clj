@@ -71,13 +71,12 @@
 
    (pretty [this {:keys [success failure] :as m}]
      (println "")
-     (println "                 " (style "Successful:" :green :underline))
-     (print-table success)
-     (println "")
-     (println "")
-     (println "                 " (style "Failures:" :red :underline))
-     (print-table [:host :code :error :out] (map (partial apply merge) (vals failure)))
-     (println "")
+     (println (style "Run summary:" :blue) "\n")
+     (doseq [r success]
+       (println " " (style "✔" :green) (select-keys r [:remote :out])))
+     (doseq [[c rs] failure]
+       (doseq [r rs]
+         (println " " (style "x" :red) (:host r) "-" (or (:out r) (:error r)))))
      (println "")
      [this m]))
 

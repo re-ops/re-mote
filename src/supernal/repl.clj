@@ -16,12 +16,14 @@
     [taoensso.timbre :refer (refer-timbre set-level!)]
     [supernal.repl.base :refer (refer-base)]
     [supernal.repl.output :refer (refer-out)]
+    [supernal.repl.pkg :refer (refer-pkg)]
     [supernal.repl.stats :refer (refer-stats collect)])
   (:import [supernal.repl.base Hosts]))
 
 (refer-base)
 (refer-out)
 (refer-stats)
+(refer-pkg)
 
 (def hosts (Hosts. {:user "vagrant"} ["192.168.2.25" "192.168.2.26" "192.168.2.27" "192.168.2.28"]))
 
@@ -32,4 +34,5 @@
 
 (defn ex2 []
   (run (free hosts) | (pretty)))
+
 
