@@ -114,15 +114,6 @@
   (let [date (force timestamp_)]
     (format "%s %s\n" date (or (force msg_) ""))))
 
-(defn slf4j-fix []
-  (let [cl (.getContextClassLoader  (Thread/currentThread))]
-    (-> cl  
-        (.loadClass "org.slf4j.LoggerFactory")
-        (.getMethod "getLogger"  (into-array java.lang.Class [(.loadClass cl "java.lang.String")]))
-        (.invoke nil (into-array java.lang.Object ["ROOT"])))))
-
-
-(slf4j-fix)
 
 (defn -main [& args]
   (binding [*ns* (create-ns 'supernal.adhoc)] 

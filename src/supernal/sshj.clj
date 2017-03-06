@@ -45,7 +45,8 @@
   "Collect log output into logs atom"
   [uuid]
    (fn [out host]
-     (swap! logs (fn [m] (assoc m uuid (doall (map (fn [line] (info  (<< "[~{host}]:") line) line) (line-seq (reader out)))))))))
+     (let [lines (doall (map (fn [line] (info  (<< "[~{host}]:") line) line) (line-seq (reader out))))]
+       (swap! logs (fn [m] (assoc m uuid lines))))))
 
 (defn get-log
   "Getting log entry and clearing it"

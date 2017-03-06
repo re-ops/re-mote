@@ -10,7 +10,6 @@
                  [prismatic/plumbing "0.5.3"]
                  [com.hierynomus/sshj "0.20.0"]
                  [me.raynes/conch "0.8.0"]
-                 [clj-aws-s3 "0.3.10"]
                  [org.clojure/core.async "0.3.441"]
                  [narkisr/cliopatra "1.1.0"]
                  [narkisr/clansi "1.2.0"]
@@ -19,7 +18,12 @@
                  ; repl
                  [com.palletops/stevedore "0.8.0-beta.7"] 
                  [io.aviso/pretty "0.1.33"]
-                 [progrock "0.1.1"]]
+                 [progrock "0.1.1"]
+                 ; run at
+                 [jarohen/chime "0.2.0" :exclusions [org.clojure/core.async]]
+                 ; file copy 
+                 [clj-aws-s3 "0.3.10"]
+                 ]
 
   :exclusions [org.clojure/clojure]
 

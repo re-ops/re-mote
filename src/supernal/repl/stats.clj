@@ -11,19 +11,45 @@
 
 (ns supernal.repl.stats
   (:require
+    [clojure.string :refer (split join)]
+    [supernal.sshj :refer (get-log)]
     [supernal.repl.base :refer (run-hosts)]
     [pallet.stevedore :refer (script)])
   (:import [supernal.repl.base Hosts]))
 
 (defprotocol Stats
-  (cpu [this hosts])
-  (ram [this hosts]))
+  (cpu [this])
+  (free [this]))
+
+(defn get-logs [hosts]
+  (doall (map (fn [{:keys [uuid] :as m}] (dissoc (assoc m :out (join "" (get-log uuid))) :uuid)) hosts)))
+
+(defn collect
+  "Collecting output into a hash, must be defined outside protocoal because of var args"
+  [this {:keys [success] :as res} k & ks]
+    (let [zipped (fn [{:keys [out] :as m}] (assoc m k (zipmap ks (split out #"\s"))))
+          success' (map zipped (get-logs success))] 
+      [this (assoc res :success success')]))
+
+(defn cpu-script []
+   (script 
+     (set! R @("mpstat" "1" "1")) 
+     (if (not (= $? 0)) ("exit" 1))
+     (pipe ((println (quoted "${R}"))) ("awk" "'NR==4 { print $4 \" \" $6 \" \" $13 }'"))))
+
+(defn free-script []
+   (script 
+     (set! R @("free" "-m")) 
+     (if (not (= $? 0)) ("exit" 1))
+     (pipe ((println (quoted "${R}"))) ("awk" "'NR==2 { print $2 \" \" $3 \" \" $4 }'"))))
 
 (extend-type Hosts
   Stats
-  (cpu [this {:keys [hosts]}]
-     (let [stat (script (pipe ("mpstat" "1" "1") ("awk" "'NR==4 { print $4 \" \" $6 \" \" $13 }'")))]
-       [this (run-hosts (:auth this) hosts stat)]))
-  (ram [this {:keys [hosts]}]
-     (let [stat (script (pipe  ("free" "-m")  ("awk" "'NR==2 { print $4 \" \" $5 \" \" $6 }'")))]
-       [this (run-hosts (:auth this) hosts stat)])))
+  (cpu [this]
+    (collect this (run-hosts this (cpu-script)) :cpu :usr :sys :idle))
+
+  (free [this]
+    (collect this (run-hosts this (free-script)) :free :total :used :free)))
+
+(defn refer-stats []
+  (require '[supernal.repl.stats :as stats :refer (cpu free collect)]))

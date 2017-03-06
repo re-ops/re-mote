@@ -23,12 +23,9 @@
 (defn map-async 
   "Map functions in seperate theads and merge the results"
   [f ms]
-  (<!! (async/into [] (async/merge (map #(thread-call (bound-fn []  (f %))) ms)))))
+   (<!! (async/into [] (async/merge (map #(thread-call (bound-fn []  (f %))) ms)))))
 
-(defn get-logs [hosts]
-   (map (fn [{:keys [uuid] :as m}] (assoc m :out (get-log uuid))) hosts))
-
-(defn run-hosts [auth hosts script]
+(defn run-hosts [{:keys [auth hosts]} script]
   (let [results (map-async (partial execute-uuid auth script ) hosts)
         grouped (group-by :code results)]
       {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
@@ -44,34 +41,34 @@
     `(~p ~f ~s)))
 
 (defprotocol Shell
-  (rm [this hosts target flags])
-  (ls [this hosts target flags])
-  (grep [this hosts expr flags])
-  (cp [this hosts src dest flags]))
+  (rm [this target flags])
+  (ls [this target flags])
+  (grep [this expr flags])
+  (cp [this src dest flags]))
 
 (defprotocol Tracing
-  (ping [this hosts target]))
+  (ping [this target]))
 
 (defprotocol Select
   (initialize [this])
   (pick [this m f]))
- 
-(defrecord Hosts [auth initial]
+
+(defrecord Hosts [auth hosts]
 
   Shell
-  (ls [this {:keys [hosts]} target flags]
-   [this (run-hosts auth hosts (script ("ls" ~target ~flags)))])
+  (ls [this target flags]
+   [this (run-hosts this (script ("ls" ~target ~flags)))])
 
   Select
    (initialize [this]
-    [this {:hosts initial}])
+    [this hosts])
 
-  (pick [this {:keys [hosts failure success]} f]
+  (pick [this {:keys [failure success]} f]
     [this {:hosts (filter (partial f success failure) hosts)}])
 
   Tracing
-  (ping [this {:keys [hosts]} target]
-    [this (run-hosts auth hosts (script ("ping" "-c" 1 ~target)))]))
+  (ping [this target]
+    [this (run-hosts this (script ("ping" "-c" 1 ~target)))]))
 
 (defn refer-base []
   (require '[supernal.repl.base :as base :refer (run | initialize pick ping ls)]))
