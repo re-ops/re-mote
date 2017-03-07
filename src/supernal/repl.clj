@@ -36,3 +36,6 @@
   (run (free hosts) | (pretty)))
 
 
+(defn ex3 []
+  (run (update hosts) | (pick successful) | (upgrade) | (pretty))
+  )

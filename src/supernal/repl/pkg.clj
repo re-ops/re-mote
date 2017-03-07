@@ -21,7 +21,7 @@
 
 (defprotocol Apt
   (update [this]) 
-  (upgrade [this])
+  (upgrade [this m])
   )
 
 (extend-type Hosts
@@ -29,7 +29,7 @@
    (update [this]
      [this (run-hosts this (script ("sudo" "apt" "update")))])  
 
-   (upgrade [this]
+   (upgrade [this _]
      [this (run-hosts this (script ("sudo" "apt" "upgrade" "-y")))]))
 
 (defn refer-pkg []

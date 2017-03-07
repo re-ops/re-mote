@@ -79,13 +79,17 @@
    (initialize [this]
     [this hosts])
 
-  (pick [this {:keys [failure success]} f]
-    [this {:hosts (filter (partial f success failure) hosts)}])
+  (pick [this {:keys [failure success] :as m} f]
+    [(Hosts. auth (f success failure hosts)) {}])
 
   Tracing
   (ping [this target]
     [this (run-hosts this (script ("ping" "-c" 1 ~target)))]))
 
+(defn successful 
+  "Used for picking successful"
+  [success _ hs] (filter (into #{} (map :host success)) hs))
+
 (defn refer-base []
-  (require '[supernal.repl.base :as base :refer (run | initialize pick ping ls)]))
+  (require '[supernal.repl.base :as base :refer (run | initialize pick successful ping ls)]))
 
