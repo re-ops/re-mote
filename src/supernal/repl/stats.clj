@@ -42,4 +42,4 @@
     (collect this (run-hosts this (free-script)) :free :total :used :free)))
 
 (defn refer-stats []
-  (require '[supernal.repl.stats :as stats :refer (cpu free collect)]))
+  (require '[supernal.repl.stats :as stats :refer (cpu free)]))

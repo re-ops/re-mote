@@ -17,7 +17,7 @@
     [supernal.repl.base :refer (refer-base)]
     [supernal.repl.output :refer (refer-out)]
     [supernal.repl.pkg :refer (refer-pkg)]
-    [supernal.repl.stats :refer (refer-stats collect)])
+    [supernal.repl.stats :refer (refer-stats)])
   (:import [supernal.repl.base Hosts]))
 
 (refer-base)
