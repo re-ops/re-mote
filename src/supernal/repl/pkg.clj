@@ -20,12 +20,18 @@
 
 
 (defprotocol Apt
-  (update [this]) 
+  (update 
+    [this]
+    [this m]
+    ) 
   (upgrade [this m])
   )
 
 (extend-type Hosts
    Apt
+   (update [this _]
+     (update this))
+
    (update [this]
      [this (run-hosts this (script ("sudo" "apt" "update")))])  
 
