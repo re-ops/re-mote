@@ -16,20 +16,29 @@
                  ; tracking
                  [org.clojure/tools.trace "0.7.8"]
                  ; repl
-                 [com.palletops/stevedore "0.8.0-beta.7"] 
+                 [com.palletops/stevedore "0.8.0-beta.7"]
                  [io.aviso/pretty "0.1.33"]
                  [progrock "0.1.1"]
                  ; run at
                  [jarohen/chime "0.2.0" :exclusions [org.clojure/core.async]]
-                 ; file copy 
-                 [clj-aws-s3 "0.3.10"]
+                 [clj-time/clj-time "0.13.0"]
+                 ; web publish
+                 [compojure "1.5.1"]
+                 [org.clojure/clojurescript "1.9.229"]
+                 [com.taoensso/sente "1.11.0"]
+                 [http-kit "2.2.0"]
+                 [ring "1.5.0"]
+                 [ring/ring-defaults "0.2.1"]
+                 [com.taoensso/encore "2.84.2"]
+                 [hiccup "1.0.5"]
                  ]
 
   :exclusions [org.clojure/clojure]
 
   :plugins  [[jonase/eastwood "0.0.2"] [lein-midje "3.1.3"] [lein-tag "0.1.0"]
              [lein-ancient "0.6.7" :exclusions [org.clojure/clojure]]
-             [lein-tar "2.0.0"] [lein-set-version "0.3.0"] [lein-gorilla "0.4.0"]]
+             [lein-tar "2.0.0"] [lein-set-version "0.3.0"] [lein-gorilla "0.4.0"]
+             [lein-figwheel "0.5.9"] [lein-cljsbuild "1.1.4"]]
 
   :profiles {
     :dev {
@@ -43,6 +52,17 @@
      }
    }
 
+  :clean-targets [:target-path "out"]
+
+   :cljsbuild
+  {:builds
+   [{:id :cljs-client
+     :source-paths ["src"]
+     :compiler {:output-to "target/main.js"
+                :optimizations :whitespace #_:advanced
+   :pretty-print true}}]}
+
+
   :repl-options {
     :init-ns user
   }
@@ -51,6 +71,8 @@
      "autotest" ["midje" ":autotest" ":filter" "-integration"]
      "runtest" ["midje" ":filter" "-integration"]
      "supernal" ["run" "-m" "supernal.launch"]
+     "start-repl" ["do" "clean," "cljsbuild" "once," "repl" ":headless"]
+     "start" ["do" "clean," "cljsbuild" "once," "run"]
    }
 
   :aot [supernal.launch]

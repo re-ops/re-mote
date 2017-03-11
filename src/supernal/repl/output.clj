@@ -50,12 +50,14 @@
   (disable-coloring)
   (set-level! :info))
 
-(setup-logging)
-
 (defprotocol Report
  (summary [this target])
  (log- [this m])
  (pretty [this m]))
+
+(defn summarize [s]
+  (let [l (.length s)]
+    (if (< l 50) s (.substring s (- l 50) l))))
 
 (extend-type Hosts
   Report
@@ -73,11 +75,11 @@
    (pretty [this {:keys [success failure] :as m}]
      (println "")
      (println (style "Run summary:" :blue) "\n")
-     (doseq [{:keys [host]} success]
-       (println " " (style "✔" :green) host))
+     (doseq [{:keys [host out]} success]
+       (println " " (style "✔" :green) host (if out (summarize out) "")))
      (doseq [[c rs] failure]
        (doseq [{:keys [host error out]} (get-logs rs)]
-         (println " " (style "x" :red) host "-" (if out (str c ",") "") (or out error))))
+         (println " " (style "x" :red) host "-" (if out (str c ",") "") (or error (summarize out)))))
      (println "")
      [this m]))
 

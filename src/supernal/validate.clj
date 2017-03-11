@@ -18,5 +18,3 @@
     (when (> Integer/MAX_VALUE allowed)
       (throw (ex-info "JCE isn't available" {:max-allowed allowed})))))
 
-(check-entropy 200)
-(check-jce)

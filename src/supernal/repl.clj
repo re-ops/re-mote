@@ -12,11 +12,13 @@
 (ns supernal.repl
   "Repl utilities for supernal"
   (:require
+    [supernal.validate :refer (check-entropy check-jce)]
     [clojure.pprint :refer (pprint)]
     [taoensso.timbre :refer (refer-timbre set-level!)]
     [supernal.repl.base :refer (refer-base)]
-    [supernal.repl.output :refer (refer-out)]
+    [supernal.repl.output :refer (refer-out setup-logging)]
     [supernal.repl.pkg :refer (refer-pkg)]
+    [supernal.log :refer (run-purge)]
     [supernal.repl.stats :refer (refer-stats)])
   (:import [supernal.repl.base Hosts]))
 
@@ -25,17 +27,24 @@
 (refer-stats)
 (refer-pkg)
 
-(def hosts (Hosts. {:user "vagrant"} ["192.168.2.25" "192.168.2.26" "192.168.2.27" "192.168.2.28"]))
+(defn setup []
+  (check-entropy 200)
+  (check-jce)
+  (setup-logging)
+  (run-purge 10))
 
-(def with-missing (Hosts. {:user "vagrant"} ["192.168.2.25" "192.168.2.26" "192.168.2.29"]))
+(setup)
 
-(defn ex1 []
-  (run (ls hosts "/" "-la") | (pretty)))
+(def sandbox (Hosts. {:user "vagrant"} ["192.168.2.25" "192.168.2.26" "192.168.2.27" "192.168.2.28"]))
 
-(defn ex2 []
-  (run (free hosts) | (pretty)))
+(def local (into-hosts "local.edn"))
 
+(defn listing [hs]
+  (run (ls hs "/" "-la") | (pretty)))
 
-(defn ex3 []
-  (run (update hosts) | (pick successful) | (upgrade) | (pretty))
-  )
+(defn stats [hs]
+  (run (free hs) | (pretty))
+  (run (cpu hs) | (pretty)))
+
+(defn update-n-upgrade [hs]
+  (run (update hs) | (pretty) | (pick successful) | (upgrade) | (pretty)))

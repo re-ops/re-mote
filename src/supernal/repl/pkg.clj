@@ -13,7 +13,7 @@
   "Package automation"
    (:require
      [clojure.string :refer (split join)]
-     [supernal.sshj :refer (get-log)]
+     [supernal.log :refer (get-log)]
      [supernal.repl.base :refer (run-hosts)]
      [pallet.stevedore :refer (script)])
    (:import [supernal.repl.base Hosts]))

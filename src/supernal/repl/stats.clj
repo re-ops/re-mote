@@ -13,13 +13,18 @@
   "General stats"
   (:require
     [supernal.repl.base :refer (run-hosts collect)]
-    [pallet.stevedore :refer (script)])
+    [pallet.stevedore :refer (script do-script)])
   (:import [supernal.repl.base Hosts]))
 
 (defprotocol Stats
   (cpu [this])
   (free [this]))
 
+(defn bash!
+   "check that we are running within bash!" 
+   []
+  (script
+     ("[" "!" "-n" "\"$BASH\"" "]" "&&" "echo" "Please set default user shell to bash" "&&" "exit" 1)))
 
 (defn cpu-script []
    (script 
@@ -33,13 +38,16 @@
      (if (not (= $? 0)) ("exit" 1))
      (pipe ((println (quoted "${R}"))) ("awk" "'NR==2 { print $2 \" \" $3 \" \" $4 }'"))))
 
+(defn validate! [f]
+  (do-script (bash!) (f)))
+
 (extend-type Hosts
   Stats
   (cpu [this]
-    (collect this (run-hosts this (cpu-script)) :cpu :usr :sys :idle))
+    (collect this (run-hosts this (validate! cpu-script)) :cpu :usr :sys :idle))
 
   (free [this]
-    (collect this (run-hosts this (free-script)) :free :total :used :free)))
+    (collect this (run-hosts this (validate! free-script)) :free :total :used :free)))
 
 (defn refer-stats []
   (require '[supernal.repl.stats :as stats :refer (cpu free)]))

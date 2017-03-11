@@ -1,13 +1,15 @@
 (ns supernal.repl.base
   (:require
+    [clojure.edn :refer (read-string)]
     [clojure.string :refer (split join)]
     [clojure.tools.trace :as t]
     [clojure.core.async :refer (<!! thread thread-call) :as async]
-    [clojure.java.io :refer (reader)]
+    [clojure.java.io :refer (reader file)]
     [taoensso.timbre :refer (refer-timbre )]
     [pallet.stevedore.bash]
     [pallet.stevedore :refer (script)]
-    [supernal.sshj :refer (execute collect-log get-log gen-uuid)]))
+    [supernal.log :refer (collect-log get-log gen-uuid)]
+    [supernal.sshj :refer (execute)]))
 
 (refer-timbre)
 
@@ -16,12 +18,12 @@
 (defn execute-uuid [auth script host]
   (try
     (let [uuid (gen-uuid)
-          code (execute script {:host host :user (auth :user)} :out-fn (collect-log uuid))]
+          code (execute script (merge {:host host} auth) :out-fn (collect-log uuid))]
        {:host host :code code :uuid uuid})
     (catch Throwable e
        {:host host :code :fail :error (.getMessage e)})))
 
-(defn map-async 
+(defn map-async
   "Map functions in seperate theads and merge the results"
   [f ms]
    (<!! (async/into [] (async/merge (map #(thread-call (bound-fn []  (f %))) ms)))))
@@ -50,27 +52,26 @@
 (defprotocol Tracing
   (ping [this target]))
 
-
 (defn get-logs [hosts]
-  (doall 
-    (map 
-      (fn [{:keys [uuid] :as m}] 
+  (doall
+    (map
+      (fn [{:keys [uuid] :as m}]
         (if-not uuid m
-          (dissoc (assoc m :out (join "" (get-log uuid))) :uuid))) hosts)))
+          (dissoc (assoc m :out (join "\n" (get-log uuid))) :uuid))) hosts)))
 
 (defn collect
   "Collecting output into a hash, must be defined outside protocoal because of var args"
-  [this {:keys [success] :as res} k & ks]
+  [this {:keys [success failure] :as res} k & ks]
     (let [zipped (fn [{:keys [out] :as m}] (assoc m k (zipmap ks (split out #"\s"))))
-          success' (map zipped (get-logs success))] 
-      [this (assoc res :success success')]))
- 
+          success' (map zipped (get-logs success))
+          failure' (into {} (map (fn [[code rs]] [code (get-logs rs)]) failure))]
+      [this (assoc (assoc res :success success') :failure failure')]))
+
 (defprotocol Select
   (initialize [this])
   (pick [this m f]))
 
 (defrecord Hosts [auth hosts]
-
   Shell
   (ls [this target flags]
    [this (run-hosts this (script ("ls" ~target ~flags)))])
@@ -86,10 +87,16 @@
   (ping [this target]
     [this (run-hosts this (script ("ping" "-c" 1 ~target)))]))
 
-(defn successful 
+(defn successful
   "Used for picking successful"
   [success _ hs] (filter (into #{} (map :host success)) hs))
 
+(defn into-hosts
+   "builds hosts from an edn file" 
+   [f]
+   (let [{:keys [auth hosts]} (read-string (slurp (file f)))]
+     (Hosts. auth hosts)))
+
 (defn refer-base []
-  (require '[supernal.repl.base :as base :refer (run | initialize pick successful ping ls)]))
+  (require '[supernal.repl.base :as base :refer (run | initialize pick successful ping ls into-hosts)]))
 
