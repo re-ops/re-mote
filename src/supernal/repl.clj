@@ -37,7 +37,7 @@
 
 (def sandbox (Hosts. {:user "vagrant"} ["192.168.2.25" "192.168.2.26" "192.168.2.27" "192.168.2.28"]))
 
-(def local (into-hosts "local.edn"))
+;; (def local (into-hosts "local.edn"))
 
 (defn listing [hs]
   (run (ls hs "/" "-la") | (pretty)))
