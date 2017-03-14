@@ -1,7 +1,7 @@
 (ns supernal.repl.base
   (:require
     [clojure.edn :as edn]
-    [clojure.string :refer (split join)]
+    [clojure.string :refer (split)]
     [clojure.tools.trace :as t]
     [clojure.core.async :refer (<!! thread thread-call) :as async]
     [clojure.java.io :refer (reader file)]

@@ -12,6 +12,7 @@
 (ns supernal.log
   "log collection"
   (:require
+      [clojure.string :refer (join)]
       [taoensso.timbre.appenders.3rd-party.rolling :refer (rolling-appender)] 
       [clansi.core :refer (style)]
       [taoensso.timbre :refer (refer-timbre set-level! merge-config!)]
