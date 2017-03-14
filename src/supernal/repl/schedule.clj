@@ -20,17 +20,33 @@
 
 (refer-timbre)
 
-(defn create-ch [s] 
-  (chime-ch (periodic-seq  (t/now) (-> s t/seconds))))
+(def chs (atom #{}))
 
-(defn watch [ch]
+(defn create-ch [s] 
+  (let [ch (chime-ch (periodic-seq  (t/now) (-> s t/seconds)))]
+    (swap! chs conj ch) 
+     ch
+    ))
+
+(defn- run [ch f args]
  (future
    (a/<!! 
      (go-loop []
        (when-let [msg (<! ch)]
-         (info "Chiming at:" msg)
+         (debug "Chiming at:" msg)
+         (apply f args)
       (recur))))))
 
-(def my-ch (create-ch 1))
-;; (close! my-ch)
-; (watch my-ch)
+(defn watch
+  "run f every s seconds"
+   [s f & args]
+   (let [ch (create-ch s)] (run ch f args) ch))
+
+(defn halt!
+   ([] 
+    (doseq [ch @chs] (halt! ch)))
+   ([ch] 
+     (close! ch) 
+     (swap! chs (fn [curr] (into #{} (remove #{ch} curr))))) 
+    )
+   

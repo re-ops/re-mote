@@ -11,6 +11,7 @@
 
 (ns supernal.repl.pkg
   "Package automation"
+   (:refer-clojure :exclude  [update])
    (:require
      [clojure.string :refer (split join)]
      [supernal.log :refer (get-log)]

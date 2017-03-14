@@ -18,6 +18,7 @@
     [supernal.repl.base :refer (refer-base)]
     [supernal.repl.output :refer (refer-out setup-logging)]
     [supernal.repl.pkg :refer (refer-pkg)]
+    [supernal.repl.schedule :refer (watch)]
     [supernal.log :refer (run-purge)]
     [supernal.repl.stats :refer (refer-stats)])
   (:import [supernal.repl.base Hosts]))
@@ -33,18 +34,16 @@
   (setup-logging)
   (run-purge 10))
 
-(setup)
-
 (def sandbox (Hosts. {:user "vagrant"} ["192.168.2.25" "192.168.2.26" "192.168.2.27" "192.168.2.28"]))
 
-;; (def local (into-hosts "local.edn"))
+(def local (into-hosts "local.edn"))
 
 (defn listing [hs]
   (run (ls hs "/" "-la") | (pretty)))
 
 (defn stats [hs]
-  (run (free hs) | (pretty))
-  (run (cpu hs) | (pretty)))
+  (run (free hs) | (pretty) | (collect))
+  #_(run (cpu hs)  | (pretty) | (collect)))
 
 (defn update-n-upgrade [hs]
   (run (update hs) | (pretty) | (pick successful) | (upgrade) | (pretty)))

@@ -12,13 +12,16 @@
 (ns supernal.repl.stats
   "General stats"
   (:require
-    [supernal.repl.base :refer (run-hosts collect)]
+    [clj-time.core :as t]
+    [supernal.repl.base :refer (run-hosts zip)]
     [pallet.stevedore :refer (script do-script)])
   (:import [supernal.repl.base Hosts]))
 
 (defprotocol Stats
   (cpu [this])
-  (free [this]))
+  (free [this])
+  (collect [this m])
+  (sliding [this m]))
 
 (defn bash!
    "check that we are running within bash!" 
@@ -41,13 +44,25 @@
 (defn validate! [f]
   (do-script (bash!) (f)))
 
+(def db (atom {}))
+
 (extend-type Hosts
   Stats
   (cpu [this]
-    (collect this (run-hosts this (validate! cpu-script)) :cpu :usr :sys :idle))
+    (zip this (run-hosts this (validate! cpu-script)) :stats :cpu :usr :sys :idle))
 
   (free [this]
-    (collect this (run-hosts this (validate! free-script)) :free :total :used :free)))
+    (zip this (run-hosts this (validate! free-script)) :stats :free :total :used :free))
+
+  (collect [this {:keys [success] :as m}]
+    (doseq [{:keys [host stats]} success]
+      (doseq [[k v] stats]
+        (swap! db assoc-in [host k (t/now)] v))))
+
+  (sliding [this {:keys [success] :as m}]
+    
+    ) 
+  )
 
 (defn refer-stats []
-  (require '[supernal.repl.stats :as stats :refer (cpu free)]))
+  (require '[supernal.repl.stats :as stats :refer (cpu free collect)]))

@@ -1,10 +1,39 @@
 (ns user
   (:use midje.repl)
-  (:require 
+  (:require
      [clojure.java.io :as io]
-     [clojure.string :as str]
-     [clojure.pprint :refer (pprint)]
      [clojure.repl :refer :all]
      [clojure.tools.namespace.repl :refer (refresh refresh-all)]
-    ))
+     [supernal.publish.server :as server]
+     [supernal.repl :as repl] 
+     [supernal.launch :as launch] 
+     ))
+
+(def system nil)
+
+(defn init
+  "Constructs the current development system."
+  []
+  (alter-var-root #'system (constantly (launch/setup))))
+
+(defn start
+  "Starts the current development system."
+  []
+  (alter-var-root #'system launch/start))
+
+(defn stop
+  "Shuts down and destroys the current development system."
+  []
+  (alter-var-root #'system launch/stop))
+
+(defn go
+  "Initializes the current development system and starts it running."
+  []
+  (init)
+  (start))
+
+
+(defn reset []
+  (stop)
+  (refresh :after 'user/go))
 
