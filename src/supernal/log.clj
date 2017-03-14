@@ -12,7 +12,9 @@
 (ns supernal.log
   "log collection"
   (:require
-      [taoensso.timbre :refer (refer-timbre)]
+      [taoensso.timbre.appenders.3rd-party.rolling :refer (rolling-appender)] 
+      [clansi.core :refer (style)]
+      [taoensso.timbre :refer (refer-timbre set-level! merge-config!)]
       [clojure.core.strint :refer (<<)]
       [chime :refer [chime-ch]]
       [clj-time.periodic :refer  [periodic-seq]]
@@ -24,17 +26,24 @@
 (refer-timbre)
 
 (def logs (atom {}))
+(def do-stream (atom false))
 
 (defn log-output
   "Output log stream"
   [out host]
-  (doseq [line (line-seq (reader out))] (debug  (<< "[~{host}]:") line)))
+  (doseq [line (line-seq (reader out))] 
+    (debug  (<< "[~{host}]:") line)))
+
+(defn process-line 
+   "process a single log line" 
+   [host line]
+  (when @do-stream (info (<< "[~{host}]:") line)) line)
 
 (defn collect-log
   "Collect log output into logs atom"
   [uuid]
    (fn [out host]
-     (let [lines (doall (map (fn [line] (info  (<< "[~{host}]:") line) line) (line-seq (reader out))))]
+     (let [lines (doall (map process-line (line-seq (reader out))))]
        (swap! logs (fn [m] (assoc m uuid  {:ts (t/now) :lines lines}))))))
 
 (defn get-log
@@ -42,8 +51,17 @@
   [uuid]
    (when-let [{:keys [lines]} (get @logs uuid)]
       (swap! logs (fn [m] (dissoc m uuid)))
-      lines
+       lines
      ))
+
+(defn get-logs 
+  "Getting logs for all hosts"
+  [hosts]
+  (doall
+    (map
+      (fn [{:keys [uuid] :as m}]
+        (if-not uuid m
+          (dissoc (assoc m :out (join "\n" (get-log uuid))) :uuid))) hosts)))
 
 (defn purge
   "Clearing dead non collected logs"
@@ -68,3 +86,40 @@
         (recur)))))))
 
 (defn gen-uuid [] (.replace (str (java.util.UUID/randomUUID)) "-" ""))
+
+(defn output-fn
+  "Timbre logger format function"
+  ([data] (output-fn nil data))
+  ([opts data] ; For partials
+   (let [{:keys [level ?err #_vargs msg_ ?ns-str ?file hostname_ timestamp_ ?line]} data]
+     (str (style "> " :blue) (force msg_)))))
+
+(defn slf4j-fix []
+  (let [cl (.getContextClassLoader  (Thread/currentThread))]
+    (-> cl
+      (.loadClass "org.slf4j.LoggerFactory")
+      (.getMethod "getLogger"  (into-array java.lang.Class [(.loadClass cl "java.lang.String")]))
+      (.invoke nil (into-array java.lang.Object ["ROOT"])))))
+
+(defn disable-coloring
+   "See https://github.com/ptaoussanis/timbre"
+   []
+  (merge-config! 
+    {:output-fn (partial output-fn  {:stacktrace-fonts {}})})
+  (merge-config!  
+    {:appenders  {:rolling  (rolling-appender  {:path "supernal.log" :pattern :weekly})}}))
+
+(defn setup-logging
+  "Sets up logging configuration:
+    - stale logs removale interval
+    - steam collect logs 
+    - log level 
+  "
+  [& {:keys [interval level stream] :or {interval 10 level :info stream false}}]
+  (slf4j-fix)
+  (reset! do-stream stream)
+  (disable-coloring)
+  (set-level! level)
+  (run-purge interval))
+ 
+

@@ -14,15 +14,16 @@
   (:require
     [supernal.validate :refer (check-entropy check-jce)]
     [clojure.pprint :refer (pprint)]
-    [taoensso.timbre :refer (refer-timbre set-level!)]
+    [taoensso.timbre :refer (refer-timbre)]
     [supernal.repl.base :refer (refer-base)]
-    [supernal.repl.output :refer (refer-out setup-logging)]
+    [supernal.repl.output :refer (refer-out)]
     [supernal.repl.pkg :refer (refer-pkg)]
     [supernal.repl.schedule :refer (watch)]
-    [supernal.log :refer (run-purge)]
+    [supernal.log :refer (setup-logging)]
     [supernal.repl.stats :refer (refer-stats)])
   (:import [supernal.repl.base Hosts]))
 
+(refer-timbre)
 (refer-base)
 (refer-out)
 (refer-stats)
@@ -31,8 +32,8 @@
 (defn setup []
   (check-entropy 200)
   (check-jce)
-  (setup-logging)
-  (run-purge 10))
+  (setup-logging :stream false)
+  )
 
 (def sandbox (Hosts. {:user "vagrant"} ["192.168.2.25" "192.168.2.26" "192.168.2.27" "192.168.2.28"]))
 
@@ -43,7 +44,7 @@
 
 (defn stats [hs]
   (run (free hs) | (pretty) | (collect))
-  #_(run (cpu hs)  | (pretty) | (collect)))
+  (run (cpu hs)  | (pretty) | (collect)))
 
 (defn update-n-upgrade [hs]
   (run (update hs) | (pretty) | (pick successful) | (upgrade) | (pretty)))

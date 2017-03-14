@@ -8,7 +8,7 @@
     [taoensso.timbre :refer (refer-timbre )]
     [pallet.stevedore.bash]
     [pallet.stevedore :refer (script)]
-    [supernal.log :refer (collect-log get-log gen-uuid)]
+    [supernal.log :refer (collect-log get-logs gen-uuid)]
     [supernal.sshj :refer (execute)]))
 
 (refer-timbre)
@@ -29,7 +29,7 @@
    (<!! (async/into [] (async/merge (map #(thread-call (bound-fn []  (f %))) ms)))))
 
 (defn run-hosts [{:keys [auth hosts]} script]
-  (let [results (map-async (partial execute-uuid auth script ) hosts)
+  (let [results (map-async (partial execute-uuid auth script) hosts)
         grouped (group-by :code results)]
       {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
 
@@ -51,13 +51,6 @@
 
 (defprotocol Tracing
   (ping [this target]))
-
-(defn get-logs [hosts]
-  (doall
-    (map
-      (fn [{:keys [uuid] :as m}]
-        (if-not uuid m
-          (dissoc (assoc m :out (join "\n" (get-log uuid))) :uuid))) hosts)))
 
 (defn zip
   "Collecting output into a hash, must be defined outside protocoal because of var args"

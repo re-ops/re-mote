@@ -12,43 +12,13 @@
 (ns supernal.repl.output
   (:require
     [supernal.repl.base :refer (get-logs)]
-    [taoensso.timbre.appenders.3rd-party.rolling :refer (rolling-appender)] 
     [clojure.pprint :refer [print-table]]
     [clansi.core :refer (style)]
     [clojure.string :as s]
-    [taoensso.timbre :refer (refer-timbre set-level! merge-config!)])
+    [taoensso.timbre :refer (refer-timbre)])
   (:import [supernal.repl.base Hosts]))
 
 (refer-timbre)
-
-(defn output-fn
-  "output for repl result"
-  ([data] (output-fn nil data))
-  ([opts data] ; For partials
-   (let [ {:keys [level ?err #_vargs msg_ ?ns-str ?file hostname_ timestamp_ ?line]} data]
-     (str   (style "> " :blue) (force msg_)))))
-
-(defn slf4j-fix []
-  (let [cl (.getContextClassLoader  (Thread/currentThread))]
-    (-> cl
-      (.loadClass "org.slf4j.LoggerFactory")
-      (.getMethod "getLogger"  (into-array java.lang.Class [(.loadClass cl "java.lang.String")]))
-      (.invoke nil (into-array java.lang.Object ["ROOT"])))))
-
-(defn disable-coloring
-   "See https://github.com/ptaoussanis/timbre"
-   []
-  (merge-config! 
-    {:output-fn (partial output-fn  {:stacktrace-fonts {}})})
-  (merge-config!  
-    {:appenders  {:rolling  (rolling-appender  {:path "supernal.log" :pattern :weekly})}}))
-
-(defn setup-logging
-  "Sets up logging configuration"
-  []
-  (slf4j-fix)
-  (disable-coloring)
-  (set-level! :info))
 
 (defprotocol Report
  (summary [this target])
