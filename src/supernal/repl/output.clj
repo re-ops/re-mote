@@ -11,7 +11,7 @@
 
 (ns supernal.repl.output
   (:require
-    [supernal.repl.base :refer (get-logs)]
+    [supernal.log :refer (get-logs)]
     [clojure.pprint :refer [print-table]]
     [clansi.core :refer (style)]
     [clojure.string :as s]
