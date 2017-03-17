@@ -1,3 +1,5 @@
 language: clojure
+jdk:
+  - oraclejdk8
 lein: lein2
 script: lein2 do clean, compile, midje :filter -integration
