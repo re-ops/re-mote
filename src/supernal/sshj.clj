@@ -18,8 +18,7 @@
     [clojure.core.strint :refer (<<)]
     [taoensso.timbre :refer (refer-timbre)]
     [supernal.log :refer (log-output)]
-    [clojure.string :refer (split)]
-    [plumbing.core :refer (defnk)])
+    [clojure.string :refer (split)])
   (:import
     clojure.lang.ExceptionInfo
     (java.util.concurrent TimeUnit)

@@ -33,9 +33,10 @@
   (check-entropy 200)
   (check-jce)
   (setup-logging :stream false)
+  (setup-stats 10 10)
   )
 
-(def sandbox (Hosts. {:user "vagrant"} ["192.168.2.25" "192.168.2.26" "192.168.2.27" "192.168.2.28"]))
+(def sandbox (Hosts. {:user "vagrant"} ["192.168.2.25" "192.168.2.26" "192.168.2.27"]))
 
 ;; (def local (into-hosts "local.edn"))
 
@@ -44,7 +45,10 @@
 
 (defn stats [hs]
   (run (free hs) | (pretty) | (collect))
-  (run (cpu hs)  | (pretty) | (collect)))
+  (run (cpu hs)  | (pretty) | (collect) | (sliding avg :avg)))
 
-(defn update-n-upgrade [hs]
+(defn inlined-stats [hs]
+  (run (free hs) | (collect) | (cpu) | (collect) | (sliding avg :avg)))
+
+(defn aptgrade [hs]
   (run (update hs) | (pretty) | (pick successful) | (upgrade) | (pretty)))

@@ -13,16 +13,16 @@
   "log collection"
   (:require
       [clojure.string :refer (join)]
-      [taoensso.timbre.appenders.3rd-party.rolling :refer (rolling-appender)] 
+      [taoensso.timbre.appenders.3rd-party.rolling :refer (rolling-appender)]
       [clansi.core :refer (style)]
       [taoensso.timbre :refer (refer-timbre set-level! merge-config!)]
       [clojure.core.strint :refer (<<)]
       [chime :refer [chime-ch]]
-      [clj-time.periodic :refer  [periodic-seq]]
       [clj-time.core :as t]
       [clj-time.coerce :refer [to-long]]
       [clojure.java.io :refer (reader)]
-      [clojure.core.async :as a :refer [<! go-loop close!]]))
+      [supernal.repl.schedule :refer (watch)]
+    ))
 
 (refer-timbre)
 
@@ -32,11 +32,11 @@
 (defn log-output
   "Output log stream"
   [out host]
-  (doseq [line (line-seq (reader out))] 
+  (doseq [line (line-seq (reader out))]
     (debug  (<< "[~{host}]:") line)))
 
-(defn process-line 
-   "process a single log line" 
+(defn process-line
+   "process a single log line"
    [host line]
   (when @do-stream (info (<< "[~{host}]:") line)) line)
 
@@ -44,7 +44,7 @@
   "Collect log output into logs atom"
   [uuid]
    (fn [out host]
-     (let [lines (doall (map process-line (line-seq (reader out))))]
+     (let [lines (doall (map (partial process-line host) (line-seq (reader out))))]
        (swap! logs (fn [m] (assoc m uuid  {:ts (t/now) :lines lines}))))))
 
 (defn get-log
@@ -55,7 +55,7 @@
        lines
      ))
 
-(defn get-logs 
+(defn get-logs
   "Getting logs for all hosts"
   [hosts]
   (doall
@@ -77,14 +77,8 @@
   (chime-ch (periodic-seq (t/now) (-> s t/seconds))))
 
 (defn run-purge [s]
-  (let [ch (create-ch s)]
-    (future
-      (a/<!!
-        (go-loop []
-          (when-let [msg (<! ch)]
-            (debug "purging logs at" (t/now))
-            (purge)
-        (recur)))))))
+  (watch s 
+    (fn [] (debug "purging logs at" (t/now)) (purge))))
 
 (defn gen-uuid [] (.replace (str (java.util.UUID/randomUUID)) "-" ""))
 
@@ -105,16 +99,16 @@
 (defn disable-coloring
    "See https://github.com/ptaoussanis/timbre"
    []
-  (merge-config! 
+  (merge-config!
     {:output-fn (partial output-fn  {:stacktrace-fonts {}})})
-  (merge-config!  
+  (merge-config!
     {:appenders  {:rolling  (rolling-appender  {:path "supernal.log" :pattern :weekly})}}))
 
 (defn setup-logging
   "Sets up logging configuration:
     - stale logs removale interval
-    - steam collect logs 
-    - log level 
+    - steam collect logs
+    - log level
   "
   [& {:keys [interval level stream] :or {interval 10 level :info stream false}}]
   (slf4j-fix)
@@ -122,5 +116,4 @@
   (disable-coloring)
   (set-level! level)
   (run-purge interval))
- 
 

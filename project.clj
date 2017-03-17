@@ -7,35 +7,38 @@
                  [com.taoensso/timbre "4.1.4"]
                  [ch.qos.logback/logback-classic "1.2.1"]
                  [org.codehaus.groovy/groovy "2.4.9"]
-                 [prismatic/plumbing "0.5.3"]
                  [com.hierynomus/sshj "0.20.0"]
                  [me.raynes/conch "0.8.0"]
-                 [org.clojure/core.async "0.3.441"]
+                 [org.clojure/core.async "0.3.442"]
                  [narkisr/cliopatra "1.1.0"]
                  [narkisr/clansi "1.2.0"]
+                 [com.rpl/specter "1.0.0"]
+
                  ; tracking
-                 [org.clojure/tools.trace "0.7.8"]
+                 [org.clojure/tools.trace "0.7.9"]
+
                  ; repl
                  [com.palletops/stevedore "0.8.0-beta.7"]
                  [io.aviso/pretty "0.1.33"]
-                 [progrock "0.1.1"]
+                 [progrock "0.1.2"]
+
                  ; run at
                  [jarohen/chime "0.2.0" :exclusions [org.clojure/core.async]]
                  [clj-time/clj-time "0.13.0"]
 
                  ; web publish
-                 [compojure "1.5.1"]
-                 [org.clojure/clojurescript "1.9.229"]
+                 [compojure "1.5.2"]
+                 [org.clojure/clojurescript "1.9.495"]
                  [com.taoensso/sente "1.11.0"]
                  [http-kit "2.2.0"]
-                 [ring "1.5.0"]
-                 [ring/ring-defaults "0.2.1"]
-                 [com.taoensso/encore "2.84.2"]
+                 [ring "1.5.1"]
+                 [ring/ring-defaults "0.2.3"]
+                 [com.taoensso/encore "2.90.1"]
                  [hiccup "1.0.5"]
 
                  ; frontend
                  [reagent "0.6.1"]
-                 [binaryage/devtools "0.8.3"]
+                 [binaryage/devtools "0.9.2"]
                  [metosin/vega-tools "0.2.0"]
                  [ring-webjars "0.1.1"]
                  [org.clojure/data.json "0.2.6"]

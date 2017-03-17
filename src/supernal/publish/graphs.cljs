@@ -84,4 +84,49 @@
 	  :hover {:fillOpacity {:value 0.5}}}}]}]}
   )
 
-(def graphs {:vega/stack stack :vega/lines lines})
+(defn stock [vs] 
+  {:width 800,
+   :height 200,
+   :data
+   [{:name "table", :values vs}]
+   :scales
+   [{:name "x",
+     :type "time",
+     :range "width",
+     :domain {:data "table", :field "x"}}
+    {:name "y",
+     :type "linear",
+     :range "height",
+     :nice true,
+     :domain {:data "table", :field "y"}}
+    {:name "color",
+     :type "ordinal",
+     :domain {:data "table", :field "host"},
+     :range "category10"}],
+   :axes
+   [{:type "x", :scale "x", :tickSizeEnd 0} {:type "y", :scale "y"}],
+   :marks
+   [{:type "group",
+     :from
+     {:data "table", :transform [{:type "facet", :groupby ["host"]}]},
+     :marks
+     [{:type "line",
+       :properties
+       {:enter
+        {:x {:scale "x", :field "x"},
+         :y {:scale "y", :field "y"},
+         :stroke {:scale "color", :field "host"},
+         :strokeWidth {:value 2}}}}
+      {:type "text",
+       :from
+       {:transform
+        [{:type "filter", :test "datum.date == 1267430400000"}]},
+       :properties
+       {:enter
+        {:x {:scale "x", :field "date", :offset 2},
+         :y {:scale "y", :field "value"},
+         :fill {:scale "color", :field "host"},
+         :text {:field "host"},
+         :baseline {:value "middle"}}}}]}]})
+
+(def graphs {:vega/stack stack :vega/lines lines :vega/stock stock})

@@ -89,9 +89,10 @@
 
 (comment
   (require 'clojure.data.json)
+
   (binding [*out* (clojure.java.io/writer "out.edn")]
-    (clojure.pprint/pprint (clojure.data.json/read-str (slurp "stack.json") :key-fn keyword)))
-  (start)
+    (clojure.pprint/pprint (clojure.data.json/read-str (slurp "stock.json") :key-fn keyword)))
+
   (defn linear-values [s]
     (mapv (fn [i] {:x i :y (rand-int 1000) }) (range s)))
 
@@ -102,4 +103,11 @@
 
   (broadcast! [::vega {:values (mapcat (partial grouped-values 20) (range 4)) :graph :vega/stack}])
 
-  (test-fast-server>user-pushes))
+  (defn grouped-dates [s host]
+    (map (fn [i] {:x (+ (* i 1000) 1489675925417) :y (rand-int 10) :host host}) (range s)))
+
+  (use 'supernal.repl.schedule)
+  (watch 10 
+    (fn [] (broadcast! [::vega {:values (mapcat (partial grouped-dates 20) [:supa :supb :supc :supd]) :graph :vega/stock}])))
+  
+)
