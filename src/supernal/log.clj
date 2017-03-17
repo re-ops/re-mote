@@ -73,9 +73,6 @@
        (trace "purged log" uuid)
        (swap! logs (fn [m] (dissoc m uuid))))))
 
-(defn create-ch [s]
-  (chime-ch (periodic-seq (t/now) (-> s t/seconds))))
-
 (defn run-purge [s]
   (watch s 
     (fn [] (debug "purging logs at" (t/now)) (purge))))
