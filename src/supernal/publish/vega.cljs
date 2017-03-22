@@ -5,6 +5,7 @@
     [clojure.pprint :as pprint]
     [promesa.core :as p]
     [reagent.core :as r]
+    [taoensso.timbre :as timbre]
     [vega-tools.core :as vega-tools]))
 
 (defonce app-state (r/atom {}))
@@ -18,24 +19,31 @@
       (.update (chart {:el (r/dom-node this)})))}))
 
 (defn update-graph [{:keys [graph values]}]
-    (swap! app-state assoc :chart nil :error nil)
-    (-> ((graph graphs) values)
-        (vega-tools/validate-and-parse)
-        (p/catch #(swap! app-state assoc :error %))
-        (p/then #(swap! app-state assoc :chart %))))
+    (let [{:keys [gname gtype]} graph]
+        (swap! app-state assoc-in [gname] nil)
+        (-> ((gtype graphs) values)
+            (vega-tools/validate-and-parse)
+            (p/catch #(swap! app-state assoc-in [gname :error] %))
+            (p/then #(swap! app-state assoc-in [gname :chart] %)))
+        ))
+
+(defn render-chart [[gname {:keys [error chart]}]]
+   [:div.col-md-6
+     [:h3 (str gname ":") ]
+     (cond
+       error [:div [:h2 "Validation error"] [:pre (with-out-str (pprint/pprint error))]]
+       chart ^{:id gname} [vega-chart {:chart chart}])])
+
+(defn rows [graphs]
+  (case (count graphs)
+     0 []
+     1 [(render-chart (first graphs))]
+     (mapv (fn [p] (into [:div.row] p)) (partition 2 (mapv render-chart graphs)))))
 
 (defn main []
-  (let [{:keys [input error chart]} @app-state]
-    [:div
+  [:div
      [:h1 "Dashboard:"]
-     [:div.container-fluid
-      [:div.col-md-6
-       (cond
-         error [:div
-                [:h2 "Validation error"]
-                [:pre (with-out-str (pprint/pprint error))]]
-         chart [vega-chart {:chart chart}]
-         )]]]))
+     (into [:div.container-fluid] (map render-chart @app-state))])
 
 (defn start! []
   (js/console.log "Starting the app")

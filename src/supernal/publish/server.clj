@@ -5,30 +5,25 @@
     [clojure.string     :as str]
     [ring.middleware.webjars :refer [wrap-webjars]]
     [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
-    [compojure.core     :as comp :refer (defroutes GET POST)]
-    [compojure.route    :as route]
-    [hiccup.core        :as hiccup]
+    [compojure.core :refer (defroutes GET POST)]
+    [compojure.route :as route]
+    [hiccup.core :as hiccup]
     [clojure.core.async :as async  :refer (<! <!! >! >!! put! chan go go-loop)]
-    [taoensso.timbre    :as timbre :refer (tracef debugf infof warnf errorf)]
-    [taoensso.sente     :as sente]
-    [org.httpkit.server :as http-kit :refer (run-server)]
+    [taoensso.timbre :refer (refer-timbre)]
+    [taoensso.sente :as sente]
+    [org.httpkit.server :refer (run-server)]
     [taoensso.sente.server-adapters.http-kit :refer (get-sch-adapter)]))
 
+(refer-timbre)
 
 (let [chsk-server (sente/make-channel-socket-server! (get-sch-adapter) {:packer :edn})
      {:keys [ch-recv send-fn connected-uids ajax-post-fn ajax-get-or-ws-handshake-fn]} chsk-server]
   (def ring-ajax-post ajax-post-fn)
   (def ring-ajax-get-or-ws-handshake ajax-get-or-ws-handshake-fn)
-  (def ch-chsk ch-recv) 
+  (def ch-chsk ch-recv)
   (def chsk-send! send-fn)
   (def connected-uids connected-uids) ; Watchable, read-only atom
   )
-
-;; We can watch this atom for changes if we like
-(add-watch connected-uids :connected-uids
-  (fn [_ _ old new]
-    (when (not= old new)
-      (infof "Connected uids change: %s" new))))
 
 (defroutes routes
   (GET  "/"      ring-req (index))
@@ -40,17 +35,10 @@
 (def app
   (wrap-defaults (wrap-webjars routes) site-defaults))
 
-(defn test-fast-server>user-pushes
-  "Quickly pushes 100 events to all connected users. Note that this'll be fast+reliable even over Ajax!"
-  []
-  (doseq [uid (:any @connected-uids)]
-    (doseq [i (range 100)]
-      (chsk-send! uid [:fast-push/is-fast (str "hello " i "!!")]))))
-
 (defn event-msg-handler
   "Wraps `-event-msg-handler` with logging, error catching, etc."
   [{:as ev-msg :keys [id ?data event]}]
-  (println id event ?data))
+  (trace id event ?data))
 
 (defonce router (atom nil))
 
@@ -74,7 +62,7 @@
 
 (defn broadcast! [m]
   (let [uids (:any @connected-uids)]
-    (debugf "Broadcasting server>user: %s uids" (count uids))
+    (tracef "Broadcasting server>user: %s uids" (count uids))
     (doseq [uid uids] (chsk-send! uid m))))
 
 (defn stop  []
@@ -85,8 +73,6 @@
   (start-router)
   (start-server 8080))
 
-
-
 (comment
   (require 'clojure.data.json)
 
@@ -96,18 +82,21 @@
   (defn linear-values [s]
     (mapv (fn [i] {:x i :y (rand-int 1000) }) (range s)))
 
-  (broadcast! [::vega {:values (linear-values 20) :graph :vega/lines}])
+  (broadcast! [::vega {:values (linear-values 20) :graph {:gtype :vega/lines :gname "foo"}}])
 
   (defn grouped-values [s c]
     (map (fn [i] {:x i :y (rand-int 10) :c (+ 1 c)}) (range s)))
 
-  (broadcast! [::vega {:values (mapcat (partial grouped-values 20) (range 4)) :graph :vega/stack}])
+  (broadcast! [::vega {:values (mapcat (partial grouped-values 20) (range 4)) :graph {:gtype :vega/stack :gname "Some random name"}}])
 
   (defn grouped-dates [s host]
     (map (fn [i] {:x (+ (* i 1000) 1489675925417) :y (rand-int 10) :host host}) (range s)))
 
-  (use 'supernal.repl.schedule)
-  (watch 10 
-    (fn [] (broadcast! [::vega {:values (mapcat (partial grouped-dates 20) [:supa :supb :supc :supd]) :graph :vega/stock}])))
   
+   (broadcast! [::vega {:values (mapcat (partial grouped-dates 20) [:supa :supb :supc :supd]) 
+                                :graph {:gtype :vega/stock :gname "grouped2"}}])
+
+   (broadcast! [::vega {:values (mapcat (partial grouped-dates 20) [:supa :supb :supc :supd]) 
+                                :graph {:gtype :vega/stock :gname "grouped"}}])
+
 )

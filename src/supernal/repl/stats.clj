@@ -15,6 +15,7 @@
     [taoensso.timbre :refer (refer-timbre)]
     [com.rpl.specter :as s :refer (transform select MAP-VALS ALL ATOM keypath srange)]
     [clj-time.core :as t]
+    [clj-time.coerce :refer (to-long)]
     [supernal.repl.base :refer (run-hosts zip)]
     [supernal.repl.schedule :refer (watch)]
     [pallet.stevedore :refer (script do-script)])
@@ -115,6 +116,28 @@
    "Setup stats collection" 
    [s n]
    (watch s (fn [] (purge n))))
+
+(defn- host-values
+  [k ks {:keys [host stats]}]
+  (transform [ALL] 
+    (fn [[t s]] {:x (to-long t) :y (get-in s ks) :host host})
+      (into [] (get-in @readings [host (first (keys stats)) k]))))
+
+(defn single-per-host 
+  "Collect a single nested reading for each host"
+  [k ks success]
+   (mapcat (partial host-values k ks) success))
+
+(defn- avg-data-point [& ks] 
+  (let [[t _] (first ks) sums (apply (partial merge-with +) (map second ks))
+        vs (transform [MAP-VALS] #(with-precision 10 (/ % (count ks))) sums)] 
+    (map (fn [[k v]] {:x (to-long t) :y v :c k}) vs)))
+
+(defn avg-all
+  "Average for all hosts"
+  [k success]
+  (let [r (first (keys (:stats (first success))))]
+    (apply mapcat avg-data-point (select [ATOM MAP-VALS r k] readings))))
 
 (defn refer-stats []
   (require '[supernal.repl.stats :as stats :refer (cpu free collect sliding avg setup-stats)]))

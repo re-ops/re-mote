@@ -2,10 +2,9 @@
   "common vega graphs"
  )
 
+
 (defn lines [vs]
-  {:width  600
-   :height 100
-   :padding {:top 10, :left 30, :bottom 30, :right 10}
+  {:padding {:top 10, :left 30, :bottom 30, :right 10}
 
    :data [{:name "table" :values vs}]
 
@@ -37,9 +36,7 @@
 (defn stack
   "See https://vega.github.io/vega/examples/stacked-area-chart/"  
   [vs]
-  {:width 500,
-   :height 200,
-   :padding {:top 10, :left 30, :bottom 30, :right 10},
+  {:padding {:top 10, :left 30, :bottom 30, :right 10},
    :data
    [{:name "table", :values vs}
     {:name "stats",
@@ -85,12 +82,9 @@
   )
 
 (defn stock [vs] 
-  {:width 800,
-   :height 200,
-   :data
-   [{:name "table", :values vs}]
-   :scales
-   [{:name "x",
+  {:data [{:name "table", :values vs}]
+   :scales [ {
+     :name "x",
      :type "time",
      :range "width",
      :domain {:data "table", :field "x"}}
@@ -103,10 +97,10 @@
      :type "ordinal",
      :domain {:data "table", :field "host"},
      :range "category10"}],
-   :axes
-   [{:type "x", :scale "x", :tickSizeEnd 0} {:type "y", :scale "y"}],
-   :marks
-   [{:type "group",
+   :axes [{
+     :type "x", :scale "x", :tickSizeEnd 0} {:type "y", :scale "y"}],
+   :marks [{
+     :type "group",
      :from
      {:data "table", :transform [{:type "facet", :groupby ["host"]}]},
      :marks
@@ -129,4 +123,9 @@
          :text {:field "host"},
          :baseline {:value "middle"}}}}]}]})
 
-(def graphs {:vega/stack stack :vega/lines lines :vega/stock stock})
+(def defaults {:width 300 :height 200})
+
+(defn with-defaults [[k f]] 
+  [k (fn [vs] (merge (f vs) defaults))])
+ 
+(def graphs (into {} (map with-defaults {:vega/stack stack :vega/lines lines :vega/stock stock})))
