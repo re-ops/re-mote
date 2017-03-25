@@ -44,6 +44,7 @@
     `(~p ~f ~s)))
 
 (defprotocol Shell
+  (exec [this script])
   (rm [this target flags])
   (ls [this target flags])
   (grep [this expr flags])
@@ -69,6 +70,9 @@
   (ls [this target flags]
    [this (run-hosts this (script ("ls" ~target ~flags)))])
 
+  (exec [this script]
+    [this (run-hosts this script)])
+
   Select
    (initialize [this]
     [this hosts])
@@ -91,5 +95,5 @@
      (Hosts. auth hosts)))
 
 (defn refer-base []
-  (require '[supernal.repl.base :as base :refer (run | initialize pick successful ping ls into-hosts)]))
+  (require '[supernal.repl.base :as base :refer (run | initialize pick successful ping ls into-hosts exec)]))
 

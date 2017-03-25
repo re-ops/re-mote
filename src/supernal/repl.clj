@@ -19,7 +19,7 @@
     [supernal.repl.output :refer (refer-out)]
     [supernal.repl.pkg :refer (refer-pkg)]
     [supernal.repl.publish :refer (refer-publish)]
-    [supernal.repl.schedule :refer (watch)]
+    [supernal.repl.schedule :refer (watch seconds)]
     [supernal.log :refer (setup-logging)]
     [supernal.repl.stats :refer (refer-stats)])
   (:import [supernal.repl.base Hosts]))
@@ -40,7 +40,6 @@
 
 (def sandbox (Hosts. {:user "vagrant"} ["192.168.2.25" "192.168.2.26" "192.168.2.27"]))
 
-;; (def local (into-hosts "local.edn"))
 
 (defn listing [hs]
   (run (ls hs "/" "-la") | (pretty)))
@@ -55,10 +54,7 @@
 (defn aptgrade [hs]
   (run (update hs) | (pretty) | (pick successful) | (upgrade) | (pretty)))
 
-(def ch (atom nil))
-
-(defn stop-periodical-stats []
-  (clojure.core.async/close! @ch))
-
 (defn periodical-stats [hs]
-  (reset! ch (watch 10 (fn [] (stats hs)))))
+  (watch :stats (seconds 10) (fn [] (stats hs))))
+
+

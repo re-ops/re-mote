@@ -14,5 +14,6 @@ third-party.log
 .nrepl-port
 supernal.log.*
 supernal.log
-local.edn
 public
+hosts
+scripts

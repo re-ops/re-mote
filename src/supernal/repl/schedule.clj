@@ -16,15 +16,24 @@
       [taoensso.timbre :refer (refer-timbre)]
       [chime :refer [chime-ch]]
       [clj-time.core :as t]
-      [clojure.core.async :as a :refer [<! go-loop close!]]))
+      [clojure.core.async :as a :refer [<! go-loop close!]])
+  (:import [org.joda.time DateTimeConstants DateTimeZone]))
 
 (refer-timbre)
 
-(def chs (atom #{}))
+(def chs (atom {}))
 
-(defn create-ch [s] 
-  (let [ch (chime-ch (periodic-seq  (t/now) (-> s t/seconds)))]
-    (swap! chs conj ch) 
+(defn seconds [n] 
+  (periodic-seq  (t/now) (-> n t/seconds)))
+
+(defn weekdays [hour] 
+  (->> 
+    (periodic-seq (.. (clj-time.local/local-now) (withTime hour 0 0 0)) (t/days 1))
+    (remove (comp #{DateTimeConstants/SATURDAY DateTimeConstants/SUNDAY} #(.getDayOfWeek %)))))
+
+(defn create-ch [k period] 
+  (let [ch (chime-ch period)]
+    (swap! chs assoc k ch) 
      ch
     ))
 
@@ -38,15 +47,15 @@
       (recur))))))
 
 (defn watch
-  "run f every s seconds"
-   [s f & args]
-   (let [ch (create-ch s)] (run ch f args) ch))
+  "run f using provided period"
+   [k period f & args]
+   (let [ch (create-ch k period)] 
+     (run ch f args) ch))
 
 (defn halt!
    ([] 
-    (doseq [ch @chs] (halt! ch)))
-   ([ch] 
-     (close! ch) 
-     (swap! chs (fn [curr] (into #{} (remove #{ch} curr))))) 
-    )
+    (doseq [[k ch] @chs] (halt! k)))
+   ([k] 
+     (close! (get chs k)) 
+     (swap! chs (fn [curr] (dissoc curr)))))
    
