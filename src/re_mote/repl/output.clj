@@ -1,5 +1,5 @@
 (comment
-  Celestial, Copyright 2017 Ronen Narkis, narkisr.com
+  re-mote, Copyright 2017 Ronen Narkis, narkisr.com
   Licensed under the Apache License,
   Version 2.0  (the "License") you may not use this file except in compliance with the License.
   You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -9,14 +9,14 @@
   See the License for the specific language governing permissions and
   limitations under the License.)
 
-(ns supernal.repl.output
+(ns re-mote.repl.output
   (:require
-    [supernal.log :refer (get-logs)]
+    [re-mote.log :refer (get-logs)]
     [clojure.pprint :refer [print-table]]
     [clansi.core :refer (style)]
     [clojure.string :as s]
     [taoensso.timbre :refer (refer-timbre)])
-  (:import [supernal.repl.base Hosts]))
+  (:import [re_mote.repl.base Hosts]))
 
 (refer-timbre)
 
@@ -54,4 +54,4 @@
      [this m]))
 
 (defn refer-out []
-  (require '[supernal.repl.output :as out :refer (log- pretty)]))
+  (require '[re-mote.repl.output :as out :refer (log- pretty)]))

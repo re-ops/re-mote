@@ -1,5 +1,5 @@
 (comment
-  Celestial, Copyright 2017 Ronen Narkis, narkisr.com
+  re-mote, Copyright 2017 Ronen Narkis, narkisr.com
   Licensed under the Apache License,
   Version 2.0  (the "License") you may not use this file except in compliance with the License.
   You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -9,9 +9,9 @@
   See the License for the specific language governing permissions and
   limitations under the License.)
 
-(ns supernal.repl.schedule
+(ns re-mote.repl.schedule
   "Schedule tasks"
-  (:require 
+  (:require
       [clj-time.periodic :refer  [periodic-seq]]
       [taoensso.timbre :refer (refer-timbre)]
       [chime :refer [chime-ch]]
@@ -23,23 +23,23 @@
 
 (def chs (atom {}))
 
-(defn seconds [n] 
+(defn seconds [n]
   (periodic-seq  (t/now) (-> n t/seconds)))
 
-(defn weekdays [hour] 
-  (->> 
+(defn weekdays [hour]
+  (->>
     (periodic-seq (.. (clj-time.local/local-now) (withTime hour 0 0 0)) (t/days 1))
     (remove (comp #{DateTimeConstants/SATURDAY DateTimeConstants/SUNDAY} #(.getDayOfWeek %)))))
 
-(defn create-ch [k period] 
+(defn create-ch [k period]
   (let [ch (chime-ch period)]
-    (swap! chs assoc k ch) 
+    (swap! chs assoc k ch)
      ch
     ))
 
 (defn- run [ch f args]
  (future
-   (a/<!! 
+   (a/<!!
      (go-loop []
        (when-let [msg (<! ch)]
          (debug "Chiming at:" msg)
@@ -49,13 +49,13 @@
 (defn watch
   "run f using provided period"
    [k period f & args]
-   (let [ch (create-ch k period)] 
+   (let [ch (create-ch k period)]
      (run ch f args) ch))
 
 (defn halt!
-   ([] 
+   ([]
     (doseq [[k ch] @chs] (halt! k)))
-   ([k] 
-     (close! (get chs k)) 
+   ([k]
+     (close! (get chs k))
      (swap! chs (fn [curr] (dissoc curr)))))
-   
+

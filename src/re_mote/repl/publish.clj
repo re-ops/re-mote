@@ -1,5 +1,5 @@
 (comment
-  Celestial, Copyright 2017 Ronen Narkis, narkisr.com
+  re-mote, Copyright 2017 Ronen Narkis, narkisr.com
   Licensed under the Apache License,
   Version 2.0  (the "License") you may not use this file except in compliance with the License.
   You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -9,16 +9,16 @@
   See the License for the specific language governing permissions and
   limitations under the License.)
 
-(ns supernal.repl.publish
+(ns re-mote.repl.publish
   (:require
     [com.rpl.specter :as s :refer (transform select MAP-VALS ALL ATOM keypath srange)]
     [clojure.pprint :refer (pprint)]
     [taoensso.timbre :refer (refer-timbre)]
-    [supernal.publish.server :refer (broadcast!)]
-    [supernal.repl.stats :refer (single-per-host avg-all)]
-    [supernal.repl.stats :refer (readings)]
-    [supernal.repl.base :refer (refer-base)])
-  (:import [supernal.repl.base Hosts]))
+    [re-mote.publish.server :refer (broadcast!)]
+    [re-mote.repl.stats :refer (single-per-host avg-all)]
+    [re-mote.repl.stats :refer (readings)]
+    [re-mote.repl.base :refer (refer-base)])
+  (:import [re_mote.repl.base Hosts]))
 
 (defprotocol Publishing
   (publish [this m spec])
@@ -41,6 +41,6 @@
      ))
 
 (defn refer-publish []
-  (require '[supernal.repl.publish :as pub :refer (publish stock stack lines)])
+  (require '[re-mote.repl.publish :as pub :refer (publish stock stack lines)])
   )
 

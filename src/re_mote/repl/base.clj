@@ -1,4 +1,15 @@
-(ns supernal.repl.base
+(comment
+   re-mote, Copyright 2017 Ronen Narkis, narkisr.com
+   Licensed under the Apache License,
+   Version 2.0  (the "License") you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.)
+
+(ns re-mote.repl.base
   (:require
     [clojure.edn :as edn]
     [clojure.string :refer (split)]
@@ -8,8 +19,8 @@
     [taoensso.timbre :refer (refer-timbre )]
     [pallet.stevedore.bash]
     [pallet.stevedore :refer (script)]
-    [supernal.log :refer (collect-log get-logs gen-uuid)]
-    [supernal.sshj :refer (execute)]))
+    [re-mote.log :refer (collect-log get-logs gen-uuid)]
+    [re-mote.sshj :refer (execute)]))
 
 (refer-timbre)
 
@@ -95,5 +106,5 @@
      (Hosts. auth hosts)))
 
 (defn refer-base []
-  (require '[supernal.repl.base :as base :refer (run | initialize pick successful ping ls into-hosts exec)]))
+  (require '[re-mote.repl.base :as base :refer (run | initialize pick successful ping ls into-hosts exec)]))
 

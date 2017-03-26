@@ -1,5 +1,5 @@
 (comment
-  Celestial, Copyright 2017 Ronen Narkis, narkisr.com
+  re-mote, Copyright 2017 Ronen Narkis, narkisr.com
   Licensed under the Apache License,
   Version 2.0  (the "License") you may not use this file except in compliance with the License.
   You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -9,17 +9,17 @@
   See the License for the specific language governing permissions and
   limitations under the License.)
 
-(ns supernal.repl.stats
+(ns re-mote.repl.stats
   "General stats"
   (:require
     [taoensso.timbre :refer (refer-timbre)]
     [com.rpl.specter :as s :refer (transform select MAP-VALS ALL ATOM keypath srange)]
     [clj-time.core :as t]
     [clj-time.coerce :refer (to-long)]
-    [supernal.repl.base :refer (run-hosts zip)]
-    [supernal.repl.schedule :refer (watch seconds)]
+    [re-mote.repl.base :refer (run-hosts zip)]
+    [re-mote.repl.schedule :refer (watch seconds)]
     [pallet.stevedore :refer (script do-script)])
-  (:import [supernal.repl.base Hosts]))
+  (:import [re_mote.repl.base Hosts]))
 
 (refer-timbre)
 
@@ -140,7 +140,7 @@
     (apply mapcat avg-data-point (select [ATOM MAP-VALS r k] readings))))
 
 (defn refer-stats []
-  (require '[supernal.repl.stats :as stats :refer (cpu free collect sliding avg setup-stats)]))
+  (require '[re-mote.repl.stats :as stats :refer (cpu free collect sliding avg setup-stats)]))
 
 (comment
  (reset! readings {}))

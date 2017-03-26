@@ -1,5 +1,5 @@
 (comment
-  Celestial, Copyright 2017 Ronen Narkis, narkisr.com
+  re-mote, Copyright 2017 Ronen Narkis, narkisr.com
   Licensed under the Apache License,
   Version 2.0  (the "License") you may not use this file except in compliance with the License.
   You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -9,20 +9,20 @@
   See the License for the specific language governing permissions and
   limitations under the License.)
 
-(ns supernal.repl
-  "Repl utilities for supernal"
+(ns re-mote.repl
+  "Repl utilities for re-mote"
   (:require
-    [supernal.validate :refer (check-entropy check-jce)]
+    [re-mote.validate :refer (check-entropy check-jce)]
     [clojure.pprint :refer (pprint)]
     [taoensso.timbre :refer (refer-timbre)]
-    [supernal.repl.base :refer (refer-base)]
-    [supernal.repl.output :refer (refer-out)]
-    [supernal.repl.pkg :refer (refer-pkg)]
-    [supernal.repl.publish :refer (refer-publish)]
-    [supernal.repl.schedule :refer (watch seconds)]
-    [supernal.log :refer (setup-logging)]
-    [supernal.repl.stats :refer (refer-stats)])
-  (:import [supernal.repl.base Hosts]))
+    [re-mote.repl.base :refer (refer-base)]
+    [re-mote.repl.output :refer (refer-out)]
+    [re-mote.repl.pkg :refer (refer-pkg)]
+    [re-mote.repl.publish :refer (refer-publish)]
+    [re-mote.repl.schedule :refer (watch seconds)]
+    [re-mote.log :refer (setup-logging)]
+    [re-mote.repl.stats :refer (refer-stats)])
+  (:import [re_mote.repl.base Hosts]))
 
 (refer-timbre)
 (refer-base)

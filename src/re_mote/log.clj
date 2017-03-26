@@ -1,5 +1,5 @@
 (comment
-  Celestial, Copyright 2017 Ronen Narkis, narkisr.com
+  re-mote, Copyright 2017 Ronen Narkis, narkisr.com
   Licensed under the Apache License,
   Version 2.0  (the "License") you may not use this file except in compliance with the License.
   You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -9,7 +9,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.)
 
-(ns supernal.log
+(ns re-mote.log
   "log collection"
   (:require
       [clojure.string :refer (join)]
@@ -21,7 +21,7 @@
       [clj-time.core :as t]
       [clj-time.coerce :refer [to-long]]
       [clojure.java.io :refer (reader)]
-      [supernal.repl.schedule :refer (watch seconds)]
+      [re-mote.repl.schedule :refer (watch seconds)]
     ))
 
 (refer-timbre)
@@ -98,7 +98,7 @@
   (merge-config!
     {:output-fn (partial output-fn  {:stacktrace-fonts {}})})
   (merge-config!
-    {:appenders  {:rolling  (rolling-appender  {:path "supernal.log" :pattern :weekly})}}))
+    {:appenders  {:rolling  (rolling-appender  {:path "re-mote.log" :pattern :weekly})}}))
 
 (defn setup-logging
   "Sets up logging configuration:
