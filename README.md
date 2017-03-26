@@ -43,18 +43,10 @@ Now we can start and play (see src/re_mote/repl.clj):
 ```
 # Prerequisite
 
-* JDK 8 with JCE enabled (see below on how to install JCE).
+* JDK 8 with JCE enabled (On Ubuntu oracle-java8-unlimited-jce-policy using PPA).
 * lein (see https://leiningen.org/).
 * rng-tools for increased entropy under Linux (Ubuntu).
 * A solid understanding of Clojure :)
-
-## Setting JCE
-
-```bash
-# Download http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html
-$ unzip UnlimitedJCEPolicyJDK7.zip
-$ sudo cp UnlimitedJCEPolicy/* /usr/lib/jvm/java-7-oracle/jre/lib/security/
-```
 
 # Copyright and license
 
