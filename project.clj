@@ -1,6 +1,6 @@
-(defproject supernal "0.6.1"
-  :description "A remote multi server automation tool (like Capistrano/Fabric)"
-  :url "https://github.com/celestial-ops/supernal"
+(defproject re-mote "0.1.0"
+  :description "A live remote operations environment"
+  :url "https://github.com/re-ops/re-mote"
   :license  {:name "Apache License, Version 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/core.incubator "0.1.4"]
@@ -61,7 +61,7 @@
        :resource-paths  ["pkg/etc/"]
        :source-paths  ["dev"]
        :set-version {
-          :updates [{:path "src/supernal/launch.clj" :search-regex #"\"Supernal \d+\.\d+\.\d+\""}]
+          :updates [{:path "src/re-mote/launch.clj" :search-regex #"\"re-mote \d+\.\d+\.\d+\""}]
        }
      }
    }
@@ -86,12 +86,11 @@
   :aliases {
      "autotest" ["midje" ":autotest" ":filter" "-integration"]
      "runtest" ["midje" ":filter" "-integration"]
-     "supernal" ["run" "-m" "supernal.launch"]
      "start-repl" ["do" "clean," "cljsbuild" "once," "repl" ":headless"]
      "start" ["do" "clean," "cljsbuild" "once," "run"]
    }
 
-  :aot [supernal.launch]
+  :aot [re-mote.repl.base]
 
   :target-path "target/"
 
