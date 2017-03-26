@@ -2,7 +2,7 @@
 
 A live coding environment for remote operations.
 
-[![Build Status](https://travis-ci.org/celestial-ops/supernal.png)](https://travis-ci.org/celestial-ops/supernal)
+[![Build Status](https://travis-ci.org/re-ops/re-mote.png)](https://travis-ci.org/re-ops/re-ops)
 
 ## Motivation
 
@@ -10,11 +10,11 @@ Most (if not all) configuration management tools currently are static in nature,
 
 Still our live environments change rapidly and having this cycle in place really slows our reaction time down.
 
-After working in Clojure for a long time iv found that the REPL is the most powerful environment to code in, there is no reason we cant use this enviroment to drive our operations faster!
+RE-mote is a re-take on how remote operations would look like when using a live REPL to drive them.
 
-# Install 
+# Usage
 
-TBD
+
 
 ## JCE
 
