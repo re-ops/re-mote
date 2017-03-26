@@ -21,7 +21,7 @@
       [clj-time.core :as t]
       [clj-time.coerce :refer [to-long]]
       [clojure.java.io :refer (reader)]
-      [supernal.repl.schedule :refer (watch)]
+      [supernal.repl.schedule :refer (watch seconds)]
     ))
 
 (refer-timbre)
@@ -74,8 +74,7 @@
        (swap! logs (fn [m] (dissoc m uuid))))))
 
 (defn run-purge [s]
-  (watch s 
-    (fn [] (debug "purging logs at" (t/now)) (purge))))
+  (watch :logs-purge (seconds s) (fn [] (debug "purging logs at" (t/now)) (purge))))
 
 (defn gen-uuid [] (.replace (str (java.util.UUID/randomUUID)) "-" ""))
 

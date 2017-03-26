@@ -17,7 +17,7 @@
     [clj-time.core :as t]
     [clj-time.coerce :refer (to-long)]
     [supernal.repl.base :refer (run-hosts zip)]
-    [supernal.repl.schedule :refer (watch)]
+    [supernal.repl.schedule :refer (watch seconds)]
     [pallet.stevedore :refer (script do-script)])
   (:import [supernal.repl.base Hosts]))
 
@@ -115,7 +115,7 @@
 (defn setup-stats
    "Setup stats collection" 
    [s n]
-   (watch s (fn [] (purge n))))
+   (watch :stats-purge (seconds s) (fn [] (purge n))))
 
 (defn- host-values
   [k ks {:keys [host stats]}]
