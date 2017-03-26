@@ -3,7 +3,7 @@
 A remote multi server automation tool (Capistrano/Fabric) in Clojure.
 
 
-[![Build Status](https://travis-ci.org/celestial-ops/supernal.png)](https://travis-ci.org/celestial-ops/supernal)
+[![Build Status](https://travis-ci.org/re-ops/re-mote.png)](https://travis-ci.org/re-ops/re-mote)
 
 # Goals and motivation
  
