@@ -25,8 +25,9 @@ user=> (go)
 # Prerequisite
 
 * JDK 8 with JCE enabled (see below on how to install JCE).
+* lein (see https://leiningen.org/).
 * rng-tools for increased entropy under Linux (Ubuntu).
-
+* A solid understanding of Clojure :)
 
 ## Setting JCE
 
