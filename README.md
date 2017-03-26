@@ -12,11 +12,23 @@ Still our live environments change rapidly and having this cycle in place really
 
 RE-mote is a re-take on how remote operations would look like when using a live REPL to drive them.
 
-# Usage
+# Get running
+
+```clojure
+$ lein repl
+user=> (use 're-mote.repl)
+nil
+user=> (go)
+
+```
+
+# Prerequisite
+
+* JDK 8 with JCE enabled (see below on how to install JCE).
+* rng-tools for increased entropy under Linux (Ubuntu).
 
 
-
-## JCE
+## Setting JCE
 
 ```bash
 # Download http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html
@@ -24,11 +36,9 @@ $ unzip UnlimitedJCEPolicyJDK7.zip
 $ sudo cp UnlimitedJCEPolicy/* /usr/lib/jvm/java-7-oracle/jre/lib/security/
 ```
 
-# Usage
-
 # Copyright and license
 
-Copyright [2013] [Ronen Narkis]
+Copyright [2017] [Ronen Narkis]
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
