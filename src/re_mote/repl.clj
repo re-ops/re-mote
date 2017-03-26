@@ -40,7 +40,6 @@
 
 (def sandbox (Hosts. {:user "vagrant"} ["192.168.2.25" "192.168.2.26" "192.168.2.27"]))
 
-
 (defn listing [hs]
   (run (ls hs "/" "-la") | (pretty)))
 

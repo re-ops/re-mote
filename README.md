@@ -22,6 +22,25 @@ user=> (go)
 
 ```
 
+Now we can start and play (see src/re_mote/repl.clj):
+
+```clojure
+; see https://github.com/opskeleton/supernal-sandbox
+(def sandbox (Hosts. {:user "vagrant"} ["192.168.2.25" "192.168.2.26" "192.168.2.27"]))
+
+; a simple list action on all hosts
+(defn listing [hs]
+  (run (ls hs "/" "-la") | (pretty)))
+
+(listing sandbox)
+
+; publish cpu/ram use to a dashboard
+(defn stats [hs]
+  (run (free hs) | (pretty) | (collect) | (publish (stock "Free RAM" :timeseries :free)) | (publish (stock "Used RAM" :timeseries :used)))
+  (run (cpu hs)  | (pretty) | (collect) | (publish (stock "Idle CPU" :timeseries :idle)) | (publish (stock "User CPU" :timeseries :usr))))
+
+(stats sandbox)
+```
 # Prerequisite
 
 * JDK 8 with JCE enabled (see below on how to install JCE).
