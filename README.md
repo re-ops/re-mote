@@ -2,7 +2,7 @@
 
 A live coding environment for remote operations.
 
-[![Build Status](https://travis-ci.org/re-ops/re-mote.png)](https://travis-ci.org/re-ops/re-ops)
+[![Build Status](https://travis-ci.org/re-ops/re-mote.png)](https://travis-ci.org/re-ops/re-mote)
 
 ## Motivation
 
