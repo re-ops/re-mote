@@ -10,7 +10,7 @@ Most (if not all) configuration management tools currently are static in nature,
 
 Still our live environments change rapidly and having this cycle in place really slows our reaction time down.
 
-After working in Clojure for a long time iv found that the REPL is the most powerful environment to code in, there is no reason we won't this power language responding fast to our changing world.
+After working in Clojure for a long time iv found that the REPL is the most powerful environment to code in, there is no reason we cant use this enviroment to drive our operations faster!
 
 # Install 
 
