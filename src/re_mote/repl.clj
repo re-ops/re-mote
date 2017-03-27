@@ -53,6 +53,9 @@
 (defn aptgrade [hs]
   (run (update hs) | (pretty) | (pick successful) | (upgrade) | (pretty)))
 
+(defn aptdate [hs]
+  (run (update hs) | (pretty)))
+
 (defn periodical-stats [hs]
   (watch :stats (seconds 10) (fn [] (stats hs))))
 
