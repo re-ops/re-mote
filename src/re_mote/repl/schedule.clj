@@ -16,6 +16,7 @@
       [taoensso.timbre :refer (refer-timbre)]
       [chime :refer [chime-ch]]
       [clj-time.core :as t]
+      [clj-time.local :refer [local-now]]
       [clojure.core.async :as a :refer [<! go-loop close!]])
   (:import [org.joda.time DateTimeConstants DateTimeZone]))
 
@@ -28,7 +29,7 @@
 
 (defn weekdays [hour]
   (->>
-    (periodic-seq (.. (clj-time.local/local-now) (withTime hour 0 0 0)) (t/days 1))
+    (periodic-seq (.. (local-now) (withTime hour 0 0 0)) (t/days 1))
     (remove (comp #{DateTimeConstants/SATURDAY DateTimeConstants/SUNDAY} #(.getDayOfWeek %)))))
 
 (defn create-ch [k period]
