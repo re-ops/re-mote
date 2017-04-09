@@ -4,7 +4,6 @@
      [clojure.java.io :as io]
      [clojure.repl :refer :all]
      [clojure.tools.namespace.repl :refer (refresh refresh-all)]
-     [re-mote.publish.server :as server]
      [re-mote.repl :as repl] 
      [re-mote.launch :as launch] 
      ))
@@ -31,7 +30,6 @@
   []
   (init)
   (start))
-
 
 (defn reset []
   (stop)
