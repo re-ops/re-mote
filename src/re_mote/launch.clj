@@ -22,10 +22,10 @@
 (defn setup []
   (repl/setup))
 
-(defn start [cs] 
+(defn start [_] 
   (server/start))
 
-(defn stop [cs] 
+(defn stop [_] 
   (server/stop))
 
 (defcommand version 
