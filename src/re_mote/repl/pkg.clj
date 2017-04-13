@@ -23,10 +23,11 @@
 (defprotocol Apt
   (update
     [this]
-    [this m]
-    )
+    [this m])
   (upgrade [this m])
-  )
+  (install 
+    [this pkg]
+    [this m pkg]))
 
 (extend-type Hosts
    Apt
@@ -37,7 +38,13 @@
      [this (run-hosts this (script ("sudo" "apt" "update")))])
 
    (upgrade [this _]
-     [this (run-hosts this (script ("sudo" "apt" "upgrade" "-y")))]))
+     [this (run-hosts this (script ("sudo" "apt" "upgrade" "-y")))])
+
+   (install [this _ pkg]
+      (install this pkg))
+
+   (install [this pkg]
+     [this (run-hosts this (script ("sudo" "apt" "install" ~pkg "-y")))]))
 
 (defn refer-pkg []
-  (require '[re-mote.repl.pkg :as pkg :refer (update upgrade)]))
+  (require '[re-mote.repl.pkg :as pkg :refer (update upgrade install)]))

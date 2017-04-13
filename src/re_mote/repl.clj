@@ -56,6 +56,9 @@
 (defn aptdate [hs]
   (run (update hs) | (pretty)))
 
+(defn add-package [hs pkg]
+  (run (install hs pkg) | (pretty)))
+
 (defn periodical-stats [hs]
   (watch :stats (seconds 10) (fn [] (stats hs))))
 
