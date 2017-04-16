@@ -20,7 +20,7 @@
     [pallet.stevedore.bash]
     [pallet.stevedore :refer (script)]
     [re-mote.log :refer (collect-log get-logs gen-uuid)]
-    [re-mote.sshj :refer (execute)]))
+    [re-mote.sshj :refer (execute upload)]))
 
 (refer-timbre)
 
@@ -39,6 +39,18 @@
   [f ms]
    (<!! (async/into [] (async/merge (map #(thread-call (bound-fn []  (f %))) ms)))))
 
+(defn host-upload [auth src dest h]
+  (try 
+     (upload src dest (merge {:host h} auth))
+     {:host h :code 0}
+    (catch Throwable e
+      {:host h :code 1 :error (.getMessage e)})))
+
+(defn upload-hosts [{:keys [auth hosts]} src dest]
+  (let [results (map-async (partial host-upload auth src dest) hosts)
+        grouped (group-by :code results)]
+      {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
+
 (defn run-hosts [{:keys [auth hosts]} script]
   (let [results (map-async (partial execute-uuid auth script) hosts)
         grouped (group-by :code results)]
@@ -56,13 +68,19 @@
 
 (defprotocol Shell
   (exec [this script])
-  (rm [this target flags])
+  (rm [this m target flags])
   (ls [this target flags])
   (grep [this expr flags])
   (cp [this src dest flags]))
 
 (defprotocol Tracing
   (ping [this target]))
+
+(defprotocol Copy
+  (scp [this src dest]))
+
+(defprotocol Tar
+  (extract [this m archive target]))
 
 (defn zip
   "Collecting output into a hash, must be defined outside protocoal because of var args"
@@ -79,10 +97,22 @@
 (defrecord Hosts [auth hosts]
   Shell
   (ls [this target flags]
-   [this (run-hosts this (script ("ls" ~target ~flags)))])
+    [this (run-hosts this (script ("ls" ~target ~flags)))])
+
+  (rm [this _ target flags]
+    [this (run-hosts this (script ("rm" ~target ~flags)))]
+    )
 
   (exec [this script]
     [this (run-hosts this script)])
+
+  Tar
+  (extract [this _ archive target]
+     [this (run-hosts this (script ("tar" "-xzf" ~archive "-C" ~target)))])
+
+  Copy
+   (scp [this src target]
+      [this (upload-hosts this src target)]) 
 
   Select
    (initialize [this]
@@ -106,5 +136,5 @@
      (Hosts. auth hosts)))
 
 (defn refer-base []
-  (require '[re-mote.repl.base :as base :refer (run | initialize pick successful ping ls into-hosts exec)]))
+  (require '[re-mote.repl.base :as base :refer (run | initialize pick successful ping ls into-hosts exec scp extract rm)]))
 

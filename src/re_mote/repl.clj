@@ -12,6 +12,7 @@
 (ns re-mote.repl
   "Repl utilities for re-mote"
   (:require
+    [clojure.core.strint :refer (<<)]
     [re-mote.validate :refer (check-entropy check-jce)]
     [clojure.pprint :refer (pprint)]
     [taoensso.timbre :refer (refer-timbre)]
@@ -19,8 +20,10 @@
     [re-mote.repl.output :refer (refer-out)]
     [re-mote.repl.pkg :refer (refer-pkg)]
     [re-mote.repl.publish :refer (refer-publish)]
+    [re-mote.repl.puppet :refer (refer-puppet)]
     [re-mote.repl.schedule :refer (watch seconds)]
     [re-mote.log :refer (setup-logging)]
+    [clojure.java.io :refer (file)]
     [re-mote.repl.stats :refer (refer-stats)])
   (:import [re_mote.repl.base Hosts]))
 
@@ -29,6 +32,7 @@
 (refer-out)
 (refer-stats)
 (refer-pkg)
+(refer-puppet)
 (refer-publish)
 
 (defn setup []
@@ -38,7 +42,7 @@
   (setup-stats 10 10)
   )
 
-(def sandbox (Hosts. {:user "vagrant"} ["192.168.2.25" "192.168.2.26" "192.168.2.27"]))
+(def sandbox (Hosts. {:user "vagrant"} ["192.168.2.28" "192.168.2.26" "192.168.2.27"]))
 
 (defn listing [hs]
   (run (ls hs "/" "-la") | (pretty)))
@@ -62,4 +66,15 @@
 (defn periodical-stats [hs]
   (watch :stats (seconds 10) (fn [] (stats hs))))
 
+(defn copy-module [hs pkg]
+  (let [name (.getName (file pkg))]
+    (run (scp hs pkg "/tmp") | (extract (<< "/tmp/~{name}") "/tmp") | 
+         (rm (<< "/tmp/~{name}") "-rf") | (pretty) | (pick successful))))
 
+(defn run-module [hs pkg args]
+  (let [[this _] (copy-module hs pkg)  extracted (.replace (.getName (file pkg)) ".tar.gz" "")]
+    (run (apply-module this (<< "/tmp/~{extracted}") args) | (rm (<< "/tmp/~{extracted}") "-rf") | (pretty))))
+
+(defn nohup [hs cmd]
+   (run (exec hs cmd) | (pretty))
+  )

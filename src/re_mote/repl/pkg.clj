@@ -25,7 +25,7 @@
     [this]
     [this m])
   (upgrade [this m])
-  (install 
+  (install
     [this pkg]
     [this m pkg]))
 
@@ -40,11 +40,9 @@
    (upgrade [this _]
      [this (run-hosts this (script ("sudo" "apt" "upgrade" "-y")))])
 
-   (install [this _ pkg]
-      (install this pkg))
-
-   (install [this pkg]
-     [this (run-hosts this (script ("sudo" "apt" "install" ~pkg "-y")))]))
+   (install
+     ([this _ pkg] (install this pkg))
+     ([this pkg] [this (run-hosts this (script ("sudo" "apt" "install" ~pkg "-y")))])))
 
 (defn refer-pkg []
   (require '[re-mote.repl.pkg :as pkg :refer (update upgrade install)]))
