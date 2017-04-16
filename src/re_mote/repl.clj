@@ -75,6 +75,3 @@
   (let [[this _] (copy-module hs pkg)  extracted (.replace (.getName (file pkg)) ".tar.gz" "")]
     (run (apply-module this (<< "/tmp/~{extracted}") args) | (rm (<< "/tmp/~{extracted}") "-rf") | (pretty))))
 
-(defn nohup [hs cmd]
-   (run (exec hs cmd) | (pretty))
-  )
