@@ -90,7 +90,7 @@
      "start" ["do" "clean," "cljsbuild" "once," "run"]
    }
 
-  :aot [re-mote.repl.base]
+  ;; :aot [re-mote.repl.base]
 
   :target-path "target/"
 

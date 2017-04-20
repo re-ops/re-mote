@@ -82,6 +82,9 @@
 (defprotocol Tar
   (extract [this m archive target]))
 
+(defprotocol Performance
+  (measure [this m]))
+
 (defn zip
   "Collecting output into a hash, must be defined outside protocoal because of var args"
   [this {:keys [success failure] :as res} parent k & ks]

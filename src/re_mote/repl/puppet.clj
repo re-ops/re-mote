@@ -18,18 +18,18 @@
   (:import [re_mote.repl.base Hosts]))
 
 (defprotocol Puppet
-  (apply-module 
+  (apply-module
     [this path args]
     [this m path args]))
 
 (defn puppet-script [path args]
-  (script 
+  (script
     ("cd" ~path)
-    (chain-or ("sudo" "/bin/bash" "run.sh" "--detailed-exitcodes" "--color=false") ("[ $? -eq 2 ]"))))
+    (chain-or ("sudo" "/bin/bash" "run.sh" ~args "--detailed-exitcodes" "--color=false") ("[ $? -eq 2 ]"))))
 
-(extend-type Hosts 
-  Puppet 
-  (apply-module 
+(extend-type Hosts
+  Puppet
+  (apply-module
     ([this path args] (apply-module this nil path args))
     ([this _ path args]
       [this (run-hosts this (puppet-script path args))])))

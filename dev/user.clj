@@ -4,8 +4,8 @@
      [clojure.java.io :as io]
      [clojure.repl :refer :all]
      [clojure.tools.namespace.repl :refer (refresh refresh-all)]
-     [re-mote.launch :as launch] 
-     ))
+     [re-mote.launch :as launch]
+     [re-mote.repl :refer :all]))
 
 (def system nil)
 
@@ -33,4 +33,3 @@
 (defn reset []
   (stop)
   (refresh :after 'user/go))
-
