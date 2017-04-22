@@ -43,7 +43,7 @@
    (a/<!!
      (go-loop []
        (when-let [msg (<! ch)]
-         (debug "Chiming at:" msg)
+         (trace "Chiming at:" msg)
          (apply f args)
       (recur))))))
 
