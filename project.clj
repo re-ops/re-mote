@@ -4,23 +4,25 @@
   :license  {:name "Apache License, Version 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/core.incubator "0.1.4"]
-                 [com.taoensso/timbre "4.1.4"]
-                 [ch.qos.logback/logback-classic "1.2.1"]
-                 [org.codehaus.groovy/groovy "2.4.9"]
-                 [com.hierynomus/sshj "0.20.0"]
                  [me.raynes/conch "0.8.0"]
                  [org.clojure/core.async "0.3.442"]
                  [narkisr/cliopatra "1.1.0"]
                  [narkisr/clansi "1.2.0"]
                  [com.rpl/specter "1.0.0"]
 
-                 ; tracking
+                 ; logging
+                 [ch.qos.logback/logback-classic "1.2.1"]
+                 [org.codehaus.groovy/groovy "2.4.9"]
+                 [com.taoensso/timbre "4.10.0"]
                  [org.clojure/tools.trace "0.7.9"]
 
                  ; repl
                  [com.palletops/stevedore "0.8.0-beta.7"]
                  [io.aviso/pretty "0.1.33"]
                  [progrock "0.1.2"]
+
+                 ; ssh
+                 [com.hierynomus/sshj "0.20.0"]
 
                  ; run at
                  [jarohen/chime "0.2.0" :exclusions [org.clojure/core.async]]
@@ -33,7 +35,7 @@
                  [http-kit "2.2.0"]
                  [ring "1.5.1"]
                  [ring/ring-defaults "0.2.3"]
-                 [com.taoensso/encore "2.90.1"]
+                 ;; [com.taoensso/encore "2.90.1"]
                  [hiccup "1.0.5"]
 
                  ; frontend

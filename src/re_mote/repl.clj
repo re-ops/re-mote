@@ -68,7 +68,7 @@
 
 (defn copy-module [hs pkg]
   (let [name (.getName (file pkg))]
-    (run (scp hs pkg "/tmp") | (extract (<< "/tmp/~{name}") "/tmp") | 
+    (run (scp hs pkg "/tmp") | (extract (<< "/tmp/~{name}") "/tmp") |
          (rm (<< "/tmp/~{name}") "-rf") | (pretty) | (pick successful))))
 
 (defn run-module [hs pkg args]

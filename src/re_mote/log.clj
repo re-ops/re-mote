@@ -14,6 +14,7 @@
   (:require
       [clojure.string :refer (join)]
       [taoensso.timbre.appenders.3rd-party.rolling :refer (rolling-appender)]
+      [taoensso.timbre.appenders.core :refer (println-appender)]
       [clansi.core :refer (style)]
       [taoensso.timbre :refer (refer-timbre set-level! merge-config!)]
       [clojure.core.strint :refer (<<)]
@@ -21,13 +22,11 @@
       [clj-time.core :as t]
       [clj-time.coerce :refer [to-long]]
       [clojure.java.io :refer (reader)]
-      [re-mote.repl.schedule :refer (watch seconds)]
-    ))
+      [re-mote.repl.schedule :refer (watch seconds)]))
 
 (refer-timbre)
 
 (def logs (atom {}))
-(def do-stream (atom false))
 
 (defn log-output
   "Output log stream"
@@ -38,7 +37,7 @@
 (defn process-line
    "process a single log line"
    [host line]
-  (when @do-stream (info (<< "[~{host}]:") line)) line)
+  (info (<< "[~{host}]:") line))
 
 (defn collect-log
   "Collect log output into logs atom"
@@ -97,8 +96,11 @@
    []
   (merge-config!
     {:output-fn (partial output-fn  {:stacktrace-fonts {}})})
-  (merge-config!
-    {:appenders  {:rolling  (rolling-appender  {:path "re-mote.log" :pattern :weekly})}}))
+  (merge-config!  {
+     :appenders {
+       :println  (merge {:ns-blacklist ["re-mote.log"]}
+                        (println-appender {:stream :auto }))
+       :rolling (rolling-appender {:path "re-mote.log" :pattern :weekly})}}))
 
 (defn setup-logging
   "Sets up logging configuration:
@@ -106,9 +108,8 @@
     - steam collect logs
     - log level
   "
-  [& {:keys [interval level stream] :or {interval 10 level :info stream false}}]
+  [& {:keys [interval level] :or {interval 10 level :info}}]
   (slf4j-fix)
-  (reset! do-stream stream)
   (disable-coloring)
   (set-level! level)
   (run-purge interval))
