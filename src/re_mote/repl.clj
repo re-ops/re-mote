@@ -69,9 +69,11 @@
 (defn copy-module [hs pkg]
   (let [name (.getName (file pkg))]
     (run (scp hs pkg "/tmp") | (extract (<< "/tmp/~{name}") "/tmp") |
-         (rm (<< "/tmp/~{name}") "-rf") | (pretty) | (pick successful))))
+      (rm (<< "/tmp/~{name}") "-rf") | (pretty) | (pick successful))))
 
 (defn run-module [hs pkg args]
   (let [[this _] (copy-module hs pkg)  extracted (.replace (.getName (file pkg)) ".tar.gz" "")]
     (run (apply-module this (<< "/tmp/~{extracted}") args) | (pretty) | (rm (<< "/tmp/~{extracted}") "-rf"))))
 
+(defn nohup [hs cmd]
+  (run (exec hs (<< "nohup sh -c '~{cmd} &' &>/dev/null"))| (pretty)))
