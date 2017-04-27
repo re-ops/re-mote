@@ -17,6 +17,7 @@
     [clojure.pprint :refer (pprint)]
     [taoensso.timbre :refer (refer-timbre)]
     [re-mote.repl.base :refer (refer-base)]
+    [re-mote.repl.zfs :refer (refer-zfs)]
     [re-mote.repl.output :refer (refer-out)]
     [re-mote.repl.pkg :refer (refer-pkg)]
     [re-mote.repl.publish :refer (refer-publish)]
@@ -33,6 +34,7 @@
 (refer-stats)
 (refer-pkg)
 (refer-puppet)
+(refer-zfs)
 (refer-publish)
 
 (defn setup []
@@ -74,6 +76,3 @@
 (defn run-module [hs pkg args]
   (let [[this _] (copy-module hs pkg)  extracted (.replace (.getName (file pkg)) ".tar.gz" "")]
     (run (apply-module this (<< "/tmp/~{extracted}") args) | (pretty) | (rm (<< "/tmp/~{extracted}") "-rf"))))
-
-(defn nohup [hs cmd]
-  (run (exec hs (<< "nohup sh -c '~{cmd} &' &>/dev/null"))| (pretty)))

@@ -20,6 +20,7 @@
                  [com.palletops/stevedore "0.8.0-beta.7"]
                  [io.aviso/pretty "0.1.33"]
                  [progrock "0.1.2"]
+                 [hawk "0.2.11"]
 
                  ; ssh
                  [com.hierynomus/sshj "0.20.0"]
