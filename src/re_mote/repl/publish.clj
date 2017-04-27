@@ -37,8 +37,10 @@
    Publishing
    (publish [this {:keys [success] :as m} {:keys [graph values-fn]}]
       (broadcast! [::vega {:values (sort-by :x (values-fn success)) :graph graph}])
-      [this m]
-     ))
+      [this m])
+   (email [this {:keys [success failure] :as m} mail]
+     (send-message smtp (mail success failure))
+     [this m]))
 
 (defn refer-publish []
   (require '[re-mote.repl.publish :as pub :refer (publish stock stack lines)])

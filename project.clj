@@ -10,11 +10,12 @@
                  [narkisr/clansi "1.2.0"]
                  [com.rpl/specter "1.0.0"]
 
-                 ; logging
+                 ; logging publishing
                  [ch.qos.logback/logback-classic "1.2.1"]
                  [org.codehaus.groovy/groovy "2.4.9"]
                  [com.taoensso/timbre "4.10.0"]
                  [org.clojure/tools.trace "0.7.9"]
+                 [com.draines/postal "2.0.2"]
 
                  ; repl
                  [com.palletops/stevedore "0.8.0-beta.7"]
@@ -36,7 +37,6 @@
                  [http-kit "2.2.0"]
                  [ring "1.5.1"]
                  [ring/ring-defaults "0.2.3"]
-                 ;; [com.taoensso/encore "2.90.1"]
                  [hiccup "1.0.5"]
 
                  ; frontend
