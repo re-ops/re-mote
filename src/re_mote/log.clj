@@ -84,13 +84,6 @@
    (let [{:keys [level ?err #_vargs msg_ ?ns-str ?file hostname_ timestamp_ ?line]} data]
      (str (style "> " :blue) (force msg_)))))
 
-(defn slf4j-fix []
-  (let [cl (.getContextClassLoader  (Thread/currentThread))]
-    (-> cl
-      (.loadClass "org.slf4j.LoggerFactory")
-      (.getMethod "getLogger"  (into-array java.lang.Class [(.loadClass cl "java.lang.String")]))
-      (.invoke nil (into-array java.lang.Object ["ROOT"])))))
-
 (defn disable-coloring
    "See https://github.com/ptaoussanis/timbre"
    []
@@ -98,7 +91,7 @@
     {:output-fn (partial output-fn  {:stacktrace-fonts {}})})
   (merge-config!  {
      :appenders {
-       :println  (merge {:ns-blacklist ["re-mote.log"]}
+       :println  (merge {:ns-whitelist ["re-mote.output"]}
                         (println-appender {:stream :auto }))
        :rolling (rolling-appender {:path "re-mote.log" :pattern :weekly})}}))
 
@@ -109,7 +102,6 @@
     - log level
   "
   [& {:keys [interval level] :or {interval 10 level :info}}]
-  (slf4j-fix)
   (disable-coloring)
   (set-level! level)
   (run-purge interval))

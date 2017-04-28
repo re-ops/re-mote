@@ -11,6 +11,7 @@
 
 (ns re-mote.repl.publish
   (:require
+    [formation.core :as form]
     [com.rpl.specter :as s :refer (transform select MAP-VALS ALL ATOM keypath srange)]
     [clojure.pprint :refer (pprint)]
     [taoensso.timbre :refer (refer-timbre)]
@@ -29,7 +30,8 @@
   (publish [this m e])
   (email [this m e]))
 
-(def smtp (atom {}))
+(def smtp  
+  (memoize (fn [] (:smtp (form/config "re-mote" (fn [_] nil))))))
 
 (defn stock [n k & ks]
   {:graph {:gtype :vega/stock :gname n} :values-fn (partial single-per-host k ks)})
@@ -41,17 +43,15 @@
   {:graph {:gtype :vega/stack :gname n} :values-fn (partial avg-all k)})
 
 (extend-type Hosts
-   Publishing
+  Publishing
    (publish [this {:keys [success] :as m} {:keys [graph values-fn]}]
       (broadcast! [::vega {:values (sort-by :x (values-fn success)) :graph graph}])
       [this m])
+
    (email [this m e]
-     (send-message @smtp (merge e {:body [:alternative {:type "text/html" :content (template m)}]}))
+     (send-message (smtp) (merge e {:body [:alternative {:type "text/html" :content (template m)}]}))
      [this m]))
 
-(defn setup-mail [m]
-  (reset! smtp (:smtp m)))
-
 (defn refer-publish []
-  (require '[re-mote.repl.publish :as pub :refer (publish email stock stack lines setup-mail)]))
+  (require '[re-mote.repl.publish :as pub :refer (publish email stock stack lines)]))
 

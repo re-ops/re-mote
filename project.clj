@@ -13,7 +13,6 @@
                  ; logging publishing
                  [com.taoensso/timbre "4.10.0"]
                  [com.fzakaria/slf4j-timbre "0.3.5"]
-                 [ch.qos.logback/logback-classic "1.2.1"]
                  [org.codehaus.groovy/groovy "2.4.9"]
                  [org.clojure/tools.trace "0.7.9"]
                  [com.draines/postal "2.0.2"]
@@ -25,7 +24,7 @@
                  [hawk "0.2.11"]
 
                  ; ssh
-                 [com.hierynomus/sshj "0.20.0"]
+                 [com.hierynomus/sshj "0.20.0" :exclusions [org.slf4j/slf4j-api]]
 
                  ; run at
                  [jarohen/chime "0.2.0" :exclusions [org.clojure/core.async]]
@@ -48,11 +47,11 @@
                  [org.clojure/data.json "0.2.6"]
 
                  ; CSS
-                 [org.webjars/bootstrap "3.3.5"]
+                 [org.webjars/bootstrap "3.3.5" :exclusions [org.slf4j/slf4j-api]]
 
                  ; configuration
                  [clojure-future-spec "1.9.0-alpha15"]
-                 [formation "0.1.0"]
+                 [formation "0.1.0" :exclusions [com.taoensso/timbre com.fzakaria/slf4j-timbre]]
                  ]
 
   :exclusions [org.clojure/clojure]
@@ -64,13 +63,7 @@
 
   :profiles {
     :dev {
-       :dependencies [[midje "1.8.3"] [junit/junit "4.12"] ]
-       :jvm-opts ~(vec (map (fn [[p v]] (str "-D" (name p) "=" v)) {:disable-conf "true"}))
-       :resource-paths  ["pkg/etc/"]
        :source-paths  ["dev"]
-       :set-version {
-          :updates [{:path "src/re-mote/launch.clj" :search-regex #"\"re-mote \d+\.\d+\.\d+\""}]
-       }
      }
    }
 
@@ -89,20 +82,14 @@
 
   :repl-options {
     :init-ns user
-  }
+   }
 
   :aliases {
-     "autotest" ["midje" ":autotest" ":filter" "-integration"]
-     "runtest" ["midje" ":filter" "-integration"]
      "start-repl" ["do" "clean," "cljsbuild" "once," "repl" ":headless"]
      "start" ["do" "clean," "cljsbuild" "once," "run"]
    }
 
-  ;; :aot [re-mote.repl.base]
-
   :target-path "target/"
-
   :signing {:gpg-key "narkisr@gmail.com"}
 
-  :main supernal.launch
-  )
+)
