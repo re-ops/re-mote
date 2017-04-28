@@ -10,12 +10,10 @@
                  [narkisr/clansi "1.2.0"]
                  [com.rpl/specter "1.0.0"]
 
-                 ; logging publishing
+                 ; logging
                  [com.taoensso/timbre "4.10.0"]
                  [com.fzakaria/slf4j-timbre "0.3.5"]
-                 [org.codehaus.groovy/groovy "2.4.9"]
                  [org.clojure/tools.trace "0.7.9"]
-                 [com.draines/postal "2.0.2"]
 
                  ; repl
                  [com.palletops/stevedore "0.8.0-beta.7"]
@@ -30,7 +28,7 @@
                  [jarohen/chime "0.2.0" :exclusions [org.clojure/core.async]]
                  [clj-time/clj-time "0.13.0"]
 
-                 ; web publish
+                 ;publishing
                  [compojure "1.5.2"]
                  [org.clojure/clojurescript "1.9.495"]
                  [com.taoensso/sente "1.11.0"]
@@ -38,6 +36,7 @@
                  [ring "1.5.1"]
                  [ring/ring-defaults "0.2.3"]
                  [hiccup "1.0.5"]
+                 [com.draines/postal "2.0.2"]
 
                  ; frontend
                  [reagent "0.6.1"]
