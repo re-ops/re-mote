@@ -11,9 +11,10 @@
                  [com.rpl/specter "1.0.0"]
 
                  ; logging publishing
+                 [com.taoensso/timbre "4.10.0"]
+                 [com.fzakaria/slf4j-timbre "0.3.5"]
                  [ch.qos.logback/logback-classic "1.2.1"]
                  [org.codehaus.groovy/groovy "2.4.9"]
-                 [com.taoensso/timbre "4.10.0"]
                  [org.clojure/tools.trace "0.7.9"]
                  [com.draines/postal "2.0.2"]
 
@@ -46,8 +47,12 @@
                  [ring-webjars "0.1.1"]
                  [org.clojure/data.json "0.2.6"]
 
-                 ;; CSS
+                 ; CSS
                  [org.webjars/bootstrap "3.3.5"]
+
+                 ; configuration
+                 [clojure-future-spec "1.9.0-alpha15"]
+                 [formation "0.1.0"]
                  ]
 
   :exclusions [org.clojure/clojure]

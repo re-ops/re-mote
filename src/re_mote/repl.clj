@@ -24,6 +24,7 @@
     [re-mote.repl.puppet :refer (refer-puppet)]
     [re-mote.repl.schedule :refer (watch seconds)]
     [re-mote.log :refer (setup-logging)]
+    [formation.core :as form]
     [clojure.java.io :refer (file)]
     [re-mote.repl.stats :refer (refer-stats)])
   (:import [re_mote.repl.base Hosts]))
@@ -40,9 +41,10 @@
 (defn setup []
   (check-entropy 200)
   (check-jce)
-  (setup-logging :stream false)
+  (setup-logging)
   (setup-stats 10 10)
-  )
+  (let [config (form/config "re-mote" (fn [_] nil))]
+    (setup-mail config)))
 
 (def sandbox (Hosts. {:user "vagrant"} ["192.168.2.28" "192.168.2.26" "192.168.2.27"]))
 
@@ -60,7 +62,7 @@
   (run (update hs) | (pretty) | (pick successful) | (upgrade) | (pretty)))
 
 (defn aptdate [hs]
-  (run (update hs) | (pretty)))
+  (run (update hs) | (pretty) | (email {:to "narkisr@gmail.com" :from "gookup@gmail.com" :subject "Running aptdate results"})))
 
 (defn add-package [hs pkg]
   (run (install hs pkg) | (pretty)))

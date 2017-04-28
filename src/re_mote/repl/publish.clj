@@ -15,14 +15,21 @@
     [clojure.pprint :refer (pprint)]
     [taoensso.timbre :refer (refer-timbre)]
     [re-mote.publish.server :refer (broadcast!)]
+    [re_mote.publish.email :refer (template)]
     [re-mote.repl.stats :refer (single-per-host avg-all)]
     [re-mote.repl.stats :refer (readings)]
+    [postal.core :as p :refer (send-message)]
+    [formation.core :as form]
     [re-mote.repl.base :refer (refer-base)])
   (:import [re_mote.repl.base Hosts]))
 
+(refer-timbre)
+
 (defprotocol Publishing
-  (publish [this m spec])
-  (email [this m]))
+  (publish [this m e])
+  (email [this m e]))
+
+(def smtp (atom {}))
 
 (defn stock [n k & ks]
   {:graph {:gtype :vega/stock :gname n} :values-fn (partial single-per-host k ks)})
@@ -38,11 +45,13 @@
    (publish [this {:keys [success] :as m} {:keys [graph values-fn]}]
       (broadcast! [::vega {:values (sort-by :x (values-fn success)) :graph graph}])
       [this m])
-   (email [this {:keys [success failure] :as m} mail]
-     (send-message smtp (mail success failure))
+   (email [this m e]
+     (send-message @smtp (merge e {:body [:alternative {:type "text/html" :content (template m)}]}))
      [this m]))
 
+(defn setup-mail [m]
+  (reset! smtp (:smtp m)))
+
 (defn refer-publish []
-  (require '[re-mote.repl.publish :as pub :refer (publish stock stack lines)])
-  )
+  (require '[re-mote.repl.publish :as pub :refer (publish email stock stack lines setup-mail)]))
 
