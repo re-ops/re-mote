@@ -63,6 +63,7 @@
   :profiles {
     :dev {
        :source-paths  ["dev"]
+       :dependencies [[midje "1.8.3"]]
      }
    }
 
