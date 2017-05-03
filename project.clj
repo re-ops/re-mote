@@ -50,7 +50,7 @@
 
                  ; configuration
                  [clojure-future-spec "1.9.0-alpha15"]
-                 [formation "0.1.1"]
+                 [formation "0.2.0"]
                  ]
 
   :exclusions [org.clojure/clojure]
