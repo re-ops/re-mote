@@ -120,14 +120,17 @@
 
   Copy
    (scp [this src target]
-      [this (upload-hosts this src target)]) 
+      [this (upload-hosts this src target)])
 
   Select
    (initialize [this]
     [this hosts])
 
   (pick [this {:keys [failure success] :as m} f]
-    [(Hosts. auth (f success failure hosts)) {}])
+    (let [hs (f success failure hosts)]
+      (if (empty? hs)
+        (throw (ex-info "no succesful hosts found" m))
+        [(Hosts. auth hs) {}])))
 
   Tracing
   (ping [this target]
@@ -138,7 +141,7 @@
   [success _ hs] (filter (into #{} (map :host success)) hs))
 
 (defn into-hosts
-   "builds hosts from an edn file" 
+   "builds hosts from an edn file"
    [f]
    (let [{:keys [auth hosts]} (edn/read-string (slurp (file f)))]
      (Hosts. auth hosts)))

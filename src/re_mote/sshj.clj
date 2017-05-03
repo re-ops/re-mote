@@ -12,7 +12,7 @@
 (ns re-mote.sshj
   (:require
     [me.raynes.conch :as c]
-    [clojure.java.io :refer (reader output-stream)]
+    [clojure.java.io :as io :refer (reader output-stream)]
     [clojure.string :refer (join split)]
     [clojure.java.shell :refer [sh]]
     [clojure.core.strint :refer (<<)]
@@ -71,7 +71,10 @@
         (reportProgress [transferred]
           (debug (<< "transferred ~(int (/ (* transferred 100) size))% of ~{name*}")))))))
 
-(defn upload [src dst remote]
+(defn upload
+  [src dst remote]
+  (when-not (.exists (io/file src))
+    (throw (ex-info "missing source file" {:file src})))
   (with-ssh remote
     (let [scp (.newSCPFileTransfer ssh)]
       (.setTransferListener scp listener)

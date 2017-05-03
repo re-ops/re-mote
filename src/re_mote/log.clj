@@ -37,7 +37,7 @@
 (defn process-line
    "process a single log line"
    [host line]
-  (info (<< "[~{host}]:") line))
+  (info (<< "[~{host}]:") line) line)
 
 (defn collect-log
   "Collect log output into logs atom"

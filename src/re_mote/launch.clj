@@ -1,4 +1,4 @@
-(comment 
+(comment
    re-mote, Copyright 2012 Ronen Narkis, narkisr.com
    Licensed under the Apache License,
    Version 2.0  (the "License") you may not use this file except in compliance with the License.
@@ -10,7 +10,7 @@
    limitations under the License.)
 
 (ns re-mote.launch
-  (:require  
+  (:require
     [taoensso.timbre :refer (refer-timbre)]
     [re-mote.publish.server :as server]
     [re-mote.repl :as repl]
@@ -22,20 +22,11 @@
 (defn setup []
   (repl/setup))
 
-(defn start [_] 
+(defn start [_]
   (server/start))
 
-(defn stop [_] 
+(defn stop [_]
   (server/stop))
-
-(defcommand version 
-  "list re-mote version and info:
-
-  sup version 
-  " 
-  {:opts-spec  []}
-  (println "Supernal 0.6.1"))
-
 
 (defn -main [& args])
 

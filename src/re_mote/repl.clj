@@ -71,8 +71,8 @@
 
 (defn copy-module [hs pkg]
   (let [name (.getName (file pkg))]
-    (run (scp hs pkg "/tmp") | (extract (<< "/tmp/~{name}") "/tmp") |
-      (rm (<< "/tmp/~{name}") "-rf") | (pretty) | (pick successful))))
+    (run (scp hs pkg "/tmp") | (pretty) | (pick successful)
+                             | (extract (<< "/tmp/~{name}") "/tmp") | (rm (<< "/tmp/~{name}") "-rf"))))
 
 (defn run-module [hs pkg args]
   (let [[this _] (copy-module hs pkg)  extracted (.replace (.getName (file pkg)) ".tar.gz" "")]

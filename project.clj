@@ -50,7 +50,7 @@
 
                  ; configuration
                  [clojure-future-spec "1.9.0-alpha15"]
-                 [formation "0.1.0" :exclusions [com.taoensso/timbre com.fzakaria/slf4j-timbre]]
+                 [formation "0.1.1"]
                  ]
 
   :exclusions [org.clojure/clojure]
