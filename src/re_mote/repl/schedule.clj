@@ -27,15 +27,15 @@
 (defn seconds [n]
   (periodic-seq  (t/now) (-> n t/seconds)))
 
+(defn every-day [hour]
+  (periodic-seq (.. (local-now) (withTime hour 0 0 0)) (t/days 1))) 
+
 (defn on-weekdays [hour]
-  (->>
-    (periodic-seq (.. (local-now) (withTime hour 0 0 0)) (t/days 1))
+  (->> (every-day hour) 
     (remove (comp #{DateTimeConstants/SATURDAY DateTimeConstants/SUNDAY} #(.getDayOfWeek %)))))
 
 (defn at-day [hour day]
-  (->>
-    (periodic-seq (.. (local-now) (withTime hour 0 0 0)) (t/days 1))
-    (filter (comp #{day} #(.getDayOfWeek %)))))
+  (->> (every-day hour) (filter (comp #{day} #(.getDayOfWeek %)))))
 
 (defn create-ch [k period]
   (let [ch (chime-ch period)]
@@ -65,3 +65,6 @@
      (close! (get chs k))
      (swap! chs (fn [curr] (dissoc curr)))))
 
+(defn pprint-scheds [] 
+  (clojure.pprint/pprint @chs)
+  )
