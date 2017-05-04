@@ -22,8 +22,8 @@
 (refer-base)
 (refer-out)
 
-(defn scrub [hs ds]
-  (run (exec hs (<< "/sbin/zpool scrub ~{ds}")) | (pretty)))
+(defn scrub [hs pool]
+  (run (exec hs (<< "/sbin/zpool scrub ~{pool}")) | (pretty)))
 
 (def errors "'(DEGRADED|FAULTED|OFFLINE|UNAVAIL|REMOVED|FAIL|DESTROYED|corrupt|cannot|unrecover)'")
 

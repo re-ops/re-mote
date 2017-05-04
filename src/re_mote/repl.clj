@@ -55,7 +55,7 @@
 (defn inlined-stats [hs]
   (run (free hs) | (collect) | (cpu) | (collect) | (sliding avg :avg) | (publish (stock "User cpu avg" :avg :usr))))
 
-(def tofrom {:to "narkisr@gmail.com" :from "gookup@gmail.com" :subject "Running aptdate results"})
+(def tofrom {:to "narkisr@gmail.com" :from "gookup@gmail.com" :subject "Running results"})
 
 (defn aptgrade [hs]
   (run (update hs) | (pretty) | (pick successful) | (upgrade) | (pretty) | (email tofrom)))
