@@ -70,7 +70,9 @@
         old (filter (fn [[uuid {:keys [ts]}]] (<= (to-long ts) minut-ago)) @logs)]
      (doseq [[uuid _] old]
        (trace "purged log" uuid)
-       (swap! logs (fn [m] (dissoc m uuid))))))
+       (swap! logs (fn [m] (dissoc m uuid))))
+     :ok 
+     ))
 
 (defn run-purge [s]
   (watch :logs-purge (seconds s) (fn [] (debug "purging logs at" (t/now)) (purge))))
