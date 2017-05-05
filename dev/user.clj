@@ -26,19 +26,27 @@
   []
   (alter-var-root #'system launch/stop))
 
+(declare go)
+
 (defn refesh-on [ctx {:keys [kind]}] 
   (when (= kind :create) 
-    (binding [*ns* (find-ns 'user)] (refresh))) ctx)
+    (binding [*ns* (find-ns 'user)] 
+      (stop)
+      (refresh)
+      (go :watch false)))
+   ctx)
 
 (defn auto-reload []
-  (hawk/watch! [{:paths ["src"] :handler refesh-on }]))
+  (println "watching src")
+  (hawk/watch! [{:paths ["src"] :handler refesh-on}]))
 
 (defn go
   "Initializes the current development system and starts it running."
-  []
-  (auto-reload)
+  [& {:keys [watch]}]
+  (when watch (auto-reload))
   (init)
-  (start))
+  (start)
+  (load-file "scripts/local.clj"))
 
 (defn reset []
   (stop)

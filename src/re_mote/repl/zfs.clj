@@ -39,4 +39,4 @@
     (run (exec hs (<< "/sbin/zfs snapshot ~{pool}/~{dataset}@~{date}")) | (pretty))))
 
 (defn refer-zfs []
-  (require '[re-mote.repl.zfs :as zfs :refer (health snapshot)]))
+  (require '[re-mote.repl.zfs :as zfs :refer (health snapshot scrub)]))
