@@ -11,6 +11,8 @@
 
 (ns re-mote.repl.publish
   (:require
+    [clojure.java.io :refer (file)]
+    [clojure.core.strint :refer (<<)]
     [formation.core :as form]
     [com.rpl.specter :as s :refer (transform select MAP-VALS ALL ATOM keypath srange)]
     [clojure.pprint :refer (pprint)]
@@ -19,6 +21,7 @@
     [re_mote.publish.email :refer (template)]
     [re-mote.repl.stats :refer (single-per-host avg-all)]
     [re-mote.repl.stats :refer (readings)]
+    [re-mote.log :refer (gen-uuid get-logs)]
     [postal.core :as p :refer (send-message)]
     [formation.core :as form]
     [re-mote.repl.base :refer (refer-base)])
@@ -42,6 +45,14 @@
 (defn stack [n k]
   {:graph {:gtype :vega/stack :gname n} :values-fn (partial avg-all k)})
 
+(defn save-fails [{:keys [failure]}]
+  (let [stdout (<< "/tmp/~(gen-uuid).out.txt") stderr (<< "/tmp/~(gen-uuid).err.txt")]
+    (doseq [[c rs] failure]
+      (doseq [{:keys [host error out]} (get-logs rs)]
+         (do (spit stdout (str host ": " out "\n") :append true)
+             (spit stderr (str host ": " error "\n") :append true))))
+     [stdout stderr])) 
+
 (extend-type Hosts
   Publishing
    (publish [this {:keys [success] :as m} {:keys [graph values-fn]}]
@@ -49,7 +60,11 @@
       [this m])
 
    (email [this m e]
-     (send-message (smtp) (merge e {:body [:alternative {:type "text/html" :content (template m)}]}))
+     (let [body {:type "text/html" :content (template m)}
+           attachment (fn [f] {:type :attachment :content (file f)})
+           files (map attachment (filter (fn [f] (.exists (file f))) (save-fails m))) ]
+       (send-message (smtp) 
+          (merge e {:body (into [:alternative body] files)})))
      [this m]))
 
 (defn refer-publish []

@@ -48,9 +48,9 @@
 
 (defn get-log
   "Getting log entry and clearing it"
-  [uuid]
+  [uuid & clear]
    (when-let [{:keys [lines]} (get @logs uuid)]
-      (swap! logs (fn [m] (dissoc m uuid)))
+      (when clear (swap! logs (fn [m] (dissoc m uuid))))
        lines
      ))
 
@@ -77,7 +77,8 @@
 (defn run-purge [s]
   (watch :logs-purge (seconds s) (fn [] (debug "purging logs at" (t/now)) (purge))))
 
-(defn gen-uuid [] (.replace (str (java.util.UUID/randomUUID)) "-" ""))
+(defn gen-uuid [] 
+  (.replace (str (java.util.UUID/randomUUID)) "-" ""))
 
 (defn output-fn
   "Timbre logger format function"

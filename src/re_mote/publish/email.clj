@@ -15,15 +15,16 @@
    (html5
     [:head]
     [:body
-     [:h3 "Success:"]
-     [:ul 
-      (for [{:keys [host out]} success] [:li " &#10003;" host]) 
+      [:h3 "Success:"]
+      [:ul 
+       (for [{:keys [host out]} success] [:li " &#10003;" host]) 
       ]
-     [:h3 "Failure:"]
-     [:ul 
-      (for [[c rs] failure]
-        (for [{:keys [host error out]} (get-logs rs)]
-         [:li " &#x2717;" " " host " - " (if out (str c ",") "") (or error (summarize out)) ]))
-      ]
-     [:p "For more information please check you local log provider."]
-     ])))
+      [:h3 "Failure:"]
+      [:ul 
+       (for [[c rs] failure]
+         (for [{:keys [host error out]} (get-logs rs)]
+           [:li " &#x2717;" " " host " - " (if out (str c ",") "") (or error (summarize out))]))
+       ]
+       [:p "For more information please check you local log provider."]
+     ]
+    )))

@@ -69,6 +69,9 @@
 (defn add-package [hs pkg]
   (run (install hs pkg) | (pretty)))
 
+(defn fail! [hs]
+  (run (exec hs "/bin/not-exists") | (email (tofrom "failing!"))))
+
 (defn periodical-stats [hs]
   (watch :stats (seconds 10) (fn [] (stats hs))))
 
