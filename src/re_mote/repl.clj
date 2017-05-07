@@ -22,6 +22,7 @@
     [re-mote.repl.pkg :refer (refer-pkg)]
     [re-mote.repl.publish :refer (refer-publish)]
     [re-mote.repl.puppet :refer (refer-puppet)]
+    [re-mote.repl.octo :refer (refer-octo)]
     [re-mote.repl.schedule :refer (watch seconds)]
     [re-mote.log :refer (setup-logging)]
     [clojure.java.io :refer (file)]
@@ -36,6 +37,7 @@
 (refer-puppet)
 (refer-zfs)
 (refer-publish)
+(refer-octo)
 
 (defn setup []
   (check-entropy 200)

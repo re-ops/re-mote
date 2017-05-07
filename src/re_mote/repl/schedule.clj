@@ -45,7 +45,8 @@
   (->> (every-day hour) (filter (comp #{day} #(.getDayOfWeek %)))))
 
 (defn create-ch [k period]
-  (let [ch (chime-ch period)]
+   (when-let [ch (k chs)] (close! ch))
+   (let [ch (chime-ch period)]
     (swap! chs assoc k ch)
     (swap! status assoc k {:period period})
      ch

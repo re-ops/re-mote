@@ -84,7 +84,7 @@
   ([data] (output-fn nil data))
   ([opts data] ; For partials
    (let [{:keys [level ?err #_vargs msg_ ?ns-str ?file hostname_ timestamp_ ?line]} data]
-     (str (style "> " :blue) (force msg_)))))
+     (str (force timestamp_) level (force msg_)))))
 
 (defn disable-coloring
    "See https://github.com/ptaoussanis/timbre"

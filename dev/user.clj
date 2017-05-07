@@ -31,8 +31,8 @@
 (defn refesh-on [ctx {:keys [kind]}] 
   (when (= kind :create) 
     (binding [*ns* (find-ns 'user)] 
-      (stop)
       (refresh)
+      (stop)
       (go :watch false)))
    ctx)
 
