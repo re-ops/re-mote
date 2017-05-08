@@ -18,7 +18,7 @@
      [clj-time.periodic :refer  [periodic-seq]]
      [clojure.core.strint :refer (<<)]
      [taoensso.timbre :refer (refer-timbre)]
-     [chime :refer [chime-ch]]
+     [chime :refer [chime-at]]
      [clj-time.coerce :as c]
      [clj-time.core :as t]
      [clj-time.local :refer [local-now to-local-date-time]]
@@ -29,6 +29,9 @@
 
 (def chs (atom {}))
 (def status (atom {}))
+
+(defn in [s] 
+  [(-> s t/seconds t/from-now)])
 
 (defn seconds [n]
   (periodic-seq  (local-now) (-> n t/seconds)))
@@ -44,36 +47,19 @@
 (defn at-day [day hour]
   (->> (every-day hour) (filter (comp #{day} #(.getDayOfWeek %)))))
 
-(defn create-ch [k period]
-   (when-let [ch (k chs)] (close! ch))
-   (let [ch (chime-ch period)]
-    (swap! chs assoc k ch)
-    (swap! status assoc k {:period period})
-     ch
-    ))
-
-(defn- run [k ch f args]
-  (future
-    (a/<!!
-      (go-loop []
-        (when-let [msg (<! ch)]
-          (trace "Chiming at:" msg)
-          (let [result (apply f args)]
-            (swap! status update k 
-              (fn [{:keys [period] :as m}] (merge m {:result result :period (rest period)}))))
-       (recur))))))
-
 (defn watch
   "run f using provided period"
    [k period f & args]
-   (let [ch (create-ch k period)]
-     (run k ch f args) ch))
+    (swap! status assoc k {:period period})
+    (swap! chs assoc k 
+      (chime-at period (fn [t] (debug "chime" t) (apply f args)) 
+        {:on-finished (fn [] (debug "job done" k))})))
 
 (defn halt!
    ([]
-    (doseq [[k ch] @chs] (halt! k)))
+    (doseq [[k f] @chs] (halt! k)))
    ([k]
-     (when-let [ch (get chs k)] (close! ch))
+     ((@chs k)) 
      (swap! chs (fn [curr] (dissoc curr k))) 
      (swap! status (fn [curr] (dissoc curr k)))
      ))

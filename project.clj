@@ -25,7 +25,7 @@
                  [com.hierynomus/sshj "0.20.0" :exclusions [org.slf4j/slf4j-api]]
 
                  ; run at
-                 [jarohen/chime "0.2.0" :exclusions [org.clojure/core.async]]
+                 [jarohen/chime "0.2.1" :exclusions [org.clojure/core.async]]
                  [clj-time/clj-time "0.13.0"]
 
                  ;publishing
