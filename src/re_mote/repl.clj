@@ -60,11 +60,11 @@
 (defn tofrom [desc] 
   {:to "narkisr@gmail.com" :from "gookup@gmail.com" :subject (<< "Running ~{desc} results")})
 
-(defn aptgrade [hs]
-  (run (update hs) | (pretty) | (pick successful) | (upgrade) | (pretty) | (email (tofrom "aptgrade"))))
-
 (defn aptdate [hs]
-  (run (update hs) | (pretty) | (email (tofrom "aptdate"))))
+  (run (update hs) | (pretty) | (email (tofrom "apt update"))))
+
+(defn aptgrade [hs]
+  (run (aptdate hs) | (pick successful) | (upgrade) | (pretty) | (email (tofrom "apt upgrade"))))
 
 (defn add-package [hs pkg]
   (run (install hs pkg) | (pretty)))
