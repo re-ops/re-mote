@@ -71,7 +71,9 @@
 
 (defn schedule-report []  
   (doseq [[k {:keys [result period]}] @status]
-    (when result (println "Last run result of" (name k) result)))
+    (when result 
+      (println "Result of" (name k) ":") 
+      (pprint result)))
   (println " ")
   (doseq [[k {:keys [result period]}] (sort-by (fn [[k m]] (first (m :period))) @status)]
     (let [date (f/unparse (f/formatter-local "dd/MM/YY HH:mm:ss") (first period))]
