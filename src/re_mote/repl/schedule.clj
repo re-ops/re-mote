@@ -14,7 +14,7 @@
   (:require
      [clj-time.format :as f]
      [clansi.core :refer (style)]
-     [clojure.pprint :refer [pprint]]
+     [clojure.pprint :refer [pprint print-table]]
      [clj-time.periodic :refer  [periodic-seq]]
      [clojure.core.strint :refer (<<)]
      [taoensso.timbre :refer (refer-timbre)]
@@ -69,13 +69,22 @@
      (swap! status (fn [curr] (dissoc curr k)))
      ))
 
-(defn schedule-report []  
+(defn results []
   (doseq [[k {:keys [result period]}] @status]
-    (when result 
-      (println "Result of" (name k) ":") 
-      (pprint result)))
-  (println " ")
+    (when (and result (vector? result)) 
+      (let [[_ {:keys [success failure]}] result]
+        (println "Result of" (name k) ":") 
+        (print-table (apply concat (vals failure)))
+        (print-table success)))))
+
+(defn next-run []
   (doseq [[k {:keys [result period]}] (sort-by (fn [[k m]] (first (m :period))) @status)]
     (let [date (f/unparse (f/formatter-local "dd/MM/YY HH:mm:ss") (first period))]
       (println (style date :blue) (<< " ~(name k)")))))
+
+(defn schedule-report []  
+  (results)  
+  (println " ")
+  (next-run)
+  )
 
