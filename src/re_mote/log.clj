@@ -85,7 +85,7 @@
   ([data] (output-fn nil data))
   ([opts data] ; For partials
    (let [{:keys [level ?err #_vargs msg_ ?ns-str ?file hostname_ timestamp_ ?line]} data]
-     (str (force timestamp_) " " level " " (force msg_)))))
+     (str (force timestamp_) " " ?file " " (name level) ": " (force msg_)))))
 
 (defn disable-coloring
    "See https://github.com/ptaoussanis/timbre"
@@ -109,3 +109,8 @@
   (set-level! level)
   (run-purge interval))
 
+(defn debug-on [] 
+  (set-level! :debug))
+
+(defn debug-off [] 
+  (set-level! :info))
