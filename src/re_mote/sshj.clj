@@ -48,20 +48,26 @@
      (try
        ~@body
        (catch Throwable e#
-         (.disconnect ~'ssh)
          (throw e#)
-         ))))
+         )
+       (finally 
+        (debug "disconneted ssh")
+        (.disconnect ~'ssh)))))
 
 (defn execute
   "Executes a cmd on a remote host"
   [cmd remote & {:keys [out-fn err-fn] :or {out-fn log-output err-fn log-output}}]
   (with-ssh remote
     (let [session (doto (.startSession ssh) (.allocateDefaultPTY)) command (.exec session cmd) ]
-      (debug (<< "[~(remote :host)]:") cmd)
-      (out-fn (.getInputStream command) (remote :host))
-      (err-fn (.getErrorStream command) (remote :host))
-      (.join command 60 TimeUnit/SECONDS)
-      (.getExitStatus command))))
+      (try (debug (<< "[~(remote :host)]:") cmd)
+         (out-fn (.getInputStream command) (remote :host))
+         (err-fn (.getErrorStream command) (remote :host))
+         (.join command 60 TimeUnit/SECONDS)
+         (.getExitStatus command)
+       (finally 
+         (.close session)
+         (debug "session closed!") 
+         )))))
 
 (def listener
   (proxy [TransferListener] []
