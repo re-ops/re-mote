@@ -64,7 +64,9 @@
    ([]
     (doseq [[k f] @chs] (halt! k)))
    ([k]
+     (debug "closing channel")
      ((@chs k)) 
+     (debug "clearing chs and status atoms")
      (swap! chs (fn [curr] (dissoc curr k))) 
      (swap! status (fn [curr] (dissoc curr k)))
      ))
@@ -73,7 +75,7 @@
   (doseq [[k {:keys [result period]}] @status]
     (when (and result (vector? result)) 
       (let [[_ {:keys [success failure]}] result]
-        (println "Result of" (name k) ":") 
+        (println "\nResult of" (name k) ":") 
         (print-table (apply concat (vals failure)))
         (print-table success)))))
 
