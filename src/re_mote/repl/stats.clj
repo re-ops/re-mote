@@ -52,8 +52,14 @@
 
 (def readings (atom {}))
 
+(defn safe-dec [v]
+  (try
+    (bigdec v)
+    (catch Throwable e 
+      (error v e))))
+
 (defn into-dec [[this readings]]
-  [this (transform [:success ALL :stats MAP-VALS MAP-VALS] bigdec readings)])
+  [this (transform [:success ALL :stats MAP-VALS MAP-VALS] safe-dec readings)])
 
 (defn avg 
   "Windowed average function"
