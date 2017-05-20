@@ -49,7 +49,7 @@
    (script
      (set! R @("mpstat" "1" "1"))
      (if (not (= $? 0)) ("exit" 1))
-     (pipe ((println (quoted "${R}"))) ("awk" "'NR==4 { print $4 \" \" $6 \" \" $13 }'"))))
+     (pipe ((println (quoted "${R}"))) ("awk" "'NR==4 { print $3 \" \" $5 \" \" $12 }'"))))
 
 (defn free-script []
    (script
