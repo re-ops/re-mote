@@ -38,6 +38,7 @@
 
 (defn net-script []
    (script
+     (set! LC_ALL "en_AU.UTF-8")
      (set! WHO @(pipe ("who" "am" "i") ("awk" "'{l = length($5) - 2; print substr($5, 2, l)}'")))
      (set! IFC @(pipe (pipe ((println (quoted "${WHO}"))) ("xargs" "ip" "route" "get")) ("awk" "'NR==1 {print $3}'"))) 
      (set! R @(("sar" "-n" "DEV" "1" "1")))
@@ -47,6 +48,7 @@
 
 (defn cpu-script []
    (script
+     (set! LC_ALL "en_AU.UTF-8")
      (set! R @("mpstat" "1" "1"))
      (if (not (= $? 0)) ("exit" 1))
      (pipe ((println (quoted "${R}"))) ("awk" "'NR==4 { print $3 \" \" $5 \" \" $12 }'"))))
