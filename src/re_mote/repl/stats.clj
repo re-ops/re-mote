@@ -24,6 +24,7 @@
 (refer-timbre)
 
 (defprotocol Stats
+  (net [this] [this m])
   (cpu [this] [this m])
   (free [this] [this m])
   (collect [this m])
@@ -34,6 +35,15 @@
    []
   (script
      ("[" "!" "-n" "\"$BASH\"" "]" "&&" "echo" "Please set default user shell to bash" "&&" "exit" 1)))
+
+(defn net-script []
+   (script
+     (set! WHO @(pipe ("who" "am" "i") ("awk" "'{l = length($5) - 2; print substr($5, 2, l)}'")))
+     (set! IFC @(pipe (pipe ((println (quoted "${WHO}"))) ("xargs" "ip" "route" "get")) ("awk" "'NR==1 {print $3}'"))) 
+     (set! R @(("sar" "-n" "DEV" "1" "1")))
+     (if (not (= $? 0)) ("exit" 1))
+     (set! L @(pipe ((println (quoted "${R}"))) ("grep" (quoted "${IFC}"))))
+     (pipe (pipe ((println (quoted "${L}"))) ("awk" "'NR==2 { print substr($0, index($0,$4)) }'")) ("tr" "-s" "' '"))))
 
 (defn cpu-script []
    (script
@@ -55,13 +65,13 @@
 (defn safe-dec [v]
   (try
     (bigdec v)
-    (catch Throwable e 
+    (catch Throwable e
       (error v e))))
 
 (defn into-dec [[this readings]]
   [this (transform [:success ALL :stats MAP-VALS MAP-VALS] safe-dec readings)])
 
-(defn avg 
+(defn avg
   "Windowed average function"
   [ts]
   (let [sum (reduce (fn [a [t m]] (merge-with + a m)) {} ts)]
@@ -70,7 +80,7 @@
 (defn- window [f ts]
   (apply merge (map f (partition 3 1 ts))))
 
-(defn reset 
+(defn reset
   "reset a key in readings"
   [k]
   (transform [ATOM MAP-VALS MAP-VALS] (fn [m] (dissoc m k)) readings))
@@ -80,7 +90,7 @@
   [k]
   (select [ATOM MAP-VALS MAP-VALS (keypath k)] readings))
 
-(defn last-n 
+(defn last-n
   "keep last n items of a sorted map"
   [n m]
    (let [v (into [] (into (sorted-map) m)) c (count v)]
@@ -88,14 +98,22 @@
 
 (extend-type Hosts
   Stats
-  (cpu 
-    ([this] 
+  (net
+    ([this]
+      (into-dec 
+        (zip this (run-hosts this (validate! net-script))
+          :stats :net :rxpck/s :txpck/s :rxkB/s :txkB/s :rxcmp/s :txcmp/s :rxmcst/s :ifutil)))
+     ([this _]
+      (net this))
+    )
+  (cpu
+    ([this]
       (into-dec (zip this (run-hosts this (validate! cpu-script)) :stats :cpu :usr :sys :idle)))
-     ([this _] 
+     ([this _]
       (cpu this)))
 
-  (free 
-    ([this] 
+  (free
+    ([this]
        (into-dec (zip this (run-hosts this (validate! free-script)) :stats :free :total :used :free)))
      ([this _]
       (free this)))
@@ -103,7 +121,7 @@
   (collect [this {:keys [success] :as m}]
     (doseq [{:keys [host stats]} success]
       (doseq [[k v] stats]
-        (swap! readings update-in [host k :timeseries] 
+        (swap! readings update-in [host k :timeseries]
           (fn [m] (if (nil? m) (sorted-map (t/now) v) (assoc m (t/now) v))))))
      [this m])
 
@@ -112,31 +130,31 @@
       (doseq [[k _] stats]
         (transform [ATOM (keypath host) k]
            (fn [{:keys [timeseries] :as m}] (assoc m fk (window f timeseries))) readings)))
-    [this m] 
+    [this m]
     ))
 
 (defn purge [n]
    (transform [ATOM MAP-VALS MAP-VALS MAP-VALS] (partial last-n n) readings))
 
 (defn setup-stats
-   "Setup stats collection" 
+   "Setup stats collection"
    [s n]
    (watch :stats-purge (seconds s) (fn [] (purge n))))
 
 (defn- host-values
   [k ks {:keys [host stats]}]
-  (transform [ALL] 
+  (transform [ALL]
     (fn [[t s]] {:x (to-long t) :y (get-in s ks) :host host})
       (into [] (get-in @readings [host (first (keys stats)) k]))))
 
-(defn single-per-host 
+(defn single-per-host
   "Collect a single nested reading for each host"
   [k ks success]
    (mapcat (partial host-values k ks) success))
 
-(defn- avg-data-point [& ks] 
+(defn- avg-data-point [& ks]
   (let [[t _] (first ks) sums (apply (partial merge-with +) (map second ks))
-        vs (transform [MAP-VALS] #(with-precision 10 (/ % (count ks))) sums)] 
+        vs (transform [MAP-VALS] #(with-precision 10 (/ % (count ks))) sums)]
     (map (fn [[k v]] {:x (to-long t) :y v :c k}) vs)))
 
 (defn avg-all
@@ -146,7 +164,7 @@
     (apply mapcat avg-data-point (select [ATOM MAP-VALS r k] readings))))
 
 (defn refer-stats []
-  (require '[re-mote.repl.stats :as stats :refer (cpu free collect sliding avg setup-stats)]))
+  (require '[re-mote.repl.stats :as stats :refer (net cpu free collect sliding avg setup-stats)]))
 
 (comment
  (reset! readings {}))

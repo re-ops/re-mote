@@ -47,7 +47,8 @@
   (when watch (auto-reload))
   (init)
   (start)
-  (load-file "scripts/local.clj"))
+  (doseq [f (filter #(and (.isFile %) (.endsWith (.getName %) ".clj")) (file-seq (io/file "scripts")))]
+    (load-file (.getPath f))))
 
 (defn reset []
   (stop)

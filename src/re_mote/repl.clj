@@ -46,18 +46,21 @@
   (setup-stats 10 10))
 
 (def sandbox (Hosts. {:user "vagrant"} ["192.168.2.28" "192.168.2.26" "192.168.2.27"]))
+(def localhost (Hosts. {:user "ronen"} ["localhost"]))
 
 (defn listing [hs]
   (run (ls hs "/" "-la") | (pretty)))
 
 (defn stats [hs]
   (run (free hs) | (collect) | (publish (stock "Free RAM" :timeseries :free)) | (publish (stock "Used RAM" :timeseries :used)))
-  (run (cpu hs)  | (collect) | (publish (stock "Idle CPU" :timeseries :idle)) | (publish (stock "User CPU" :timeseries :usr))))
+  (run (cpu hs)  | (collect) | (publish (stock "Idle CPU" :timeseries :idle)) | (publish (stock "User CPU" :timeseries :usr)))
+  (run (net hs)  | (collect) | (publish (stock "KB out" :timeseries :txkB/s)) | (publish (stock "KB in" :timeseries :rxkB/s)))
+  )
 
 (defn inlined-stats [hs]
   (run (free hs) | (collect) | (cpu) | (collect) | (sliding avg :avg) | (publish (stock "User cpu avg" :avg :usr))))
 
-(defn tofrom [desc] 
+(defn tofrom [desc]
   {:to "narkisr@gmail.com" :from "gookup@gmail.com" :subject (<< "Running ~{desc} results")})
 
 (defn aptdate [hs]
