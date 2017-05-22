@@ -12,7 +12,6 @@
 (ns re-mote.repl.output
   (:require
     [re-mote.log :refer (get-logs)]
-    [clojure.pprint :refer [print-table]]
     [clansi.core :refer (style)]
     [clojure.string :as s]
     [taoensso.timbre :refer (refer-timbre)])
