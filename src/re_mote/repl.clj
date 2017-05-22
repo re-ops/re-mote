@@ -51,11 +51,14 @@
 (defn listing [hs]
   (run (ls hs "/" "-la") | (pretty)))
 
-(defn stats [hs]
-  (run (free hs) | (collect) | (publish (stock "Free RAM" :timeseries :free)) | (publish (stock "Used RAM" :timeseries :used)))
-  (run (cpu hs)  | (collect) | (publish (stock "Idle CPU" :timeseries :idle)) | (publish (stock "User CPU" :timeseries :usr)))
-  (run (net hs)  | (collect) | (publish (stock "KB out" :timeseries :txkB/s)) | (publish (stock "KB in" :timeseries :rxkB/s)))
-  )
+(defn cpu-publish [hs]
+ (run (cpu hs)  | (collect) | (publish (stock "Idle CPU" :timeseries :idle)) | (publish (stock "User CPU" :timeseries :usr))))
+
+(defn ram-publish [hs]
+  (run (free hs) | (collect) | (publish (stock "Free RAM" :timeseries :free)) | (publish (stock "Used RAM" :timeseries :used))))
+
+(defn net-publish [hs]
+  (run (net hs)  | (collect) | (publish (stock "KB out" :timeseries :txkB/s)) | (publish (stock "KB in" :timeseries :rxkB/s))))
 
 (defn inlined-stats [hs]
   (run (free hs) | (collect) | (cpu) | (collect) | (sliding avg :avg) | (publish (stock "User cpu avg" :avg :usr))))
@@ -74,9 +77,6 @@
 
 (defn fail! [hs]
   (run (exec hs "/bin/not-exists") | (email (tofrom "failing!"))))
-
-(defn periodical-stats [hs]
-  (watch :stats (seconds 10) (fn [] (stats hs))))
 
 (defn copy-module [hs pkg]
   (let [name (.getName (file pkg))]
