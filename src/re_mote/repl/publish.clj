@@ -18,7 +18,7 @@
     [clojure.pprint :refer (pprint)]
     [taoensso.timbre :refer (refer-timbre)]
     [re-mote.publish.server :refer (broadcast!)]
-    [re_mote.publish.email :refer (template)]
+    [re-mote.publish.email :refer (template)]
     [re-mote.repl.stats :refer (single-per-host avg-all)]
     [re-mote.repl.stats :refer (readings)]
     [re-mote.log :refer (gen-uuid get-logs)]

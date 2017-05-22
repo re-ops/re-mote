@@ -1,4 +1,4 @@
-(ns re_mote.publish.email
+(ns re-mote.publish.email
   "Generating run result html email"
   (:require
     [re-mote.log :refer (get-logs)]

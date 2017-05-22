@@ -35,8 +35,10 @@
 (defn in [s] 
   [(-> s t/seconds t/from-now)])
 
-(defn seconds [n]
-  (periodic-seq  (local-now) (-> n t/seconds)))
+(defn seconds 
+  ([n f] (periodic-seq (t/plus (local-now) (t/seconds f)) (-> n t/seconds)))
+  ([n] (periodic-seq (local-now) (-> n t/seconds)))
+  )
 
 (defn every-day [hour]
   (let [now (local-now) dates (periodic-seq (.. now (withTime hour 0 0 0)) (t/days 1))]

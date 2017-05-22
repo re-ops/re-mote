@@ -1,6 +1,8 @@
-(ns supernal.publish.vega
+(ns re-mote.publish.vega
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require 
-    [supernal.publish.graphs :refer (graphs)]
+    [cljs.core.async :as async  :refer (<! >! timeout)]
+    [re-mote.publish.graphs :refer (graphs)]
     [cljs.reader :as reader]
     [clojure.pprint :as pprint]
     [promesa.core :as p]
@@ -9,6 +11,7 @@
     [vega-tools.core :as vega-tools]))
 
 (defonce app-state (r/atom {}))
+(defonce shadow (atom {}))
 
 (defn vega-chart [{:keys [chart]}]
   (r/create-class
@@ -20,12 +23,19 @@
 
 (defn update-graph [{:keys [graph values]}]
     (let [{:keys [gname gtype]} graph]
-        (swap! app-state assoc-in [gname] nil)
+        (swap! shadow assoc-in [gname] nil)
         (-> ((gtype graphs) values)
             (vega-tools/validate-and-parse)
-            (p/catch #(swap! app-state assoc-in [gname :error] %))
-            (p/then #(swap! app-state assoc-in [gname :chart] %)))
+            (p/catch #(swap! shadow assoc-in [gname :error] %))
+            (p/then #(swap! shadow assoc-in [gname :chart] %)))
         ))
+
+(go 
+  (while true
+    (let [t (timeout 10000)]
+      (timbre/info "running") 
+      (reset! app-state @shadow) 
+      (<! t))))
 
 (defn render-chart [[gname {:keys [error chart]}]]
    [:div.col-md-6

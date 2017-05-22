@@ -1,4 +1,4 @@
-(ns supernal.publish.graphs
+(ns re-mote.publish.graphs
   "common vega graphs")
 
 (defn lines [vs]

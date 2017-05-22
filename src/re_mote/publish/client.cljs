@@ -1,4 +1,4 @@
-(ns supernal.publish.client
+(ns re-mote.publish.client
   "client publish code"
   (:require
    [clojure.string  :as str]
@@ -40,7 +40,7 @@
       (timbre/debug "Channel socket state change: %s"              new-state-map))))
 
 (defmethod msg-handler :chsk/recv [{:as ev-msg :keys [?data]}]
-  (supernal.publish.vega/update-graph (second ?data))
+  (re-mote.publish.vega/update-graph (second ?data))
   (timbre/debug "Push event from server:" (second ?data)))
 
 (defmethod msg-handler :chsk/handshake [{:as ev-msg :keys [?data]}]
