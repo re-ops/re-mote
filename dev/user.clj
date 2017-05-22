@@ -55,3 +55,8 @@
   (refresh :after 'user/go))
 
 
+(defn clear 
+   "clean repl" 
+   []
+ (print (str (char 27) "[2J"))
+ (print (str (char 27) "[;H")))
