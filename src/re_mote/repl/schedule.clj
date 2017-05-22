@@ -15,6 +15,8 @@
      [clj-time.format :as f]
      [clansi.core :refer (style)]
      [clojure.pprint :refer [pprint print-table]]
+     [io.aviso.columns :refer  (format-columns write-rows)]
+     [io.aviso.ansi :refer :all]
      [clj-time.periodic :refer  [periodic-seq]]
      [clojure.core.strint :refer (<<)]
      [taoensso.timbre :refer (refer-timbre)]
@@ -57,7 +59,7 @@
           (debug "chime" t)
           (let [result (apply f args)]
              (swap! status update k
-               (fn [{:keys [period] :as m}] (merge m {:result result :period (rest period)}))))) 
+               (fn [{:keys [period] :as m}] (merge m {:result result :time (local-now) :period (rest period)}))))) 
         {:on-finished (fn [] (debug "job done" k))})))
 
 (defn halt!
@@ -71,21 +73,31 @@
      (swap! status (fn [curr] (dissoc curr k)))
      ))
 
-(defn results []
-  (doseq [[k {:keys [result period]}] @status]
+(defn local-str [t] 
+  (f/unparse (f/formatter-local "dd/MM/YY HH:mm:ss") t))
+
+(defn color-host [{:keys [host code] :as m}]
+  (update m :host (fn [_] (if-not (= code 0) (style host :red) (style host :green)))))
+
+(defn pretty [rs]
+  (let [formatter (format-columns [:right 10] "  " [:right 2] "  " :none)]
+    (write-rows *out* formatter [:host :code :out] (map (fn [m] (color-host (select-keys m [:host :code :out]))) rs))))
+
+(defn last-run []
+  (doseq [[k {:keys [result period time]}] @status]
     (when (and result (vector? result)) 
       (let [[_ {:keys [success failure]}] result]
-        (println "\nResult of" (name k) ":") 
-        (print-table (apply concat (vals failure)))
-        (print-table success)))))
+        (println "\nResults of running" (name k) "on" (local-str time) ":" ) 
+        (pretty (apply concat (vals failure)))
+        (pretty success)))))
 
 (defn next-run []
   (doseq [[k {:keys [result period]}] (sort-by (fn [[k m]] (first (m :period))) @status)]
-    (let [date (f/unparse (f/formatter-local "dd/MM/YY HH:mm:ss") (first period))]
+    (let [date (local-str (first period))]
       (println (style date :blue) (<< " ~(name k)")))))
 
-(defn schedule-report []  
-  (results)  
+(defn all []  
+  (last-run)  
   (println " ")
   (next-run)
   )
