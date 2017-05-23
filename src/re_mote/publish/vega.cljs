@@ -21,20 +21,25 @@
     (fn [this]
       (.update (chart {:el (r/dom-node this)})))}))
 
+
+(defn save [{:keys [graph values] :as m}]
+  (let [{:keys [gname]} graph]
+    (swap! shadow assoc-in [gname] m)))
+
 (defn update-graph [{:keys [graph values]}]
-    (let [{:keys [gname gtype]} graph]
-        (swap! shadow assoc-in [gname] nil)
-        (-> ((gtype graphs) values)
-            (vega-tools/validate-and-parse)
-            (p/catch #(swap! shadow assoc-in [gname :error] %))
-            (p/then #(swap! shadow assoc-in [gname :chart] %)))
-        ))
+  (let [{:keys [gname gtype]} graph]
+    (swap! app-state assoc-in [gname] nil)
+    (-> ((gtype graphs) values)
+        (vega-tools/validate-and-parse)
+        (p/catch #(swap! app-state assoc-in [gname :error] %))
+        (p/then #(swap! app-state assoc-in [gname :chart] %)))))
 
 (go 
   (while true
     (let [t (timeout 10000)]
-      (timbre/info "running") 
-      (reset! app-state @shadow) 
+      (timbre/debug "running") 
+      (doseq [[_ m] @shadow]
+        (update-graph m))
       (<! t))))
 
 (defn render-chart [[gname {:keys [error chart]}]]
