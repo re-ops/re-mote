@@ -1,6 +1,6 @@
 # Intro
 
-A live coding environment for remote operations.
+A live coding environment for configuration management.
 
 [![Build Status](https://travis-ci.org/re-ops/re-mote.png)](https://travis-ci.org/re-ops/re-mote)
 
@@ -15,32 +15,74 @@ RE-mote is a re-take on how remote operations would look like when using a live 
 # Get running
 
 ```clojure
+$ git clone git@github.com:re-ops/re-mote.git
+$ cd re-mote
 $ lein repl
-user=> (use 're-mote.repl)
-nil
 user=> (go)
+nil
+user=> (listing sandbox)
+
+Run summary:
+
+   ✔ 192.168.2.28
+   ✔ 192.168.2.27
+   ✔ 192.168.2.26
 
 ```
 
-Now we can start and play (see src/re_mote/repl.clj):
+Now we can start and play (see src/re_mote/repl.clj),  we define the hosts we work with (using key authentication):
 
 ```clojure
-; see https://github.com/opskeleton/supernal-sandbox
-(def sandbox (Hosts. {:user "vagrant"} ["192.168.2.25" "192.168.2.26" "192.168.2.27"]))
+(def sandbox (Hosts. {:user "vagrant"} ["192.168.2.28" "192.168.2.26" "192.168.2.27"]))
+```
 
-; a simple list action on all hosts
+We define pipelines (plain functions), the results of operations are threaded through:
+```clojure
 (defn listing [hs]
   (run (ls hs "/" "-la") | (pretty)))
-
-(listing sandbox)
-
-; publish cpu/ram use to a dashboard
-(defn stats [hs]
-  (run (free hs) | (pretty) | (collect) | (publish (stock "Free RAM" :timeseries :free)) | (publish (stock "Used RAM" :timeseries :used)))
-  (run (cpu hs)  | (pretty) | (collect) | (publish (stock "Idle CPU" :timeseries :idle)) | (publish (stock "User CPU" :timeseries :usr))))
-
-(stats sandbox)
 ```
+
+An operation is a part of a protocol extending Hosts:
+
+```clojure
+; re-mote.repl.base
+(defrecord Hosts [auth hosts]
+  Shell
+  (ls [this target flags]
+    [this (run-hosts this (script ("ls" ~target ~flags)))])
+```
+
+It returns the hosts operated upon and the result, thus enabling pipelines.
+
+
+We can publish results to a dashboard (check http://host:8080):
+```clojure
+(defn cpu-publish [hs]
+ (run (cpu hs)  | (collect) | (publish (stock "Idle CPU" :timeseries :idle)) | (publish (stock "User CPU" :timeseries :usr))))
+```
+
+And scehdule them:
+
+```clojure
+; every 5 seconds, check re-mote.repl.schedule for more options
+(defn stats-jobs [hs]
+  (watch :ram (seconds 5) (fn [] (ram-publish hs)))
+  (watch :net (seconds 5) (fn [] (net-publish hs)))
+  (watch :cpu (seconds 5) (fn [] (cpu-publish hs)))
+  )
+```
+
+The expected workflow is to re-eval functions on the go, stop restart and refresh can be used for bigger changes:
+
+```clojure
+; we want to stop all components
+user=> (stop)
+; usually re-eval a single function is enough, refresh is re-load all!
+user=> (refresh)
+; back into action again, no restart!
+user=> (go)
+```
+
 # Prerequisite
 
 * JDK 8 with JCE enabled (On Ubuntu oracle-java8-unlimited-jce-policy using PPA).
