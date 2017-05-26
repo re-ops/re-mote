@@ -61,7 +61,7 @@ We can publish results to a dashboard (check http://host:8080):
  (run (cpu hs)  | (collect) | (publish (stock "Idle CPU" :timeseries :idle)) | (publish (stock "User CPU" :timeseries :usr))))
 ```
 
-And scehdule them:
+And schedule them:
 
 ```clojure
 ; every 5 seconds, check re-mote.repl.schedule for more options
