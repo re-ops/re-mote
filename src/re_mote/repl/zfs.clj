@@ -31,12 +31,22 @@
   (script
     (pipe ("/sbin/zpool" "status" ~pool) ("egrep" "-v" "-i" ~errors))))
 
+(defn cap-with-range [maximum]
+  (script 
+    (set! used @("/sbin/zpool" "list" "-H" "-o" "capacity" | "cut" "-d'%'" "-f1"))
+    (if (>= @used ~maximum) 
+      (chain-and (println "used capacity is too high" @used "maximum allowed is" ~maximum) ("exit" 1)) 
+      ("exit" 0))))
+
 (defn health [hs pool]
    (run (exec hs (healty pool errors)) | (pretty)))
+
+(defn capacity [hs maximum]
+   (run (exec hs (cap-with-range maximum)) | (pretty)))
 
 (defn snapshot [hs pool dataset]
   (let [date (f/unparse (f/formatter "dd-MM-YYYY_hh:mm:ss_SS") (local-now))]
     (run (exec hs (<< "/sbin/zfs snapshot ~{pool}/~{dataset}@~{date}")) | (pretty))))
 
 (defn refer-zfs []
-  (require '[re-mote.repl.zfs :as zfs :refer (health snapshot scrub)]))
+  (require '[re-mote.repl.zfs :as zfs :refer (health snapshot scrub capacity)]))
