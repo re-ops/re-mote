@@ -12,6 +12,7 @@
 (ns re-mote.repl.stats
   "General stats"
   (:require
+    [clojure.tools.trace :as tr]
     [taoensso.timbre :refer (refer-timbre)]
     [com.rpl.specter :as s :refer (transform select MAP-VALS ALL ATOM keypath srange)]
     [clj-time.core :as t]

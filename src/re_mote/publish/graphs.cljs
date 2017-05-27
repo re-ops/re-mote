@@ -34,8 +34,7 @@
 (defn stack
   "See https://vega.github.io/vega/examples/stacked-area-chart/"  
   [vs]
-  {:padding {:top 10, :left 30, :bottom 30, :right 10},
-   :data
+  {:data
    [{:name "table", :values vs}
     {:name "stats",
      :source "table",
@@ -45,27 +44,28 @@
 	 :summarize [{:field "y", :ops ["sum"]}]}]}],
    :scales
    [{:name "x",
-     :type "ordinal",
+     :type "time",
+     :clamp true
      :range "width",
-     :points true,
      :domain {:data "table", :field "x"}}
     {:name "y",
      :type "linear",
      :range "height",
-     :nice true,
      :domain {:data "stats", :field "sum_y"}}
     {:name "color",
      :type "ordinal",
      :range "category10",
      :domain {:data "table", :field "c"}}],
+   :legends [{:fill "color"}]
    :axes [{:type "x", :scale "x"} {:type "y", :scale "y"}],
    :marks
    [{:type "group",
-     :from
-     {:data "table",
-	:transform
-	[{:type "stack", :groupby ["x"], :sortby ["c"], :field "y"}
-	 {:type "facet", :groupby ["c"]}]},
+     :from {
+      :data "table",
+	:transform [
+       {:type "stack", :groupby ["x"], :sortby ["c"], :field "y"}
+	 {:type "facet", :groupby ["c"]}
+      ]},
      :marks
      [{:type "area",
 	 :properties
@@ -95,6 +95,7 @@
      :type "ordinal",
      :domain {:data "table", :field "host"},
      :range "category10"}],
+   :legends [{:fill "color"}]
    :axes [{
      :type "x", :scale "x", :tickSizeEnd 0} {:type "y", :scale "y"}],
    :marks [{
