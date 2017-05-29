@@ -12,6 +12,8 @@ Still our live environments change rapidly and having this cycle in place really
 
 RE-mote is a re-take on how remote operations would look like when using a live REPL to drive them.
 
+It enables remote execution of commands on a group of hosts, the results can be analysed, published and manipulated in pipelines.
+
 # Get running
 
 ```clojure
@@ -61,7 +63,7 @@ We can publish results to a dashboard (check http://host:8080):
  (run (cpu hs)  | (collect) | (publish (stock "Idle CPU" :timeseries :idle)) | (publish (stock "User CPU" :timeseries :usr))))
 ```
 
-And schedule them:
+Schedule them:
 
 ```clojure
 ; every 5 seconds, check re-mote.repl.schedule for more options
