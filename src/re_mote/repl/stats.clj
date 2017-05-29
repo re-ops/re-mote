@@ -28,6 +28,7 @@
   (net [this] [this m])
   (cpu [this] [this m])
   (free [this] [this m])
+  (load-avg [this] [this m])
   (collect [this m])
   (sliding [this m f k]))
 
@@ -41,7 +42,7 @@
    (script
      (set! LC_ALL "en_AU.UTF-8")
      (set! WHO @(pipe ("who" "am" "i") ("awk" "'{l = length($5) - 2; print substr($5, 2, l)}'")))
-     (set! IFC @(pipe (pipe ((println (quoted "${WHO}"))) ("xargs" "ip" "route" "get")) ("awk" "'NR==1 {print $3}'"))) 
+     (set! IFC @(pipe (pipe ((println (quoted "${WHO}"))) ("xargs" "ip" "route" "get")) ("awk" "'NR==1 {print $3}'")))
      (set! R @(("sar" "-n" "DEV" "1" "1")))
      (if (not (= $? 0)) ("exit" 1))
      (set! L @(pipe ((println (quoted "${R}"))) ("grep" (quoted "${IFC}"))))
@@ -59,6 +60,10 @@
      (set! R @("free" "-m"))
      (if (not (= $? 0)) ("exit" 1))
      (pipe ((println (quoted "${R}"))) ("awk" "'NR==2 { print $2 \" \" $3 \" \" $4 }'"))))
+
+(defn load-script []
+   (script
+     (pipe ("uptime") ("awk" "-F" "'[, ]*'" "'NR==1 { print $10 \" \" $11 \" \" $12}'"))))
 
 (defn validate! [f]
   (do-script (bash!) (f)))
@@ -103,12 +108,12 @@
   Stats
   (net
     ([this]
-      (into-dec 
+      (into-dec
         (zip this (run-hosts this (validate! net-script))
           :stats :net :rxpck/s :txpck/s :rxkB/s :txkB/s :rxcmp/s :txcmp/s :rxmcst/s :ifutil)))
      ([this _]
-      (net this))
-    )
+      (net this)))
+
   (cpu
     ([this]
       (into-dec (zip this (run-hosts this (validate! cpu-script)) :stats :cpu :usr :sys :idle)))
@@ -118,6 +123,12 @@
   (free
     ([this]
        (into-dec (zip this (run-hosts this (validate! free-script)) :stats :free :total :used :free)))
+     ([this _]
+      (free this)))
+
+  (load-avg
+    ([this]
+       (into-dec (zip this (run-hosts this (validate! load-script)) :stats :load :one :five :fifteen)))
      ([this _]
       (free this)))
 
@@ -167,7 +178,7 @@
     (apply mapcat avg-data-point (select [ATOM MAP-VALS r k] readings))))
 
 (defn refer-stats []
-  (require '[re-mote.repl.stats :as stats :refer (net cpu free collect sliding avg setup-stats)]))
+  (require '[re-mote.repl.stats :as stats :refer (load-avg net cpu free collect sliding avg setup-stats)]))
 
 (comment
  (reset! readings {}))

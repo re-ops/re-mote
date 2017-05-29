@@ -1,6 +1,6 @@
 (ns re-mote.publish.vega
   (:require-macros [cljs.core.async.macros :refer [go]])
-  (:require 
+  (:require
     [cljs.core.async :as async  :refer (<! >! timeout)]
     [re-mote.publish.graphs :refer (graphs)]
     [cljs.reader :as reader]
@@ -34,10 +34,10 @@
         (p/catch #(swap! app-state assoc-in [gname :error] %))
         (p/then #(swap! app-state assoc-in [gname :chart] %)))))
 
-(go 
+(go
   (while true
     (let [t (timeout 10000)]
-      (timbre/debug "running") 
+      (timbre/debug "running")
       (doseq [[_ m] @shadow]
         (update-graph m))
       (<! t))))
