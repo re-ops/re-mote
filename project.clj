@@ -82,6 +82,9 @@
 
   :repl-options {
     :init-ns user
+    :prompt (fn [ns] (str "\u001B[35m[\u001B[34m" ns "\u001B[35m]\u001B[33mcλ:\u001B[m " ))
+    :welcome (println "Welcome to re-mote!" )
+
    }
 
   :aliases {
