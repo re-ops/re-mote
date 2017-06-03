@@ -2,56 +2,56 @@
   :description "A live remote operations environment"
   :url "https://github.com/re-ops/re-mote"
   :license  {:name "Apache License, Version 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
-  :dependencies [[org.clojure/clojure "1.8.0"]
-                 [org.clojure/core.incubator "0.1.4"]
-                 [me.raynes/conch "0.8.0"]
-                 [org.clojure/core.async "0.3.442"]
-                 [narkisr/cliopatra "1.1.0"]
-                 [narkisr/clansi "1.2.0"]
-                 [com.rpl/specter "1.0.1"]
+  :dependencies [
+     [org.clojure/clojure "1.8.0"]
+     [org.clojure/core.incubator "0.1.4"]
+     [me.raynes/conch "0.8.0"]
+     [org.clojure/core.async "0.3.442"]
+     [narkisr/cliopatra "1.1.0"]
+     [narkisr/clansi "1.2.0"]
+     [com.rpl/specter "1.0.1"]
 
-                 ; logging
-                 [com.taoensso/timbre "4.10.0"]
-                 [com.fzakaria/slf4j-timbre "0.3.5"]
-                 [org.clojure/tools.trace "0.7.9"]
+     ; logging
+     [com.taoensso/timbre "4.10.0"]
+     [com.fzakaria/slf4j-timbre "0.3.5"]
+     [org.clojure/tools.trace "0.7.9"]
 
-                 ; repl
-                 [com.palletops/stevedore "0.8.0-beta.7"]
-                 [io.aviso/pretty "0.1.33"]
-                 [progrock "0.1.2"]
-                 [hawk "0.2.11"]
+     ; repl
+     [com.palletops/stevedore "0.8.0-beta.7"]
+     [io.aviso/pretty "0.1.33"]
+     [progrock "0.1.2"]
+     [hawk "0.2.11"]
 
-                 ; ssh
-                 [com.hierynomus/sshj "0.21.1" :exclusions [org.slf4j/slf4j-api]]
+     ; ssh
+     [com.hierynomus/sshj "0.21.1" :exclusions [org.slf4j/slf4j-api]]
 
-                 ; run at
-                 [jarohen/chime "0.2.1" :exclusions [org.clojure/core.async]]
-                 [clj-time/clj-time "0.13.0"]
+     ; run at
+     [jarohen/chime "0.2.1" :exclusions [org.clojure/core.async]]
+     [clj-time/clj-time "0.13.0"]
 
-                 ;publishing
-                 [compojure "1.6.0"]
-                 [org.clojure/clojurescript "1.9.542"]
-                 [com.taoensso/sente "1.11.0"]
-                 [http-kit "2.2.0"]
-                 [ring "1.6.1"]
-                 [ring/ring-defaults "0.3.0"]
-                 [hiccup "1.0.5"]
-                 [com.draines/postal "2.0.2"]
+     ;publishing
+     [compojure "1.6.0"]
+     [org.clojure/clojurescript "1.9.542"]
+     [com.taoensso/sente "1.11.0"]
+     [http-kit "2.2.0"]
+     [ring "1.6.1"]
+     [ring/ring-defaults "0.3.0"]
+     [hiccup "1.0.5"]
+     [com.draines/postal "2.0.2"]
 
-                 ; frontend
-                 [reagent "0.6.2"]
-                 [binaryage/devtools "0.9.4"]
-                 [metosin/vega-tools "0.2.0"]
-                 [ring-webjars "0.2.0"]
-                 [org.clojure/data.json "0.2.6"]
+     ; frontend
+     [reagent "0.6.2"]
+     [binaryage/devtools "0.9.4"]
+     [metosin/vega-tools "0.2.0"]
+     [ring-webjars "0.2.0"]
+     [org.clojure/data.json "0.2.6"]
 
-                 ; CSS
-                 [org.webjars/bootstrap "3.3.5" :exclusions [org.slf4j/slf4j-api]]
+     ; CSS
+     [org.webjars/bootstrap "3.3.5" :exclusions [org.slf4j/slf4j-api]]
 
-                 ; configuration
-                 [clojure-future-spec "1.9.0-alpha15"]
-                 [formation "0.2.0"]
-                 ]
+     ; configuration
+     [clojure-future-spec "1.9.0-alpha15"]
+     [formation "0.2.0"]]
 
   :exclusions [org.clojure/clojure]
 
@@ -63,8 +63,12 @@
   :profiles {
     :dev {
        :source-paths  ["dev"]
-       :dependencies [[midje "1.8.3"]]
      }
+    :zero {
+       :source-paths  ["dev"]
+       :dependencies [[org.zeromq/jzmq "3.1.1-SNAPSHOT"]]
+       :jvm-opts ^:replace ["-Djava.library.path=/usr/lib:/usr/local/lib"]
+    }
    }
 
   :clean-targets [:target-path "out"]
@@ -82,7 +86,7 @@
 
   :repl-options {
     :init-ns user
-    :prompt (fn [ns] (str "\u001B[35m[\u001B[34m" ns "\u001B[35m]\u001B[33mcλ:\u001B[m " ))
+    :prompt (fn [ns] (str "\u001B[35m[\u001B[34m" ns "\u001B[35m]\u001B[33mλ:\u001B[m " ))
     :welcome (println "Welcome to re-mote!" )
 
    }
