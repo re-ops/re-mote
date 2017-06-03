@@ -94,6 +94,7 @@
   :aliases {
      "start-repl" ["do" "clean," "cljsbuild" "once," "repl" ":headless"]
      "start" ["do" "clean," "cljsbuild" "once," "run"]
+     "zrepl" ["with-profile" "default,dev,zero" "repl"]
    }
 
   :target-path "target/"

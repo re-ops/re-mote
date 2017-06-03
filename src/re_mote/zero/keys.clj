@@ -17,15 +17,15 @@
     (spit (str parent "/" prefix "-private.key") (.getSecretKeyAsZ85 zcert) )
     (spit (str parent "/" prefix "-public.key") (.getPublicKeyAsZ85 zcert) )))
 
-(defn create-keys 
-   "Create both client and server keys" 
+(defn create-keys
+   "Create both client and server keys"
    [parent]
   (generate-pair parent "client")
   (generate-pair parent "server"))
 
 
-(comment 
-  (create-keys ".curve") 
+(comment
+  (create-keys ".curve")
   (setup)
   )
 
