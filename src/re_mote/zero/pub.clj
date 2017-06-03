@@ -20,11 +20,12 @@
 (declare socket)
 
 (defn setup [private]
-  (def socket (atom (pub-socket))))
+  (def socket (atom (pub-socket private))))
 
 (defn publish [msg topic]
    (.sendMore @socket topic)
    (.send @socket msg))
 
 (comment 
+  (setup ".curve/server-private.key")
   (publish "/bin/ls /" "play"))

@@ -26,4 +26,6 @@
 
 (comment 
   (create-keys ".curve") 
+  (setup)
   )
+

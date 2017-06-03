@@ -1,25 +1,29 @@
 (ns re-mote.zero.sub
  (:require
+   [clojure.core.strint :refer  (<<)]
+   [taoensso.timbre :refer (refer-timbre)]
    [re-mote.zero.common :refer (read-key context)])
  (:import
     [java.nio.charset Charset]
     [org.zeromq ZMQ]
     [java.nio.charset Charset]))
 
-(defn sub-socket [host {:keys [client-prv client-pub server-pub]}]
+(refer-timbre)
+
+(defn sub-socket [host parent]
   (doto
     (.socket (context) ZMQ/SUB)
-    (.setCurveServerKey (read-key ".curve/server-public.key"))
-    (.setCurvePublicKey (read-key ".curve/client-public.key"))
-    (.setCurveSecretKey  (read-key ".curve/client-private.key"))
-    (.connect "tcp://127.0.0.1:9000")))
+    (.setCurveServerKey (read-key (<< "~{parent}/server-public.key")))
+    (.setCurvePublicKey (read-key (<< "~{parent}/client-public.key")))
+    (.setCurveSecretKey (read-key (<< "~{parent}/client-private.key")))
+    (.connect (<< "tcp://~{host}:9000"))))
 
 (defn read-loop [topic]
    (let [client (sub-socket)]
       (.subscribe client (.getBytes topic));
       (loop []
-        (println "waiting")
-        (println (.recvStr client 0 (Charset/defaultCharset)))
+        (debug "waiting")
+        (debug (.recvStr client 0 (Charset/defaultCharset)))
         (recur))))
 
 ;; (read-loop "play")
