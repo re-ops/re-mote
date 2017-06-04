@@ -9,3 +9,6 @@
 
 (defn read-key [k]
   (.getBytes (slurp k) utf8))
+
+(defn close! [sockets]
+  (doseq [[k s] sockets] (.close s)))
