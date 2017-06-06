@@ -2,19 +2,12 @@
   "publish to agents"
   (:require
     [taoensso.timbre :refer (refer-timbre)]
-   [re-mote.zero.common :refer (read-key context close!)])
+    [re-mote.zero.common :refer (read-key server-socket context close!)])
   (:import
     [org.zeromq ZMQ]
     [java.nio.charset Charset]))
 
 (refer-timbre)
-
-(defn server-socket [t private]
-   [t private]
-  (doto
-    (.socket (context) t)
-    (.setCurveServer true)
-    (.setCurveSecretKey (read-key private))))
 
 (defn pub-socket [private]
   (doto (server-socket ZMQ/PUB private)

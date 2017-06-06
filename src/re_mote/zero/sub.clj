@@ -2,21 +2,13 @@
  (:require
    [clojure.core.strint :refer  (<<)]
    [taoensso.timbre :refer (refer-timbre)]
-   [re-mote.zero.common :refer (read-key context)])
+   [re-mote.zero.common :refer (read-key client-socket context)])
  (:import
     [java.nio.charset Charset]
     [org.zeromq ZMQ]
     [java.nio.charset Charset]))
 
 (refer-timbre)
-
-(defn client-socket [t parent]
-  (doto
-    (.socket (context) t)
-    (.setCurveServerKey (read-key (<< "~{parent}/server-public.key")))
-    (.setCurvePublicKey (read-key (<< "~{parent}/client-public.key")))
-    (.setCurveSecretKey (read-key (<< "~{parent}/client-private.key")))
-    ))
 
 (defn sub-socket [host parent]
   (doto (client-socket ZMQ/SUB parent)
