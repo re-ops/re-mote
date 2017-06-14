@@ -23,10 +23,11 @@
     {:dealer (dealer-socket host parent)}))
 
 (defn read-loop []
-  (let [{:keys [dealer]} @sockets items (object-array [(ZMQ$PollItem. dealer ZMQ$Poller/POLLIN)]) ]
+  (let [{:keys [dealer]} @sockets items (into-array [(ZMQ$PollItem. dealer ZMQ$Poller/POLLIN)]) ]
     (while true
        (ZMQ/poll items 10)
        (when (.isReadable (aget items 0))
+          (info "got a message!")
           (let [msg (.recvStr dealer) ]
             (info msg))))))
 
@@ -35,8 +36,8 @@
     (.send dealer s)))
 
 (comment 
-  (.bytes "")
-  (setup-client "127.0.0.1" ".curve")
+  (close! @sockets)
+  (future (setup-client "127.0.0.1" ".curve"))
   (future (read-loop)) 
   (println @sockets)
   (send- "foo")

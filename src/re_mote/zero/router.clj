@@ -36,15 +36,15 @@
 (defn worker []
   (let [ctx (context) socket (worker-socket ctx)]
     (try
-      (.connect socket)
       (while true
+         (info "recieving")
          (let [msg (ZMsg/recvMsg socket) address (.pop msg) content (.pop msg)]
-           (info "recieving")
+           (info "got a message")
            (assert (not (nil? content)))
            (.destroy msg)
            (reply address content socket)))
      (catch Exception e
-       (error e))
+       (error (.getMessage e)))
      (finally
        (.close ctx)))))
 
