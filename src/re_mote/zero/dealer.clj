@@ -13,7 +13,7 @@
 (defn dealer-socket [host parent]
   (let [id (format "%04X-%04X" (rand-int 30) (rand-int 30))]
     (doto (client-socket ZMQ/DEALER parent)
-      (.setIdentity (bytes id))
+      (.setIdentity (.getBytes id))
       (.connect (<< "tcp://~{host}:9000")))))
 
 (def sockets (atom {}))
@@ -33,3 +33,11 @@
 (defn send- [s]
   (let [{:keys [dealer]} @sockets]
     (.send dealer s)))
+
+(comment 
+  (.bytes "")
+  (setup-client "127.0.0.1" ".curve")
+  (future (read-loop)) 
+  (println @sockets)
+  (send- "foo")
+  )
