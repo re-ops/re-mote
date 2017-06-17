@@ -26,34 +26,35 @@
 (def sockets (atom {}))
 
 (defn reply [address content socket]
-  (try
-    (.send address socket ZMQ/SNDMORE)
-    (.send content socket ZMQ/SNDMORE)
-    (finally
-      (.destroy address)
-      (.destroy content))))
+  (.sendMore socket address)
+  (.send socket content))
 
-(defn worker []
-  (let [ctx (context) socket (worker-socket ctx)]
+(defn handle-message [socket address content]
+   (info content ":" address)
+   (reply address content socket))
+
+(defn worker [ctx]
+  (let [socket (worker-socket ctx)]
     (try
       (while true
          (info "recieving")
          (let [msg (ZMsg/recvMsg socket) address (.pop msg) content (.pop msg)]
            (info "got a message")
            (assert (not (nil? content)))
-           (.destroy msg)
-           (reply address content socket)))
+           (handle-message socket (.toString address) (.toString content))))
      (catch Exception e
        (error (.getMessage e)))
      (finally
        (.close ctx)))))
 
-(defn setup-server [private]
+(defn setup-server [private n]
   (let [ctx (context) frontend (router-socket ctx private) backend (backend-socket ctx)]
     (reset! sockets {:frontend frontend  :backend backend})
+    (dotimes [i n] (future (worker ctx)))
     (ZMQ/proxy frontend backend nil)))
 
 (comment
+  (reply "0004-0009" "Oh realy?" (:frontend  @sockets))
   (println @sockets)
   (close! @sockets)
   (future (worker))
