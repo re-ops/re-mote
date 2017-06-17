@@ -33,12 +33,12 @@
 
 (defn send- [s]
   (let [{:keys [dealer]} @sockets]
-    (.send dealer s)))
+    (.send dealer s 0)))
 
 (comment 
   (close! @sockets)
-  (future (setup-client "127.0.0.1" ".curve"))
+  (setup-client "127.0.0.1" ".curve")
   (future (read-loop)) 
   (println @sockets)
-  (send- "foo")
+  (send- "foo oh yeah why not")
   )

@@ -27,6 +27,7 @@
 (defn client-socket [t parent]
   (doto
     (.socket (context) t)
+    (.setZAPDomain (.getBytes "global"))
     (.setCurveServerKey (read-key (<< "~{parent}/server-public.key")))
     (.setCurvePublicKey (read-key (<< "~{parent}/client-public.key")))
     (.setCurveSecretKey (read-key (<< "~{parent}/client-private.key")))))
