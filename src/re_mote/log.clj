@@ -71,16 +71,16 @@
      (doseq [[uuid _] old]
        (trace "purged log" uuid)
        (swap! logs (fn [m] (dissoc m uuid))))
-     :ok 
+     :ok
      ))
 
 (defn run-purge [s]
   (watch :logs-purge (seconds s) (fn [] (debug "purging logs at" (t/now)) (purge))))
 
-(defn gen-uuid [] 
+(defn gen-uuid []
   (.replace (str (java.util.UUID/randomUUID)) "-" ""))
 
-(def level-color 
+(def level-color
   {:info :green :debug :blue :error :red :warn :yellow})
 
 (defn output-fn
@@ -88,7 +88,7 @@
   ([data] (output-fn nil data))
   ([opts data] ; For partials
    (let [{:keys [level ?err #_vargs msg_ ?ns-str ?file hostname_ timestamp_ ?line]} data]
-     (str (style (upper-case (name level)) (level-color level)) " "(force timestamp_) " [" (style ?file :bg-black) "] "  ": " (force msg_)))))
+     (str (style (upper-case (name level)) (level-color level)) " "(force timestamp_) " [" (style ?file :bg-black) "@" ?line "] "  ": " (force msg_)))))
 
 (defn disable-coloring
    "See https://github.com/ptaoussanis/timbre"
@@ -112,8 +112,8 @@
   (set-level! level)
   (run-purge interval))
 
-(defn debug-on [] 
+(defn debug-on []
   (set-level! :debug))
 
-(defn debug-off [] 
+(defn debug-off []
   (set-level! :info))

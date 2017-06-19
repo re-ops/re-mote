@@ -10,6 +10,7 @@
      [narkisr/cliopatra "1.1.0"]
      [narkisr/clansi "1.2.0"]
      [com.rpl/specter "1.0.1"]
+     [org.clojure/core.match "0.3.0-alpha4"]
 
      ; logging
      [com.taoensso/timbre "4.10.0"]
@@ -21,6 +22,10 @@
      [io.aviso/pretty "0.1.33"]
      [progrock "0.1.2"]
      [hawk "0.2.11"]
+
+     ; serialization
+     [serializable-fn "1.1.4"]
+     [org.clojure/data.codec "0.1.0"]
 
      ; ssh
      [com.hierynomus/sshj "0.21.1" :exclusions [org.slf4j/slf4j-api]]
@@ -66,7 +71,7 @@
      }
     :zero {
        :source-paths  ["dev"]
-       :dependencies [[org.zeromq/jzmq "3.1.1-SNAPSHOT"]]
+       :dependencies [[org.zeromq/jzmq "3.1.1-SNAPSHOT"] [com.taoensso/nippy "2.13.0"]]
        :jvm-opts ^:replace ["-Djava.library.path=/usr/lib:/usr/local/lib"]
     }
    }
