@@ -1,4 +1,4 @@
-(ns re-mote.zero.dealer
+(ns re-mote.zero.client
   "A client dealer socket"
   (:require
      [clojure.core.strint :refer  (<<)]
@@ -27,7 +27,6 @@
     (while true
        (ZMQ/poll items 10)
        (when (.isReadable (aget items 0))
-          (info "got a message!")
           (let [msg (.recvStr dealer) ]
             (info msg))))))
 
@@ -35,10 +34,10 @@
   (let [{:keys [dealer]} @sockets]
     (.send dealer s 0)))
 
-(comment 
+(comment
   (close! @sockets)
   (setup-client "127.0.0.1" ".curve")
-  (future (read-loop)) 
+  (future (read-loop))
   (println @sockets)
   (send- "foo oh yeah why not")
   )
