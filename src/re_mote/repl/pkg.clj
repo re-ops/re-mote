@@ -24,7 +24,15 @@
   (update
     [this]
     [this m])
-  (upgrade [this m])
+  (upgrade 
+    [this] 
+    [this m])
+  (unlock 
+    [this]
+    [this m])
+  (kill-apt 
+    [this]
+    [this m])
   (install
     [this pkg]
     [this m pkg]))
@@ -40,9 +48,15 @@
    (upgrade [this _]
      [this (run-hosts this (script ("sudo" "apt" "upgrade" "-y")))])
 
+   (unlock [this _]
+     [this (run-hosts this (script ("sudo" "rm" "/var/lib/dpkg/lock /var/cache/apt/archives/lock")))])
+
+   (kill-apt [this _]
+     [this (run-hosts this (script ("sudo" "killall" "apt")))])
+
    (install
      ([this _ pkg] (install this pkg))
      ([this pkg] [this (run-hosts this (script ("sudo" "apt" "install" ~pkg "-y")))])))
 
 (defn refer-pkg []
-  (require '[re-mote.repl.pkg :as pkg :refer (update upgrade install)]))
+  (require '[re-mote.repl.pkg :as pkg :refer (update upgrade install unlock kill-apt)]))

@@ -87,6 +87,11 @@
 (defn add-package [hs pkg]
   (run (install hs pkg) | (pretty)))
 
+(defn apt-rewind 
+   "try to put apt back on track"
+   [hs]
+  (run (unlock hs) | (kill-apt)| (pretty) | (email (tofrom "apt rewind"))))
+
 ; Puppet
 (defn copy-module [hs pkg]
   (let [name (.getName (file pkg))]
