@@ -12,7 +12,6 @@
 (ns re-mote.repl.puppet
   "Remote puppet run of opsk sandboxes"
   (:require
-     [re-mote.log :refer (get-log)]
      [re-mote.repl.base :refer (run-hosts)]
      [pallet.stevedore :refer (script)])
   (:import [re_mote.repl.base Hosts]))
@@ -30,7 +29,8 @@
 (extend-type Hosts
   Puppet
   (apply-module
-    ([this path args] (apply-module this nil path args))
+    ([this path args] 
+      (apply-module this nil path args))
     ([this _ path args]
       [this (run-hosts this (puppet-script path args))])))
 
