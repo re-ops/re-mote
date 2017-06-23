@@ -25,6 +25,7 @@
     [re-mote.repl.octo :refer (refer-octo)]
     [re-mote.repl.stats :refer (refer-stats)]
     [re-mote.repl.sensors :refer (refer-sensors)]
+    [re-mote.repl.re-gent :refer (refer-regent)]
     [re-mote.repl.schedule :refer (watch seconds)]
     [re-mote.log :refer (setup-logging)]
     [clojure.java.io :refer (file)]
@@ -41,6 +42,7 @@
 (refer-zfs)
 (refer-publish)
 (refer-octo)
+(refer-regent)
 
 (defn setup []
   (check-entropy 200)
@@ -96,3 +98,8 @@
 (defn run-module [hs pkg args]
   (let [[this _] (copy-module hs pkg)  extracted (.replace (.getName (file pkg)) ".tar.gz" "")]
     (run (apply-module this (<< "/tmp/~{extracted}") args) | (pretty) | (rm (<< "/tmp/~{extracted}") "-rf"))))
+
+; re-gent
+
+(defn deploy-agent [hs bin]
+  (run (scp hs bin "/tmp") | (pretty) | (pick successful) | (launch-regent) | (rm (<< "/tmp/~{name}") "-rf")))
