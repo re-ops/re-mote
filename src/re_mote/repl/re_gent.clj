@@ -21,6 +21,7 @@
 
 (extend-type Hosts
   Regent
+  (launch [this])
   )
 
 (defn refer-regent []
