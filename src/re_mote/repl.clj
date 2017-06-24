@@ -102,4 +102,4 @@
 ; re-gent
 
 (defn deploy-agent [hs bin]
-  (run (scp hs bin "/tmp") | (pretty) | (pick successful) | (launch-regent) | (rm (<< "/tmp/~{name}") "-rf")))
+  (run (scp hs bin "/tmp") | (pretty) | (pick successful) | (launch) | (rm (<< "/tmp/~{name}") "-rf")))
