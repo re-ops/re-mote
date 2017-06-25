@@ -19,7 +19,7 @@
 (defn handle-message [socket address content]
    (try
      (let [{:keys [hostname uid] :as m} (thaw address)]
-       (info "got message from" hostname "uid" uid)
+       (debug "got message from" hostname "uid" uid)
        (process m (thaw content)))
      (catch Exception e
        (error e (.getMessage e)))))
