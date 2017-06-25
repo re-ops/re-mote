@@ -16,12 +16,15 @@
   (:import [re_mote.repl.base Hosts]))
 
 (defprotocol Regent
-  (launch [this])
+  (launch 
+    [this]
+    [this m])
   )
 
 (extend-type Hosts
   Regent
   (launch [this])
+  (launch [this m])
   )
 
 (defn refer-regent []
