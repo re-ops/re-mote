@@ -18,9 +18,11 @@
  {:response :fail :on request :cause e})
 
 (defn register [{:keys [hostname uid] :as address}]
+  (debug "register" hostname uid)
   (swap! hosts (fn [m] (assoc m hostname address))))
 
 (defn unregister [{:keys [hostname uid] :as address}]
+  (debug "unregister" hostname uid)
   (swap! hosts (fn [m] (dissoc m hostname))))
 
 (defn process

@@ -58,7 +58,7 @@
     (swap! chs assoc k 
       (chime-at period 
         (fn [t] 
-          (debug "chime" t)
+          (trace "chime" t)
           (let [result (apply f args)]
              (swap! status update k
                (fn [{:keys [period] :as m}] (merge m {:result result :time (local-now) :period (rest period)}))))) 
