@@ -11,12 +11,12 @@
 
 (ns re-mote.repl.re-gent
   "Copy .curve server public key and run agent remotly"
-  (:require 
+  (:require
     [re-mote.repl.base :refer (run-hosts)])
   (:import [re_mote.repl.base Hosts]))
 
 (defprotocol Regent
-  (launch 
+  (launch
     [this]
     [this m])
   )

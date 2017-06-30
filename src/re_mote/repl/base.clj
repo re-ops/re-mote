@@ -73,13 +73,16 @@
   (rm [this m target flags])
   (ls [this target flags])
   (grep [this expr flags])
+  (mkdir [this folder flags])
   (cp [this src dest flags]))
 
 (defprotocol Tracing
   (ping [this target]))
 
 (defprotocol Copy
-  (scp [this src dest]))
+  (scp 
+    [this src dest]
+    [this m src dest]))
 
 (defprotocol Tar
   (extract [this m archive target]))
@@ -104,9 +107,11 @@
   (ls [this target flags]
     [this (run-hosts this (script ("ls" ~target ~flags)))])
 
+  (mkdir [this folder flags]
+    [this (run-hosts this (script ("mkdir" ~folder ~flags)))])
+
   (rm [this _ target flags]
-    [this (run-hosts this (script ("rm" ~target ~flags)))]
-    )
+    [this (run-hosts this (script ("rm" ~target ~flags)))])
 
   (exec [this script]
     [this (run-hosts this script)])
@@ -119,6 +124,8 @@
      [this (run-hosts this (script ("tar" "-xzf" ~archive "-C" ~target)))])
 
   Copy
+   (scp [this _ src target]
+      (scp this src target))
    (scp [this src target]
       [this (upload-hosts this src target)])
 
@@ -147,5 +154,5 @@
      (Hosts. auth hosts)))
 
 (defn refer-base []
-  (require '[re-mote.repl.base :as base :refer (run | initialize pick successful ping ls into-hosts exec scp extract rm nohup)]))
+  (require '[re-mote.repl.base :as base :refer (run | initialize pick successful ping ls into-hosts exec scp extract rm nohup mkdir)]))
 
