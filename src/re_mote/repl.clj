@@ -102,4 +102,5 @@
 ; re-gent
 
 (defn deploy-agent [hs bin]
-  (run (scp hs bin "/tmp") | (pretty) | (pick successful) | (launch) | (rm (<< "/tmp/~{name}") "-rf")))
+  (run (mkdir hs "/tmp/.curve" "") | (pretty) | (scp ".curve/server-public.key" "/tmp/.curve") | (pretty))
+  (run (scp hs bin "/tmp") | (pretty) | (pick successful) | (launch)))
