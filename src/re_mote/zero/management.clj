@@ -11,9 +11,6 @@
 
 (def results (atom {}))
 
-(defn ok [request]
- {:response :ok :on request})
-
 (defn fail [request e]
  {:response :fail :on request :cause e})
 
@@ -25,16 +22,18 @@
   (debug "unregister" hostname uid)
   (swap! hosts (fn [m] (dissoc m hostname))))
 
+(defn ack [address request]
+  (reply address {:response :ok :on (dissoc request :content)}))
+
 (defn process
    "Process a message from a client"
    [{:keys [hostname uid] :as address} request]
    (try
      (match [request]
-       [{:request :register}] (register address)
-       [{:request :unregister}] (unregister address)
+       [{:request :register}] (ack address (register address))
+       [{:request :unregister}] (ack address (unregister address))
        [{:reply :metrics :content m}] (swap! results assoc-in [hostname :metrics] m))
        :else (fail request "no handling clause found for request")
-     (reply address (ok request))
      (catch Exception e
        (fail request e)
        (error e (.getMessage e)))))
@@ -47,4 +46,5 @@
   (clojure.pprint/pprint @hosts)
   (metrics)
   (clojure.pprint/pprint @results)
+  (reset! results {})
   )

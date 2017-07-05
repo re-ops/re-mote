@@ -7,7 +7,7 @@
     [clojure.tools.namespace.repl :refer (refresh refresh-all)]
     [re-mote.launch :as launch]
     [re-mote.repl :refer :all])
-   (:import re_mote.repl.base.Hosts)  
+   (:import re_mote.repl.base.Hosts)
   )
 
 (def system nil)

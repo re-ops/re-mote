@@ -11,6 +11,7 @@
 
 (ns re-mote.launch
   (:require
+    [re-mote.zero.core :refer (start-zero-server stop-zero-server)]
     [taoensso.timbre :refer (refer-timbre)]
     [re-mote.publish.server :as server]
     [re-mote.repl :as repl]
@@ -24,10 +25,12 @@
   (repl/setup))
 
 (defn start [_]
-  (server/start))
+  (server/start)
+  (start-zero-server))
 
 (defn stop [_]
   (sc/halt!)
+  (stop-zero-server)
   (server/stop))
 
 (defn -main [& args])

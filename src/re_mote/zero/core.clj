@@ -7,14 +7,14 @@
 
 (refer-timbre)
 
-(defn setup []
+(defn start-zero-server []
   (let [ctx (context)]
     (setup-server ctx ".curve/server-private.key")
     (setup-workers ctx 4)
     (future (bind))
     ))
 
-(defn stop []
+(defn stop-zero-server []
   (stop-workers!)
   (kill-server!))
 
