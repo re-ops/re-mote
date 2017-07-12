@@ -30,7 +30,7 @@
 
      ; remote execution
      [com.hierynomus/sshj "0.21.1" :exclusions [org.slf4j/slf4j-api]]
-     [org.zeromq/jzmq "3.1.1-SNAPSHOT"]
+     [org.zeromq/jzmq "3.1.1"]
 
      ; run at
      [jarohen/chime "0.2.1" :exclusions [org.clojure/core.async]]
