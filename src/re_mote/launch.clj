@@ -15,7 +15,7 @@
     [taoensso.timbre :refer (refer-timbre)]
     [re-mote.publish.server :as server]
     [re-mote.repl :as repl]
-    [re-com.zero.keys :as k]
+    [re-share.zero.keys :as k]
     [re-mote.repl.schedule :as sc]
     [cliopatra.command :as command :refer  [defcommand]])
   (:gen-class true))
