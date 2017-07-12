@@ -50,7 +50,7 @@
        (catch Throwable e#
          (throw e#)
          )
-       (finally 
+       (finally
         (debug "disconneted ssh")
         (.disconnect ~'ssh)))))
 
@@ -64,9 +64,9 @@
          (err-fn (.getErrorStream command) (remote :host))
          (.join command 60 TimeUnit/SECONDS)
          (.getExitStatus command)
-       (finally 
+       (finally
          (.close session)
-         (debug "session closed!") 
+         (debug "session closed!")
          )))))
 
 (def listener

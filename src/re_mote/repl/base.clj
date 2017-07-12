@@ -11,6 +11,7 @@
 
 (ns re-mote.repl.base
   (:require
+    [clojure.java.shell :refer [sh]]
     [clojure.core.strint :refer (<<)]
     [clojure.edn :as edn]
     [clojure.string :refer (split)]
@@ -41,11 +42,17 @@
    (<!! (async/into [] (async/merge (map #(thread-call (bound-fn []  (f %))) ms)))))
 
 (defn host-upload [auth src dest h]
-  (try 
+  (try
      (upload src dest (merge {:host h} auth))
      {:host h :code 0}
     (catch Throwable e
       {:host h :code 1 :error (.getMessage e)})))
+
+(defn sh-hosts [{:keys [auth hosts]} sh-fn]
+  "Run a local commands against hosts"
+  (let [results (map (fn [host] (assoc (sh-fn host) :host host)) hosts)
+        grouped (group-by :code results)]
+      {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
 
 (defn upload-hosts [{:keys [auth hosts]} src dest]
   (let [results (map-async (partial host-upload auth src dest) hosts)
@@ -67,10 +74,21 @@
     `(run (~p ~f ~s) ~(first fns) ~(second fns) ~@(rest (rest fns)))
     `(~p ~f ~s)))
 
+(defn safe-output [{:keys [out err exit]}]
+   (when-not (empty? out)
+     (debug out))
+   (when-not (= exit 0)
+     (error err exit))
+     {:code exit :out out :error err})
+
+(def safe (comp safe-output sh))
+
 (defprotocol Shell
   (exec [this script])
   (nohup [this script])
-  (rm [this m target flags])
+  (rm
+    [this target flags]
+    [this m target flags])
   (ls [this target flags])
   (grep [this expr flags])
   (mkdir [this folder flags])
@@ -80,7 +98,10 @@
   (ping [this target]))
 
 (defprotocol Copy
-  (scp 
+  (scp
+    [this src dest]
+    [this m src dest])
+  (sync-
     [this src dest]
     [this m src dest]))
 
@@ -110,8 +131,11 @@
   (mkdir [this folder flags]
     [this (run-hosts this (script ("mkdir" ~folder ~flags)))])
 
-  (rm [this _ target flags]
+  (rm [this target flags]
     [this (run-hosts this (script ("rm" ~target ~flags)))])
+
+  (rm [this _ target flags]
+    (rm this target flags))
 
   (exec [this script]
     [this (run-hosts this script)])
@@ -128,6 +152,12 @@
       (scp this src target))
    (scp [this src target]
       [this (upload-hosts this src target)])
+
+   (sync- [this _ src target]
+      (sync- this src target))
+
+   (sync- [{:keys [auth hosts] :as this} src target]
+      [this (sh-hosts this (fn [host] (safe "rsync" "-a" "--delete" src (<< "~(auth :user)@~{host}:~{target}"))))])
 
   Select
    (initialize [this]
@@ -154,5 +184,5 @@
      (Hosts. auth hosts)))
 
 (defn refer-base []
-  (require '[re-mote.repl.base :as base :refer (run | initialize pick successful ping ls into-hosts exec scp extract rm nohup mkdir)]))
+  (require '[re-mote.repl.base :as base :refer (run | initialize pick successful ping ls into-hosts exec scp extract rm nohup mkdir sync-)]))
 

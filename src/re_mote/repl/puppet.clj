@@ -29,7 +29,7 @@
 (extend-type Hosts
   Puppet
   (apply-module
-    ([this path args] 
+    ([this path args]
       (apply-module this nil path args))
     ([this _ path args]
       [this (run-hosts this (puppet-script path args))])))

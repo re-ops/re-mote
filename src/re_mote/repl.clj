@@ -104,6 +104,11 @@
   (let [[this _] (copy-module hs pkg)  extracted (.replace (.getName (file pkg)) ".tar.gz" "")]
     (run (apply-module this (<< "/tmp/~{extracted}") args) | (pretty) | (rm (<< "/tmp/~{extracted}") "-rf"))))
 
+(defn provision
+  "Sync puppet source code into a VM and run"
+   [hs src dest]
+   (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (apply-module dest "") | (pretty)))
+
 ; re-gent
 
 (defn deploy-agent [hs bin]

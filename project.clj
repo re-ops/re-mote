@@ -1,4 +1,4 @@
-(defproject re-mote "0.1.0"
+(defproject re-mote "0.2.0"
   :description "A live remote operations environment"
   :url "https://github.com/re-ops/re-mote"
   :license  {:name "Apache License, Version 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
@@ -26,9 +26,11 @@
      ; serialization
      [serializable-fn "1.1.4"]
      [org.clojure/data.codec "0.1.0"]
+     [com.taoensso/nippy "2.13.0"]
 
-     ; ssh
+     ; remote execution
      [com.hierynomus/sshj "0.21.1" :exclusions [org.slf4j/slf4j-api]]
+     [org.zeromq/jzmq "3.1.1-SNAPSHOT"]
 
      ; run at
      [jarohen/chime "0.2.1" :exclusions [org.clojure/core.async]]
@@ -56,7 +58,11 @@
 
      ; configuration
      [clojure-future-spec "1.9.0-alpha15"]
-     [formation "0.2.0"]]
+     [formation "0.2.0"]
+
+     ; common utilities
+     [re-com "0.1.0"]
+     ]
 
   :exclusions [org.clojure/clojure]
 
@@ -69,14 +75,11 @@
     :dev {
        :source-paths  ["dev"]
      }
-    :zero {
-       :source-paths  ["dev"]
-       :dependencies [[org.zeromq/jzmq "3.1.1-SNAPSHOT"] [com.taoensso/nippy "2.13.0"]]
-       :jvm-opts ^:replace ["-Djava.library.path=/usr/lib:/usr/local/lib"]
-    }
    }
 
   :clean-targets [:target-path "out"]
+
+  :jvm-opts ^:replace ["-Djava.library.path=/usr/lib:/usr/local/lib"]
 
   :cljsbuild {
     :builds [
@@ -89,17 +92,17 @@
   }
 
 
+  :repositories  {"bintray"  "http://dl.bintray.com/content/narkisr/narkisr-jars"}
+
   :repl-options {
     :init-ns user
     :prompt (fn [ns] (str "\u001B[35m[\u001B[34m" ns "\u001B[35m]\u001B[33mλ:\u001B[m " ))
     :welcome (println "Welcome to re-mote!" )
-
    }
 
   :aliases {
      "start-repl" ["do" "clean," "cljsbuild" "once," "repl" ":headless"]
      "start" ["do" "clean," "cljsbuild" "once," "run"]
-     "zrepl" ["with-profile" "default,dev,zero" "repl"]
    }
 
   :target-path "target/"
