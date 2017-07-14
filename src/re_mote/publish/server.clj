@@ -13,6 +13,7 @@
   "embedded http server with a websocket for publishing"
   (:require
     [re-mote.publish.index :refer (index)]
+    [re-share.core :refer (find-port)]
     [clojure.string     :as str]
     [ring.middleware.webjars :refer [wrap-webjars]]
     [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
@@ -69,7 +70,8 @@
     (reset! server nil)))
 
 (defn start-server [port]
-  (reset! server (run-server #'app {:port port})))
+  (reset! server (run-server #'app {:port port}))
+  (info "started re-mote server socket on port " port))
 
 (defn broadcast! [m]
   (let [uids (:any @connected-uids)]
@@ -81,8 +83,9 @@
   (stop-server))
 
 (defn start []
-  (start-router)
-  (start-server 8080))
+  (let [p (find-port 8080 9090)]
+   (start-router)
+   (start-server p)))
 
 (comment
   (require 'clojure.data.json)

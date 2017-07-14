@@ -1,19 +1,30 @@
+(comment
+   re-mote, Copyright 2017 Ronen Narkis, narkisr.com
+   Licensed under the Apache License,
+   Version 2.0  (the "License") you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.)
+
 (ns re-mote.zero.server
   "An orchestration re-mote server using Zeromq router socket"
   (:require
-     [taoensso.nippy :as nippy :refer (freeze)]
-     [clojure.core.strint :refer  (<<)]
-     [taoensso.timbre :refer  (refer-timbre)]
-     [re-mote.zero.common :refer  (read-key server-socket context close!)])
-  (:import [org.zeromq ZMQ])
-  )
+    [re-share.core :refer (find-port)]
+    [taoensso.nippy :as nippy :refer (freeze)]
+    [clojure.core.strint :refer  (<<)]
+    [taoensso.timbre :refer  (refer-timbre)]
+    [re-mote.zero.common :refer  (read-key server-socket context close!)])
+  (:import [org.zeromq ZMQ]))
 
 (refer-timbre)
 
-(defn router-socket [ctx private]
+(defn router-socket [ctx private port]
   (doto (server-socket ctx ZMQ/ROUTER private)
     (.setZAPDomain (.getBytes "global")) ;
-    (.bind "tcp://*:9000")))
+    (.bind (str "tcp://*:" port))))
 
 (defn backend-socket [ctx]
   (doto (.socket ctx ZMQ/DEALER)
@@ -27,7 +38,10 @@
     (.send frontend (freeze content) 0)))
 
 (defn setup-server [ctx private]
-  (let [frontend (router-socket ctx private) backend (backend-socket ctx)]
+  (let [port (find-port 9000 9010)
+        frontend (router-socket ctx private port) 
+        backend (backend-socket ctx)]
+    (info "started zeromq server router socket on port" port)
     (reset! sockets {:frontend frontend  :backend backend})))
 
 (defn bind []
