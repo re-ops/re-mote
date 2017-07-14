@@ -11,6 +11,7 @@
 
 (ns re-mote.repl
   "Repl utilities for re-mote"
+  (:refer-clojure :exclude  [update]) 
   (:require
     [clojure.core.strint :refer (<<)]
     [re-mote.validate :refer (check-entropy check-jce)]
@@ -28,8 +29,7 @@
     [re-mote.repl.re-gent :refer (refer-regent)]
     [re-mote.repl.schedule :refer (watch seconds)]
     [re-mote.log :refer (setup-logging)]
-    [clojure.java.io :refer (file)]
-    )
+    [clojure.java.io :refer (file)])
   (:import [re_mote.repl.base Hosts]))
 
 (refer-timbre)
