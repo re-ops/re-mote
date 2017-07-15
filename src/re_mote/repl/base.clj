@@ -37,8 +37,9 @@
     (catch Throwable e
       {:host h :code 1 :error (.getMessage e)})))
 
-(defn sh-hosts [{:keys [auth hosts]} sh-fn]
+(defn sh-hosts 
   "Run a local commands against hosts"
+  [{:keys [auth hosts]} sh-fn]
   (let [results (map (fn [host] (assoc (sh-fn host) :host host)) hosts)
         grouped (group-by :code results)]
     {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))

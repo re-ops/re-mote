@@ -16,13 +16,10 @@
   (doseq [[k s] sockets] (.close s)))
 
 (defn server-socket
-  ([t private]
-   (server-socket (context t private)))
-  ([ctx t private]
-   (doto
-    (.socket ctx t)
-     (.setCurveServer true)
-     (.setCurveSecretKey (read-key private)))))
+  [ctx t private]
+  (doto (.socket ctx t)
+    (.setCurveServer true)
+    (.setCurveSecretKey (read-key private))))
 
 (defn client-socket [t parent]
   (doto

@@ -32,8 +32,8 @@
     (match [request]
       [{:request :register}] (ack address (register address))
       [{:request :unregister}] (ack address (unregister address))
-      [{:reply :metrics :content m}] (swap! results assoc-in [hostname :metrics] m))
-    :else (fail request "no handling clause found for request")
+      [{:reply :metrics :content m}] (swap! results assoc-in [hostname :metrics] m)
+      :else (fail request "no handling clause found for request"))
     (catch Exception e
       (fail request e)
       (error e (.getMessage e)))))
