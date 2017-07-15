@@ -2,4 +2,4 @@ language: clojure
 jdk:
   - oraclejdk8
 lein: lein2
-script: lein2 do clean, compile, cljsbuild once
+script: lein2 do clean, compile, cljsbuild once, eastwood, cljfmt check
