@@ -3,5 +3,8 @@ jdk:
   - oraclejdk8
 lein: lein2
 before_install:
-  - sudo apt-get install libzmq-jni -y
+  - wget https://github.com/narkisr/fpm-barbecue/blob/repo/packages/ubuntu/pool/main/libz/libzmq-jni/libzmq-jni_3.1.1_amd64.deb
+  - wget https://github.com/narkisr/fpm-barbecue/blob/repo/packages/ubuntu/pool/main/libz/libzmq1/libzmq1_4.1.4_amd64.deb
+  - sudo dpkg -i libzmq-jni_3.1.1_amd64.deb
+  - sudo dpkg -i libzmq1_4.1.4_amd64.deb
 script: lein2 do clean, compile, cljsbuild once, eastwood, cljfmt check
