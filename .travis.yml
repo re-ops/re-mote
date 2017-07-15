@@ -2,4 +2,6 @@ language: clojure
 jdk:
   - oraclejdk8
 lein: lein2
+before_install:
+  - sudo apt-get install libzmq-jni -y
 script: lein2 do clean, compile, cljsbuild once, eastwood, cljfmt check
