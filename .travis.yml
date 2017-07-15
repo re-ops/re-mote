@@ -1,4 +1,3 @@
-dist: xenial
 language: clojure
 jdk:
   - oraclejdk8
@@ -10,4 +9,5 @@ before_install:
   - sudo dpkg -i libzmq-jni_3.1.1_amd64.deb
   - sudo dpkg -i libzmq1_4.1.4_amd64.deb
   - sudo dpkg -i libsodium_1.0.8_amd64.deb
+  - sudo apt-get install libstdc++6
 script: lein2 do clean, compile, cljsbuild once, eastwood, cljfmt check
