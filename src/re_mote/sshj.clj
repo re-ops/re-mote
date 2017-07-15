@@ -1,25 +1,25 @@
 (ns re-mote.sshj
   (:require
-    [me.raynes.conch :as c]
-    [clojure.java.io :as io :refer (reader output-stream)]
-    [clojure.string :refer (join split)]
-    [clojure.java.shell :refer [sh]]
-    [clojure.core.strint :refer (<<)]
-    [taoensso.timbre :refer (refer-timbre)]
-    [re-mote.log :refer (log-output)]
-    [clojure.string :refer (split)])
+   [me.raynes.conch :as c]
+   [clojure.java.io :as io :refer (reader output-stream)]
+   [clojure.string :refer (join split)]
+   [clojure.java.shell :refer [sh]]
+   [clojure.core.strint :refer (<<)]
+   [taoensso.timbre :refer (refer-timbre)]
+   [re-mote.log :refer (log-output)]
+   [clojure.string :refer (split)])
   (:import
-    clojure.lang.ExceptionInfo
-    (java.util.concurrent TimeUnit)
-    (net.schmizz.sshj.common StreamCopier$Listener)
-    (net.schmizz.sshj.xfer FileSystemFile TransferListener)
-    (net.schmizz.sshj SSHClient)
-    (net.schmizz.sshj.userauth.keyprovider FileKeyProvider)
-    (net.schmizz.sshj.transport.verification PromiscuousVerifier)))
+   clojure.lang.ExceptionInfo
+   (java.util.concurrent TimeUnit)
+   (net.schmizz.sshj.common StreamCopier$Listener)
+   (net.schmizz.sshj.xfer FileSystemFile TransferListener)
+   (net.schmizz.sshj SSHClient)
+   (net.schmizz.sshj.userauth.keyprovider FileKeyProvider)
+   (net.schmizz.sshj.transport.verification PromiscuousVerifier)))
 
 (refer-timbre)
 
-(def default-key (<< "~(System/getProperty \"user.home\")/.ssh/id_rsa" ))
+(def default-key (<< "~(System/getProperty \"user.home\")/.ssh/id_rsa"))
 (def default-user "root")
 (def default-port 22)
 
@@ -37,32 +37,30 @@
      (try
        ~@body
        (catch Throwable e#
-         (throw e#)
-         )
+         (throw e#))
        (finally
-        (debug "disconneted ssh")
-        (.disconnect ~'ssh)))))
+         (debug "disconneted ssh")
+         (.disconnect ~'ssh)))))
 
 (defn execute
   "Executes a cmd on a remote host"
   [cmd remote & {:keys [out-fn err-fn] :or {out-fn log-output err-fn log-output}}]
   (with-ssh remote
-    (let [session (doto (.startSession ssh) (.allocateDefaultPTY)) command (.exec session cmd) ]
+    (let [session (doto (.startSession ssh) (.allocateDefaultPTY)) command (.exec session cmd)]
       (try (debug (<< "[~(remote :host)]:") cmd)
-         (out-fn (.getInputStream command) (remote :host))
-         (err-fn (.getErrorStream command) (remote :host))
-         (.join command 60 TimeUnit/SECONDS)
-         (.getExitStatus command)
-       (finally
-         (.close session)
-         (debug "session closed!")
-         )))))
+           (out-fn (.getInputStream command) (remote :host))
+           (err-fn (.getErrorStream command) (remote :host))
+           (.join command 60 TimeUnit/SECONDS)
+           (.getExitStatus command)
+           (finally
+             (.close session)
+             (debug "session closed!"))))))
 
 (def listener
   (proxy [TransferListener] []
     (directory [name*] (debug "starting to transfer" name*))
     (file [name* size]
-      (proxy [StreamCopier$Listener ] []
+      (proxy [StreamCopier$Listener] []
         (reportProgress [transferred]
           (debug (<< "transferred ~(int (/ (* transferred 100) size))% of ~{name*}")))))))
 
@@ -73,8 +71,7 @@
   (with-ssh remote
     (let [scp (.newSCPFileTransfer ssh)]
       (.setTransferListener scp listener)
-      (.upload scp (FileSystemFile. src) dst)
-      )))
+      (.upload scp (FileSystemFile. src) dst))))
 
 (defn ssh-up? [remote]
   (try
@@ -93,7 +90,7 @@
 (defn sh-
   "Runs a command localy and logs its output streams"
   [cmd & args]
-  (let [[args opts] (options args) ]
+  (let [[args opts] (options args)]
     (info cmd (join " " args))
     (case (deref (:exit-code (c/run-command cmd args opts)))
       :timeout (throw (ExceptionInfo. (<< "timed out while executing: ~{cmd}") opts))

@@ -1,14 +1,14 @@
 (ns re-mote.repl.stats
   "General stats"
   (:require
-    [clojure.tools.trace :as tr]
-    [taoensso.timbre :refer (refer-timbre)]
-    [com.rpl.specter :as s :refer (transform select MAP-VALS ALL ATOM keypath srange)]
-    [clj-time.core :as t]
-    [clj-time.coerce :refer (to-long)]
-    [re-mote.repl.base :refer (run-hosts zip)]
-    [re-mote.repl.schedule :refer (watch seconds)]
-    [pallet.stevedore :refer (script do-script)])
+   [clojure.tools.trace :as tr]
+   [taoensso.timbre :refer (refer-timbre)]
+   [com.rpl.specter :as s :refer (transform select MAP-VALS ALL ATOM keypath srange)]
+   [clj-time.core :as t]
+   [clj-time.coerce :refer (to-long)]
+   [re-mote.repl.base :refer (run-hosts zip)]
+   [re-mote.repl.schedule :refer (watch seconds)]
+   [pallet.stevedore :refer (script do-script)])
   (:import [re_mote.repl.base Hosts]))
 
 (refer-timbre)
@@ -22,37 +22,37 @@
   (sliding [this m f k]))
 
 (defn bash!
-   "check that we are running within bash!"
-   []
+  "check that we are running within bash!"
+  []
   (script
-     ("[" "!" "-n" "\"$BASH\"" "]" "&&" "echo" "Please set default user shell to bash" "&&" "exit" 1)))
+   ("[" "!" "-n" "\"$BASH\"" "]" "&&" "echo" "Please set default user shell to bash" "&&" "exit" 1)))
 
 (defn net-script []
-   (script
-     (set! LC_ALL "en_AU.UTF-8")
-     (set! WHO @(pipe ("who" "am" "i") ("awk" "'{l = length($5) - 2; print substr($5, 2, l)}'")))
-     (set! IFC @(pipe (pipe ((println (quoted "${WHO}"))) ("xargs" "ip" "route" "get")) ("awk" "'NR==1 {print $3}'")))
-     (set! R @(("sar" "-n" "DEV" "1" "1")))
-     (if (not (= $? 0)) ("exit" 1))
-     (set! L @(pipe ((println (quoted "${R}"))) ("grep" (quoted "${IFC}"))))
-     (pipe (pipe ((println (quoted "${L}"))) ("awk" "'NR==2 { print substr($0, index($0,$4)) }'")) ("tr" "-s" "' '"))))
+  (script
+   (set! LC_ALL "en_AU.UTF-8")
+   (set! WHO @(pipe ("who" "am" "i") ("awk" "'{l = length($5) - 2; print substr($5, 2, l)}'")))
+   (set! IFC @(pipe (pipe ((println (quoted "${WHO}"))) ("xargs" "ip" "route" "get")) ("awk" "'NR==1 {print $3}'")))
+   (set! R @(("sar" "-n" "DEV" "1" "1")))
+   (if (not (= $? 0)) ("exit" 1))
+   (set! L @(pipe ((println (quoted "${R}"))) ("grep" (quoted "${IFC}"))))
+   (pipe (pipe ((println (quoted "${L}"))) ("awk" "'NR==2 { print substr($0, index($0,$4)) }'")) ("tr" "-s" "' '"))))
 
 (defn cpu-script []
-   (script
-     (set! LC_ALL "en_AU.UTF-8")
-     (set! R @("mpstat" "1" "1"))
-     (if (not (= $? 0)) ("exit" 1))
-     (pipe ((println (quoted "${R}"))) ("awk" "'NR==4 { print $3 \" \" $5 \" \" $12 }'"))))
+  (script
+   (set! LC_ALL "en_AU.UTF-8")
+   (set! R @("mpstat" "1" "1"))
+   (if (not (= $? 0)) ("exit" 1))
+   (pipe ((println (quoted "${R}"))) ("awk" "'NR==4 { print $3 \" \" $5 \" \" $12 }'"))))
 
 (defn free-script []
-   (script
-     (set! R @("free" "-m"))
-     (if (not (= $? 0)) ("exit" 1))
-     (pipe ((println (quoted "${R}"))) ("awk" "'NR==2 { print $2 \" \" $3 \" \" $4 }'"))))
+  (script
+   (set! R @("free" "-m"))
+   (if (not (= $? 0)) ("exit" 1))
+   (pipe ((println (quoted "${R}"))) ("awk" "'NR==2 { print $2 \" \" $3 \" \" $4 }'"))))
 
 (defn load-script []
-   (script
-     (pipe ("uptime") ("awk" "-F" "'[, ]*'" "'NR==1 { print $10 \" \" $11 \" \" $12}'"))))
+  (script
+   (pipe ("uptime") ("awk" "-F" "'[, ]*'" "'NR==1 { print $10 \" \" $11 \" \" $12}'"))))
 
 (defn validate! [f]
   (do-script (bash!) (f)))
@@ -90,70 +90,69 @@
 (defn last-n
   "keep last n items of a sorted map"
   [n m]
-   (let [v (into [] (into (sorted-map) m)) c (count v)]
-     (if (< c n) m (into (sorted-map) (subvec v (- c n) c)))))
+  (let [v (into [] (into (sorted-map) m)) c (count v)]
+    (if (< c n) m (into (sorted-map) (subvec v (- c n) c)))))
 
 (extend-type Hosts
   Stats
   (net
     ([this]
-      (into-dec
-        (zip this (run-hosts this (validate! net-script))
-          :stats :net :rxpck/s :txpck/s :rxkB/s :txkB/s :rxcmp/s :txcmp/s :rxmcst/s :ifutil)))
-     ([this _]
-      (net this)))
+     (into-dec
+      (zip this (run-hosts this (validate! net-script))
+           :stats :net :rxpck/s :txpck/s :rxkB/s :txkB/s :rxcmp/s :txcmp/s :rxmcst/s :ifutil)))
+    ([this _]
+     (net this)))
 
   (cpu
     ([this]
-      (into-dec (zip this (run-hosts this (validate! cpu-script)) :stats :cpu :usr :sys :idle)))
-     ([this _]
-      (cpu this)))
+     (into-dec (zip this (run-hosts this (validate! cpu-script)) :stats :cpu :usr :sys :idle)))
+    ([this _]
+     (cpu this)))
 
   (free
     ([this]
-       (into-dec (zip this (run-hosts this (validate! free-script)) :stats :free :total :used :free)))
-     ([this _]
-      (free this)))
+     (into-dec (zip this (run-hosts this (validate! free-script)) :stats :free :total :used :free)))
+    ([this _]
+     (free this)))
 
   (load-avg
     ([this]
-       (into-dec (zip this (run-hosts this (validate! load-script)) :stats :load :one :five :fifteen)))
-     ([this _]
-      (free this)))
+     (into-dec (zip this (run-hosts this (validate! load-script)) :stats :load :one :five :fifteen)))
+    ([this _]
+     (free this)))
 
   (collect [this {:keys [success] :as m}]
     (doseq [{:keys [host stats]} success]
       (doseq [[k v] stats]
         (swap! readings update-in [host k :timeseries]
-          (fn [m] (if (nil? m) (sorted-map (t/now) v) (assoc m (t/now) v))))))
-     [this m])
+               (fn [m] (if (nil? m) (sorted-map (t/now) v) (assoc m (t/now) v))))))
+    [this m])
 
   (sliding [this {:keys [success] :as m} f fk]
     (doseq [{:keys [host stats]} success]
       (doseq [[k _] stats]
         (transform [ATOM (keypath host) k]
-           (fn [{:keys [timeseries] :as m}] (assoc m fk (window f timeseries))) readings)))
-    [this m]
-    ))
+                   (fn [{:keys [timeseries] :as m}] (assoc m fk (window f timeseries))) readings)))
+    [this m]))
 
 (defn purge [n]
-   (transform [ATOM MAP-VALS MAP-VALS MAP-VALS] (partial last-n n) readings))
+  (transform [ATOM MAP-VALS MAP-VALS MAP-VALS] (partial last-n n) readings))
 
 (defn setup-stats
-   "Setup stats collection"
-   [s n]
-   (watch :stats-purge (seconds s) (fn [] (purge n))))
+  "Setup stats collection"
+  [s n]
+  (watch :stats-purge (seconds s) (fn [] (purge n))))
 
 (defn- host-values
   [k ks {:keys [host stats]}]
   (transform [ALL]
-    (fn [[t s]] {:x (to-long t) :y (get-in s ks) :host host})
-      (into [] (get-in @readings [host (first (keys stats)) k]))))
+             (fn [[t s]] {:x (to-long t) :y (get-in s ks) :host host})
+             (into [] (get-in @readings [host (first (keys stats)) k]))))
 
 (defn single-per-host
   "Collect a single nested reading for each host"
   [k ks success]
-   (mapcat (partial host-values k ks) success))
+  (mapcat (partial host-values k ks) success))
 
 (defn- avg-data-point [& ks]
   (let [[t _] (first ks) sums (apply (partial merge-with +) (map second ks))
@@ -170,5 +169,5 @@
   (require '[re-mote.repl.stats :as stats :refer (load-avg net cpu free collect sliding avg setup-stats)]))
 
 (comment
- (reset! readings {}))
+  (reset! readings {}))
 

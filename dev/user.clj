@@ -1,14 +1,13 @@
 (ns user
   (:require
-    [hawk.core :as hawk]
-    [clojure.java.io :as io]
-    [clojure.repl :refer :all]
-    [re-mote.log :refer (debug-on debug-off)]
-    [clojure.tools.namespace.repl :refer (refresh refresh-all)]
-    [re-mote.launch :as launch]
-    [re-mote.repl :refer :all])
-   (:import re_mote.repl.base.Hosts)
-  )
+   [hawk.core :as hawk]
+   [clojure.java.io :as io]
+   [clojure.repl :refer :all]
+   [re-mote.log :refer (debug-on debug-off)]
+   [clojure.tools.namespace.repl :refer (refresh refresh-all)]
+   [re-mote.launch :as launch]
+   [re-mote.repl :refer :all])
+  (:import re_mote.repl.base.Hosts))
 
 (def system nil)
 
@@ -29,13 +28,13 @@
 
 (declare go)
 
-(defn refesh-on [ctx {:keys [kind]}] 
-  (when (= kind :create) 
-    (binding [*ns* (find-ns 'user)] 
+(defn refesh-on [ctx {:keys [kind]}]
+  (when (= kind :create)
+    (binding [*ns* (find-ns 'user)]
       (refresh)
       (stop)
       (go :watch false)))
-   ctx)
+  ctx)
 
 (defn auto-reload []
   (println "watching src")
@@ -54,9 +53,8 @@
   (stop)
   (refresh :after 'user/go))
 
-
-(defn clear 
-   "clean repl" 
-   []
- (print (str (char 27) "[2J"))
- (print (str (char 27) "[;H")))
+(defn clear
+  "clean repl"
+  []
+  (print (str (char 27) "[2J"))
+  (print (str (char 27) "[;H")))

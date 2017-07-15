@@ -1,24 +1,24 @@
 (ns re-mote.repl
   "Repl utilities for re-mote"
-  (:refer-clojure :exclude  [update]) 
+  (:refer-clojure :exclude  [update])
   (:require
-    [clojure.core.strint :refer (<<)]
-    [re-mote.validate :refer (check-entropy check-jce)]
-    [clojure.pprint :refer (pprint)]
-    [taoensso.timbre :refer (refer-timbre)]
-    [re-mote.repl.base :refer (refer-base)]
-    [re-mote.repl.zfs :refer (refer-zfs)]
-    [re-mote.repl.output :refer (refer-out)]
-    [re-mote.repl.pkg :refer (refer-pkg)]
-    [re-mote.repl.publish :refer (refer-publish)]
-    [re-mote.repl.puppet :refer (refer-puppet)]
-    [re-mote.repl.octo :refer (refer-octo)]
-    [re-mote.repl.stats :refer (refer-stats)]
-    [re-mote.repl.sensors :refer (refer-sensors)]
-    [re-mote.repl.re-gent :refer (refer-regent)]
-    [re-mote.repl.schedule :refer (watch seconds)]
-    [re-mote.log :refer (setup-logging)]
-    [clojure.java.io :refer (file)])
+   [clojure.core.strint :refer (<<)]
+   [re-mote.validate :refer (check-entropy check-jce)]
+   [clojure.pprint :refer (pprint)]
+   [taoensso.timbre :refer (refer-timbre)]
+   [re-mote.repl.base :refer (refer-base)]
+   [re-mote.repl.zfs :refer (refer-zfs)]
+   [re-mote.repl.output :refer (refer-out)]
+   [re-mote.repl.pkg :refer (refer-pkg)]
+   [re-mote.repl.publish :refer (refer-publish)]
+   [re-mote.repl.puppet :refer (refer-puppet)]
+   [re-mote.repl.octo :refer (refer-octo)]
+   [re-mote.repl.stats :refer (refer-stats)]
+   [re-mote.repl.sensors :refer (refer-sensors)]
+   [re-mote.repl.re-gent :refer (refer-regent)]
+   [re-mote.repl.schedule :refer (watch seconds)]
+   [re-mote.log :refer (setup-logging)]
+   [clojure.java.io :refer (file)])
   (:import [re_mote.repl.base Hosts]))
 
 (refer-timbre)
@@ -48,7 +48,7 @@
 
 ; PUBLISHING
 (defn cpu-publish [hs]
- (run (cpu hs) | (collect) | (publish (stock "Idle CPU" :timeseries :idle)) | (publish (stock "User CPU" :timeseries :usr))))
+  (run (cpu hs) | (collect) | (publish (stock "Idle CPU" :timeseries :idle)) | (publish (stock "User CPU" :timeseries :usr))))
 
 (defn ram-publish [hs]
   (run (free hs) | (collect) | (publish (stock "Free RAM" :timeseries :free)) | (publish (stock "Used RAM" :timeseries :used))))
@@ -78,16 +78,16 @@
 (defn add-package [hs pkg]
   (run (install hs pkg) | (pretty)))
 
-(defn apt-rewind 
-   "try to put apt back on track"
-   [hs]
-  (run (unlock hs) | (kill-apt)| (pretty) | (email (tofrom "apt rewind"))))
+(defn apt-rewind
+  "try to put apt back on track"
+  [hs]
+  (run (unlock hs) | (kill-apt) | (pretty) | (email (tofrom "apt rewind"))))
 
 ; Puppet
 (defn copy-module [hs pkg]
   (let [name (.getName (file pkg))]
     (run (scp hs pkg "/tmp") | (pretty) | (pick successful)
-                             | (extract (<< "/tmp/~{name}") "/tmp") | (rm (<< "/tmp/~{name}") "-rf"))))
+         | (extract (<< "/tmp/~{name}") "/tmp") | (rm (<< "/tmp/~{name}") "-rf"))))
 
 (defn run-module [hs pkg args]
   (let [[this _] (copy-module hs pkg)  extracted (.replace (.getName (file pkg)) ".tar.gz" "")]
@@ -95,8 +95,8 @@
 
 (defn provision
   "Sync puppet source code into a VM and run"
-   [hs src dest]
-   (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (apply-module dest "") | (pretty)))
+  [hs src dest]
+  (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (apply-module dest "") | (pretty)))
 
 ; re-gent
 

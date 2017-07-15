@@ -1,30 +1,30 @@
 (ns re-mote.publish.server
   "embedded http server with a websocket for publishing"
   (:require
-    [re-mote.publish.index :refer (index)]
-    [re-share.core :refer (find-port)]
-    [clojure.string     :as str]
-    [ring.middleware.webjars :refer [wrap-webjars]]
-    [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
-    [compojure.core :refer (defroutes GET POST)]
-    [compojure.route :as route]
-    [hiccup.core :as hiccup]
-    [clojure.core.async :as async  :refer (<! <!! >! >!! put! chan go go-loop)]
-    [taoensso.timbre :refer (refer-timbre)]
-    [taoensso.sente :as sente]
-    [org.httpkit.server :refer (run-server)]
-    [taoensso.sente.server-adapters.http-kit :refer (get-sch-adapter)]))
+   [re-mote.publish.index :refer (index)]
+   [re-share.core :refer (find-port)]
+   [clojure.string     :as str]
+   [ring.middleware.webjars :refer [wrap-webjars]]
+   [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
+   [compojure.core :refer (defroutes GET POST)]
+   [compojure.route :as route]
+   [hiccup.core :as hiccup]
+   [clojure.core.async :as async  :refer (<! <!! >! >!! put! chan go go-loop)]
+   [taoensso.timbre :refer (refer-timbre)]
+   [taoensso.sente :as sente]
+   [org.httpkit.server :refer (run-server)]
+   [taoensso.sente.server-adapters.http-kit :refer (get-sch-adapter)]))
 
 (refer-timbre)
 
 (let [chsk-server (sente/make-channel-socket-server! (get-sch-adapter) {:packer :edn})
-     {:keys [ch-recv send-fn connected-uids ajax-post-fn ajax-get-or-ws-handshake-fn]} chsk-server]
+      {:keys [ch-recv send-fn connected-uids ajax-post-fn ajax-get-or-ws-handshake-fn]} chsk-server]
   (def ring-ajax-post ajax-post-fn)
   (def ring-ajax-get-or-ws-handshake ajax-get-or-ws-handshake-fn)
   (def ch-chsk ch-recv)
   (def chsk-send! send-fn)
   (def connected-uids connected-uids) ; Watchable, read-only atom
-  )
+)
 
 (defroutes routes
   (GET  "/"      ring-req (index))
@@ -49,7 +49,7 @@
 (defn start-router []
   (stop-router)
   (reset! router
-    (sente/start-server-chsk-router! ch-chsk event-msg-handler)))
+          (sente/start-server-chsk-router! ch-chsk event-msg-handler)))
 
 (defonce server (atom nil))
 
@@ -73,8 +73,8 @@
 
 (defn start []
   (let [p (find-port 8080 9090)]
-   (start-router)
-   (start-server p)))
+    (start-router)
+    (start-server p)))
 
 (comment
   (require 'clojure.data.json)
@@ -83,7 +83,7 @@
     (clojure.pprint/pprint (clojure.data.json/read-str (slurp "stock.json") :key-fn keyword)))
 
   (defn linear-values [s]
-    (mapv (fn [i] {:x i :y (rand-int 1000) }) (range s)))
+    (mapv (fn [i] {:x i :y (rand-int 1000)}) (range s)))
 
   (broadcast! [::vega {:values (linear-values 20) :graph {:gtype :vega/lines :gname "foo"}}])
 
@@ -94,12 +94,8 @@
 
   (defn grouped-dates [s host]
     (map (fn [i] {:x (+ (* i 1000) 1489675925417) :y (rand-int 10) :host host}) (range s)))
+  (broadcast! [::vega {:values (mapcat (partial grouped-dates 20) [:supa :supb :supc :supd])
+                       :graph {:gtype :vega/stock :gname "grouped2"}}])
 
-  
-   (broadcast! [::vega {:values (mapcat (partial grouped-dates 20) [:supa :supb :supc :supd]) 
-                                :graph {:gtype :vega/stock :gname "grouped2"}}])
-
-   (broadcast! [::vega {:values (mapcat (partial grouped-dates 20) [:supa :supb :supc :supd]) 
-                                :graph {:gtype :vega/stock :gname "grouped"}}])
-
-)
+  (broadcast! [::vega {:values (mapcat (partial grouped-dates 20) [:supa :supb :supc :supd])
+                       :graph {:gtype :vega/stock :gname "grouped"}}]))

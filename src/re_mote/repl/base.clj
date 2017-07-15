@@ -1,17 +1,17 @@
 (ns re-mote.repl.base
   (:require
-    [clojure.java.shell :refer [sh]]
-    [clojure.core.strint :refer (<<)]
-    [clojure.edn :as edn]
-    [clojure.string :refer (split)]
-    [clojure.tools.trace :as t]
-    [clojure.core.async :refer (<!! thread thread-call) :as async]
-    [clojure.java.io :refer (reader file)]
-    [taoensso.timbre :refer (refer-timbre )]
-    [pallet.stevedore.bash]
-    [pallet.stevedore :refer (script)]
-    [re-mote.log :refer (collect-log get-logs gen-uuid)]
-    [re-mote.sshj :refer (execute upload)]))
+   [clojure.java.shell :refer [sh]]
+   [clojure.core.strint :refer (<<)]
+   [clojure.edn :as edn]
+   [clojure.string :refer (split)]
+   [clojure.tools.trace :as t]
+   [clojure.core.async :refer (<!! thread thread-call) :as async]
+   [clojure.java.io :refer (reader file)]
+   [taoensso.timbre :refer (refer-timbre)]
+   [pallet.stevedore.bash]
+   [pallet.stevedore :refer (script)]
+   [re-mote.log :refer (collect-log get-logs gen-uuid)]
+   [re-mote.sshj :refer (execute upload)]))
 
 (refer-timbre)
 
@@ -21,19 +21,19 @@
   (try
     (let [uuid (gen-uuid)
           code (execute script (merge {:host host} auth) :out-fn (collect-log uuid))]
-       {:host host :code code :uuid uuid})
+      {:host host :code code :uuid uuid})
     (catch Throwable e
-       {:host host :code :fail :error (.getMessage e)})))
+      {:host host :code :fail :error (.getMessage e)})))
 
 (defn map-async
   "Map functions in seperate theads and merge the results"
   [f ms]
-   (<!! (async/into [] (async/merge (map #(thread-call (bound-fn []  (f %))) ms)))))
+  (<!! (async/into [] (async/merge (map #(thread-call (bound-fn []  (f %))) ms)))))
 
 (defn host-upload [auth src dest h]
   (try
-     (upload src dest (merge {:host h} auth))
-     {:host h :code 0}
+    (upload src dest (merge {:host h} auth))
+    {:host h :code 0}
     (catch Throwable e
       {:host h :code 1 :error (.getMessage e)})))
 
@@ -41,22 +41,22 @@
   "Run a local commands against hosts"
   (let [results (map (fn [host] (assoc (sh-fn host) :host host)) hosts)
         grouped (group-by :code results)]
-      {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
+    {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
 
 (defn upload-hosts [{:keys [auth hosts]} src dest]
   (let [results (map-async (partial host-upload auth src dest) hosts)
         grouped (group-by :code results)]
-      {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
+    {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
 
 (defn run-hosts [{:keys [auth hosts]} script]
   (let [results (map-async (partial execute-uuid auth script) hosts)
         grouped (group-by :code results)]
-      {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
+    {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
 
 (defmacro | [source fun & funs]
   (let [f (first fun) args (rest fun)]
-     `(let [[this# res#] ~source]
-        (~f this# res# ~@args))))
+    `(let [[this# res#] ~source]
+       (~f this# res# ~@args))))
 
 (defmacro run [f p s & fns]
   (if-not (empty? fns)
@@ -64,11 +64,11 @@
     `(~p ~f ~s)))
 
 (defn safe-output [{:keys [out err exit]}]
-   (when-not (empty? out)
-     (debug out))
-   (when-not (= exit 0)
-     (error err exit))
-     {:code exit :out out :error err})
+  (when-not (empty? out)
+    (debug out))
+  (when-not (= exit 0)
+    (error err exit))
+  {:code exit :out out :error err})
 
 (def safe (comp safe-output sh))
 
@@ -103,10 +103,10 @@
 (defn zip
   "Collecting output into a hash, must be defined outside protocoal because of var args"
   [this {:keys [success failure] :as res} parent k & ks]
-    (let [zipped (fn [{:keys [out] :as m}] (assoc-in m [parent k] (zipmap ks (split out #"\s"))))
-          success' (map zipped (get-logs success))
-          failure' (into {} (map (fn [[code rs]] [code (get-logs rs)]) failure))]
-      [this (assoc (assoc res :success success') :failure failure')]))
+  (let [zipped (fn [{:keys [out] :as m}] (assoc-in m [parent k] (zipmap ks (split out #"\s"))))
+        success' (map zipped (get-logs success))
+        failure' (into {} (map (fn [[code rs]] [code (get-logs rs)]) failure))]
+    [this (assoc (assoc res :success success') :failure failure')]))
 
 (defprotocol Select
   (initialize [this])
@@ -134,22 +134,22 @@
 
   Tar
   (extract [this _ archive target]
-     [this (run-hosts this (script ("tar" "-xzf" ~archive "-C" ~target)))])
+    [this (run-hosts this (script ("tar" "-xzf" ~archive "-C" ~target)))])
 
   Copy
-   (scp [this _ src target]
-      (scp this src target))
-   (scp [this src target]
-      [this (upload-hosts this src target)])
+  (scp [this _ src target]
+    (scp this src target))
+  (scp [this src target]
+    [this (upload-hosts this src target)])
 
-   (sync- [this _ src target]
-      (sync- this src target))
+  (sync- [this _ src target]
+    (sync- this src target))
 
-   (sync- [{:keys [auth hosts] :as this} src target]
-      [this (sh-hosts this (fn [host] (safe "rsync" "-a" "--delete" src (<< "~(auth :user)@~{host}:~{target}"))))])
+  (sync- [{:keys [auth hosts] :as this} src target]
+    [this (sh-hosts this (fn [host] (safe "rsync" "-a" "--delete" src (<< "~(auth :user)@~{host}:~{target}"))))])
 
   Select
-   (initialize [this]
+  (initialize [this]
     [this hosts])
 
   (pick [this {:keys [failure success] :as m} f]
@@ -167,10 +167,10 @@
   [success _ hs] (filter (into #{} (map :host success)) hs))
 
 (defn into-hosts
-   "builds hosts from an edn file"
-   [f]
-   (let [{:keys [auth hosts]} (edn/read-string (slurp (file f)))]
-     (Hosts. auth hosts)))
+  "builds hosts from an edn file"
+  [f]
+  (let [{:keys [auth hosts]} (edn/read-string (slurp (file f)))]
+    (Hosts. auth hosts)))
 
 (defn refer-base []
   (require '[re-mote.repl.base :as base :refer (run | initialize pick successful ping ls into-hosts exec scp extract rm nohup mkdir sync-)]))

@@ -1,9 +1,8 @@
 (ns re-mote.validate
- (:require
-  [clojure.string :refer (trim)])
- (:import
-   [javax.crypto Cipher])
-)
+  (:require
+   [clojure.string :refer (trim)])
+  (:import
+   [javax.crypto Cipher]))
 
 (defn- read-entropy []
   (Integer/parseInt (trim (slurp "/proc/sys/kernel/random/entropy_avail"))))

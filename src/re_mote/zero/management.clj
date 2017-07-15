@@ -1,9 +1,9 @@
 (ns re-mote.zero.management
   "Managing client protocol"
   (:require
-    [taoensso.timbre :refer  (refer-timbre)]
-    [clojure.core.match :refer [match]]
-    [re-mote.zero.server :refer [reply]]))
+   [taoensso.timbre :refer  (refer-timbre)]
+   [clojure.core.match :refer [match]]
+   [re-mote.zero.server :refer [reply]]))
 
 (refer-timbre)
 
@@ -12,7 +12,7 @@
 (def results (atom {}))
 
 (defn fail [request e]
- {:response :fail :on request :cause e})
+  {:response :fail :on request :cause e})
 
 (defn register [{:keys [hostname uid] :as address}]
   (debug "register" hostname uid)
@@ -26,17 +26,17 @@
   (reply address {:response :ok :on (dissoc request :content)}))
 
 (defn process
-   "Process a message from a client"
-   [{:keys [hostname uid] :as address} request]
-   (try
-     (match [request]
-       [{:request :register}] (ack address (register address))
-       [{:request :unregister}] (ack address (unregister address))
-       [{:reply :metrics :content m}] (swap! results assoc-in [hostname :metrics] m))
-       :else (fail request "no handling clause found for request")
-     (catch Exception e
-       (fail request e)
-       (error e (.getMessage e)))))
+  "Process a message from a client"
+  [{:keys [hostname uid] :as address} request]
+  (try
+    (match [request]
+      [{:request :register}] (ack address (register address))
+      [{:request :unregister}] (ack address (unregister address))
+      [{:reply :metrics :content m}] (swap! results assoc-in [hostname :metrics] m))
+    :else (fail request "no handling clause found for request")
+    (catch Exception e
+      (fail request e)
+      (error e (.getMessage e)))))
 
 (defn metrics []
   (doseq [[hostname address] @hosts]
@@ -46,5 +46,4 @@
   (clojure.pprint/pprint @hosts)
   (metrics)
   (clojure.pprint/pprint @results)
-  (reset! results {})
-  )
+  (reset! results {}))

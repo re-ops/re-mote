@@ -1,11 +1,11 @@
 (ns re-mote.zero.server
   "An orchestration re-mote server using Zeromq router socket"
   (:require
-    [re-share.core :refer (find-port)]
-    [taoensso.nippy :as nippy :refer (freeze)]
-    [clojure.core.strint :refer  (<<)]
-    [taoensso.timbre :refer  (refer-timbre)]
-    [re-mote.zero.common :refer  (read-key server-socket context close!)])
+   [re-share.core :refer (find-port)]
+   [taoensso.nippy :as nippy :refer (freeze)]
+   [clojure.core.strint :refer  (<<)]
+   [taoensso.timbre :refer  (refer-timbre)]
+   [re-mote.zero.common :refer  (read-key server-socket context close!)])
   (:import [org.zeromq ZMQ]))
 
 (refer-timbre)
@@ -28,7 +28,7 @@
 
 (defn setup-server [ctx private]
   (let [port (find-port 9000 9010)
-        frontend (router-socket ctx private port) 
+        frontend (router-socket ctx private port)
         backend (backend-socket ctx)]
     (info "started zeromq server router socket on port" port)
     (reset! sockets {:frontend frontend  :backend backend})))
@@ -38,7 +38,7 @@
     (ZMQ/proxy frontend backend nil)))
 
 (defn kill-server! []
-   (close! @sockets))
+  (close! @sockets))
 
 (comment
   (kill-server!)

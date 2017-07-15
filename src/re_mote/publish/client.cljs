@@ -54,7 +54,7 @@
 (defn start-router! []
   (stop-router!)
   (reset! router_
-  (sente/start-client-chsk-router! ch-chsk wrap-handler)))
+          (sente/start-client-chsk-router! ch-chsk wrap-handler)))
 
 (defn start! [] (start-router!))
 
