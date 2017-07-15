@@ -61,7 +61,7 @@
      [formation "0.2.0"]
 
      ; common utilities
-     [re-share "0.1.0"]
+     [re-share "0.1.1"]
      ]
 
   :exclusions [org.clojure/clojure]
