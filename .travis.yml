@@ -2,15 +2,4 @@ language: clojure
 jdk:
   - oraclejdk8
 lein: lein2
-before_install:
-  - wget https://raw.githubusercontent.com/narkisr/fpm-barbecue/repo/packages/ubuntu/pool/main/libz/libzmq-jni/libzmq-jni_3.1.1_amd64.deb
-  - wget https://raw.githubusercontent.com/narkisr/fpm-barbecue/repo/packages/ubuntu/pool/main/libz/libzmq1/libzmq1_4.1.4_amd64.deb
-  - wget https://raw.githubusercontent.com/narkisr/fpm-barbecue/repo/packages/ubuntu/pool/main/libs/libsodium/libsodium_1.0.8_amd64.deb
-  - sudo dpkg -i libzmq-jni_3.1.1_amd64.deb
-  - sudo dpkg -i libzmq1_4.1.4_amd64.deb
-  - sudo dpkg -i libsodium_1.0.8_amd64.deb
-  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-  - sudo apt-get update
-  - sudo apt-get install gcc-4.9 -y
-  - sudo apt-get upgrade libstdc++6 -y
-script: lein2 do clean, compile, cljsbuild once, eastwood, cljfmt check
+script: lein2 do clean, compile, cljsbuild once, eastwood "{:exclude-namespaces [re-mote.zero.worker re-mote.zero.server re-mote.zero.common] }", cljfmt check
