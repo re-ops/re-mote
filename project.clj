@@ -66,10 +66,14 @@
 
   :exclusions [org.clojure/clojure]
 
-  :plugins  [[jonase/eastwood "0.2.4"] [lein-midje "3.1.3"] [lein-tag "0.1.0"]
+  :plugins  [[jonase/eastwood "0.2.4"] 
+             [lein-tag "0.1.0"]
              [lein-ancient "0.6.7" :exclusions [org.clojure/clojure]]
-             [lein-tar "2.0.0"] [lein-set-version "0.3.0"] [lein-gorilla "0.4.0"]
-             [lein-figwheel "0.5.9"] [lein-cljsbuild "1.1.4"]]
+             [lein-tar "2.0.0"] 
+             [lein-set-version "0.3.0"] [lein-gorilla "0.4.0"]
+             [lein-figwheel "0.5.9"] 
+             [lein-cljfmt "0.5.6"]
+             [lein-cljsbuild "1.1.4"]]
 
   :profiles {
     :dev {
