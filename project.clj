@@ -102,6 +102,9 @@
 
   :aliases {
      "start-repl" ["do" "clean," "cljsbuild" "once," "repl" ":headless"]
+     "travis" [
+        "do" "clean," "compile," "cljsbuild" "once," "cljfmt" "check," "eastwood" "{:exclude-namespaces [re-mote.zero.worker re-mote.zero.server re-mote.zero.common]}"
+     ]
      "start" ["do" "clean," "cljsbuild" "once," "run"]
    }
 
