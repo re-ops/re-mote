@@ -82,19 +82,19 @@
 
 ; Packaging
 (defn #^{:category :packaging}
-  aptdate
+        aptdate
   "Apt update on hosts"
   [hs]
   (run (update hs) | (pretty) | (email (tofrom "apt update"))))
 
 (defn #^{:category :packaging}
-  aptgrade
+        aptgrade
   "Apt update and upgrade on hosts, only update successful hosts gets upgraded"
   [hs]
   (run (aptdate hs) | (pick successful) | (upgrade) | (pretty) | (email (tofrom "apt upgrade"))))
 
 (defn #^{:category :packaging}
-  add-package
+        add-package
   "Install a package on hosts"
   [hs pkg]
   (run (install hs pkg) | (pretty)))
