@@ -43,31 +43,31 @@
 
 (def localhost (Hosts. {:user "upgrade"} ["localhost"]))
 
-(defn listing [hs]
+(defn #^{:category :shell} listing [hs]
   (run (ls hs "/" "-la") | (pretty)))
 
 ; PUBLISHING
-(defn cpu-publish
+(defn #^{:category :stats} cpu-publish
   "CPU usage and idle stats collection and publishing"
   [hs]
   (run (cpu hs) | (collect) | (publish (stock "Idle CPU" :timeseries :idle)) | (publish (stock "User CPU" :timeseries :usr))))
 
-(defn ram-publish
+(defn #^{:category :stats} ram-publish
   "RAM free and used percentage collection and publishing"
   [hs]
   (run (free hs) | (collect) | (publish (stock "Free RAM" :timeseries :free)) | (publish (stock "Used RAM" :timeseries :used))))
 
-(defn net-publish
+(defn #^{:category :stats} net-publish
   "KB in/out stats collection and publishing"
   [hs]
   (run (net hs) | (collect) | (publish (stock "KB out" :timeseries :txkB/s)) | (publish (stock "KB in" :timeseries :rxkB/s))))
 
-(defn temperature-publish
+(defn #^{:category :stats} temperature-publish
   "Collect CPU temperature (using lm-sensors) and publish"
   [hs]
   (run (temperature hs) | (collect) | (publish (stock "CPU temp" :timeseries :coretemp-isa-0000 0 :temp))))
 
-(defn load-publish
+(defn #^{:category :stats} load-publish
   "Average load collection and publishing"
   [hs]
   (run (load-avg hs) | (collect) | (publish (stock "Five load" :timeseries :five))))
@@ -81,48 +81,51 @@
   {:to "narkisr@gmail.com" :from "gookup@gmail.com" :subject (<< "Running ~{desc} results")})
 
 ; Packaging
-(defn aptdate
+(defn #^{:category :packaging}
+  aptdate
   "Apt update on hosts"
   [hs]
   (run (update hs) | (pretty) | (email (tofrom "apt update"))))
 
-(defn aptgrade
+(defn #^{:category :packaging}
+  aptgrade
   "Apt update and upgrade on hosts, only update successful hosts gets upgraded"
   [hs]
   (run (aptdate hs) | (pick successful) | (upgrade) | (pretty) | (email (tofrom "apt upgrade"))))
 
-(defn add-package
+(defn #^{:category :packaging}
+  add-package
   "Install a package on hosts"
   [hs pkg]
   (run (install hs pkg) | (pretty)))
 
-(defn apt-rewind
+(defn #^{:category :packaging} apt-rewind
   "try to put apt back on track"
   [hs]
   (run (unlock hs) | (kill-apt) | (pretty) | (email (tofrom "apt rewind"))))
 
 ; Puppet
-(defn copy-module
+(defn #^{:category :puppet} copy-module
   "Copy an opskeleton tar file"
   [hs pkg]
   (let [name (.getName (file pkg))]
     (run (scp hs pkg "/tmp") | (pretty) | (pick successful)
          | (extract (<< "/tmp/~{name}") "/tmp") | (rm (<< "/tmp/~{name}") "-rf"))))
 
-(defn run-module
+(defn #^{:category :puppet} run-module
   "Run an opskeleton sandbox"
   [hs pkg args]
   (let [[this _] (copy-module hs pkg)  extracted (.replace (.getName (file pkg)) ".tar.gz" "")]
     (run (apply-module this (<< "/tmp/~{extracted}") args) | (pretty) | (rm (<< "/tmp/~{extracted}") "-rf"))))
 
-(defn provision
+(defn #^{:category :puppet} provision
   "Sync puppet source code into a VM and run"
   [hs src dest]
   (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (apply-module dest "") | (pretty)))
 
 ; re-gent
 
-(defn deploy-agent
+(defn #^{:category :re-gent} deploy-agent
   "Copy re-gent setup .curve remotely and fork process"
   [hs bin]
   (run (mkdir hs "/tmp/.curve" "") | (pretty) | (scp ".curve/server-public.key" "/tmp/.curve") | (pretty))
