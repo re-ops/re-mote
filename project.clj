@@ -1,4 +1,4 @@
-(defproject re-mote "0.2.2"
+(defproject re-mote "0.2.3"
   :description "A live remote operations environment"
   :url "https://github.com/re-ops/re-mote"
   :license  {:name "Apache License, Version 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
@@ -66,12 +66,12 @@
 
   :exclusions [org.clojure/clojure]
 
-  :plugins  [[jonase/eastwood "0.2.4"] 
+  :plugins  [[jonase/eastwood "0.2.4"]
              [lein-tag "0.1.0"]
              [lein-ancient "0.6.7" :exclusions [org.clojure/clojure]]
-             [lein-tar "2.0.0"] 
+             [lein-tar "2.0.0"]
              [lein-set-version "0.3.0"] [lein-gorilla "0.4.0"]
-             [lein-figwheel "0.5.9"] 
+             [lein-figwheel "0.5.9"]
              [lein-cljfmt "0.5.6"]
              [lein-cljsbuild "1.1.4"]]
 
@@ -100,7 +100,7 @@
 
   :repl-options {
     :init-ns user
-    :prompt (fn [ns] (str "\u001B[35m[\u001B[34m" ns "\u001B[35m]\u001B[33mλ:\u001B[m " ))
+    :prompt (fn [ns] (str "\u001B[35m[\u001B[34m" "re-mote" "\u001B[35m]\u001B[33mλ:\u001B[m " ))
     :welcome (println "Welcome to re-mote!" )
    }
 

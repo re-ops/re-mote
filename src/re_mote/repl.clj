@@ -2,6 +2,7 @@
   "Repl utilities for re-mote"
   (:refer-clojure :exclude  [update])
   (:require
+   [me.raynes.fs :as fs]
    [clojure.core.strint :refer (<<)]
    [re-mote.validate :refer (check-entropy check-jce)]
    [clojure.pprint :refer (pprint)]
@@ -120,13 +121,17 @@
 
 (defn #^{:category :puppet} provision
   "Sync puppet source code into a VM and run"
-  [hs src dest]
-  (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (apply-module dest "") | (pretty)))
+  [hs {:keys [src]}]
+  (let [dest (<< "/tmp/~(fs/base-name src)")]
+    (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (apply-module dest "") | (pretty))))
 
 ; re-gent
 
-(defn #^{:category :re-gent} deploy-agent
+(defn #^{:category :re-gent} re-gent-deploy
   "Copy re-gent setup .curve remotely and fork process"
-  [hs bin]
-  (run (mkdir hs "/tmp/.curve" "") | (pretty) | (scp ".curve/server-public.key" "/tmp/.curve") | (pretty))
-  (run (scp hs bin "/tmp") | (pretty) | (pick successful) | (launch)))
+  [{:keys [auth] :as hs} bin]
+  (let [{:keys [user]} auth
+        home (<< "/home/~{user}")
+        dest (<< "~{home}/.curve")]
+    (run (mkdir hs dest "-p") | (scp ".curve/server-public.key" dest) | (pretty))
+    (run (scp hs bin home) | (pick successful) | (re-start home))))

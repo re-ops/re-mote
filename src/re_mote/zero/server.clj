@@ -20,6 +20,7 @@
     (.bind "inproc://backend")))
 
 (def sockets (atom {}))
+(def front-port (atom nil))
 
 (defn reply [address content]
   (let [{:keys [frontend]} @sockets]
@@ -31,7 +32,8 @@
         frontend (router-socket ctx private port)
         backend (backend-socket ctx)]
     (info "started zeromq server router socket on port" port)
-    (reset! sockets {:frontend frontend  :backend backend})))
+    (reset! front-port port)
+    (reset! sockets {:frontend frontend :backend backend})))
 
 (defn bind []
   (let [{:keys [frontend backend]} @sockets]
