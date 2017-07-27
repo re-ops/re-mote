@@ -82,15 +82,13 @@
   "See https://github.com/ptaoussanis/timbre"
   []
   (merge-config!
-    {:output-fn (partial output-fn  {:stacktrace-fonts {}})})
+   {:output-fn (partial output-fn  {:stacktrace-fonts {}})})
   (merge-config!
-    {:ns-blacklist ["net.schmizz.*"]})
-  (merge-config! {
-    :appenders {
-       :println
-         (merge {:ns-whitelist ["re-mote.output"]} (println-appender {:stream :auto}))
-       :rolling
-         (rolling-appender {:path "re-mote.log" :pattern :weekly})}}))
+   {:ns-blacklist ["net.schmizz.*"]})
+  (merge-config! {:appenders {:println
+                              (merge {:ns-whitelist ["re-mote.output"]} (println-appender {:stream :auto}))
+                              :rolling
+                              (rolling-appender {:path "re-mote.log" :pattern :weekly})}}))
 
 (defn setup-logging
   "Sets up logging configuration:
@@ -106,7 +104,7 @@
 (defn debug-on
   ([] (set-level! :debug))
   ([n]
-    (merge-config! {:middleware [(level/middleware {n :debug})]})))
+   (merge-config! {:middleware [(level/middleware {n :debug})]})))
 
 (defn debug-off []
   (set-level! :info))
