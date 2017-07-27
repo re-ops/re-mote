@@ -14,6 +14,7 @@
 
      ; logging
      [com.taoensso/timbre "4.10.0"]
+     [timbre-ns-pattern-level "0.1.2"]
      [com.fzakaria/slf4j-timbre "0.3.5"]
      [org.clojure/tools.trace "0.7.9"]
 

@@ -1,6 +1,7 @@
 (ns re-mote.zero.management
   "Managing client protocol"
   (:require
+   [io.aviso.columns :refer  (format-columns write-rows)]
    [taoensso.timbre :refer  (refer-timbre)]
    [clojure.core.match :refer [match]]
    [re-mote.zero.server :refer [reply]]))
@@ -29,6 +30,7 @@
   "Process a message from a client"
   [{:keys [hostname uid] :as address} request]
   (try
+    (debug "got" address request)
     (match [request]
       [{:request :register}] (ack address (register address))
       [{:request :unregister}] (ack address (unregister address))
@@ -42,8 +44,12 @@
   (doseq [[hostname address] @hosts]
     (reply address {:request :metrics})))
 
+(defn registered-hosts []
+  (let [formatter (format-columns [:right 10] "  " [:right 20] "  " :none)]
+    (write-rows *out* formatter [:hostname :uid :out] (vals @hosts))))
+
 (comment
   (clojure.pprint/pprint @hosts)
   (metrics)
-  (clojure.pprint/pprint @results)
+  (clojure.pprint/pprint (keys @results))
   (reset! results {}))

@@ -8,37 +8,37 @@
   (:import [re_mote.repl.base Hosts]))
 
 (defprotocol Regent
-  (stop
+  (kill-agent
     [this]
     [this m])
-  (re-start
+  (start-agent
     [this]
     [this m home]))
 
 (defn kill-script []
   (script
-   (chain-or
-    (pipe (pipe ("ps" "aux") ("awk" "'/re-gent/ {print $2}'")) ("xargs" "kill" "-9")) true)))
+    (pipe
+      (pipe ("ps" "aux") ("awk" "'/re-gent -jar/  {print $2}'")) ("xargs" "kill" "-9"))))
 
 (defn start-script [port home]
   (let [bin (<< "~{home}/re-gent") cmd (<< "\"~{bin} ${IP} ~{port} &\"")]
     (script
      (set! IP @(pipe ("echo" "$SSH_CLIENT") ("awk" "'{print $1}'")))
      ("chmod" "+x"  ~bin)
-     ("nohup" "sh" "-c" ~cmd "&>/dev/null")
-     (if (not (= $? 0)) ("exit" 1)))))
-
-(defn re-start-script [port home]
-  (chained-script
-   (kill-script)
-   (start-script port home)))
+     ("nohup" "sh" "-c" ~cmd "&>/dev/null"))))
 
 (extend-type Hosts
   Regent
-  (re-start [this]
-    (launch this {}))
-  (re-start [this _ home]
-    [this (run-hosts this (re-start-script @front-port home))]))
+  (kill-agent [this]
+    (kill-agent this {}))
+  (kill-agent [this _]
+    [this (run-hosts this (kill-script))])
+  (start-agent [this]
+    (start-agent this {}))
+  (start-agent [this _ home]
+    [this (run-hosts this (start-script @front-port home))]))
 
 (defn refer-regent []
-  (require '[re-mote.repl.re-gent :as re-gent :refer (re-start stop)]))
+  (require '[re-mote.repl.re-gent :as re-gent :refer (start-agent kill-agent)]))
+
+

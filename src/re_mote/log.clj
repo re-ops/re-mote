@@ -1,6 +1,7 @@
 (ns re-mote.log
   "log collection"
   (:require
+   [timbre-ns-pattern-level :as level]
    [clojure.string :refer (join upper-case)]
    [taoensso.timbre.appenders.3rd-party.rolling :refer (rolling-appender)]
    [taoensso.timbre.appenders.core :refer (println-appender)]
@@ -81,10 +82,15 @@
   "See https://github.com/ptaoussanis/timbre"
   []
   (merge-config!
-   {:output-fn (partial output-fn  {:stacktrace-fonts {}})})
-  (merge-config!  {:appenders {:println  (merge {:ns-whitelist ["re-mote.output"]}
-                                                (println-appender {:stream :auto}))
-                               :rolling (rolling-appender {:path "re-mote.log" :pattern :weekly})}}))
+    {:output-fn (partial output-fn  {:stacktrace-fonts {}})})
+  (merge-config!
+    {:ns-blacklist ["net.schmizz.*"]})
+  (merge-config! {
+    :appenders {
+       :println
+         (merge {:ns-whitelist ["re-mote.output"]} (println-appender {:stream :auto}))
+       :rolling
+         (rolling-appender {:path "re-mote.log" :pattern :weekly})}}))
 
 (defn setup-logging
   "Sets up logging configuration:
@@ -97,8 +103,11 @@
   (set-level! level)
   (run-purge interval))
 
-(defn debug-on []
-  (set-level! :debug))
+(defn debug-on
+  ([] (set-level! :debug))
+  ([n]
+    (merge-config! {:middleware [(level/middleware {n :debug})]})))
 
 (defn debug-off []
   (set-level! :info))
+
