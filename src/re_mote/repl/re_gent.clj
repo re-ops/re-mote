@@ -17,8 +17,8 @@
 
 (defn kill-script []
   (script
-    (pipe
-      (pipe ("ps" "aux") ("awk" "'/re-gent -jar/  {print $2}'")) ("xargs" "kill" "-9"))))
+   (pipe
+    (pipe ("ps" "aux") ("awk" "'/re-gent -jar/  {print $2}'")) ("xargs" "kill" "-9"))))
 
 (defn start-script [port home]
   (let [bin (<< "~{home}/re-gent") cmd (<< "\"~{bin} ${IP} ~{port} &\"")]
@@ -40,5 +40,4 @@
 
 (defn refer-regent []
   (require '[re-mote.repl.re-gent :as re-gent :refer (start-agent kill-agent)]))
-
 
