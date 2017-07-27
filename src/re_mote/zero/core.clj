@@ -17,6 +17,9 @@
   (stop-workers!)
   (kill-server!))
 
+(defn refer-zero []
+  (require '[re-mote.zero.management :as zerom :refer (registered-hosts)]))
+
 (comment
-  (setup)
-  (stop))
+  (start-zero-server))
+

@@ -26,3 +26,7 @@
 
 (defn -main [& args])
 
+(comment
+ (stop nil) 
+ (start nil)
+  )

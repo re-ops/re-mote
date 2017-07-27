@@ -44,4 +44,4 @@
 
 (comment
   (kill-server!)
-  (future (setup-server ".curve/server-private.key" 4)))
+  (setup-server (context) ".curve/server-private.key"))

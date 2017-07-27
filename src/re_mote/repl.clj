@@ -18,11 +18,13 @@
    [re-mote.repl.sensors :refer (refer-sensors)]
    [re-mote.repl.re-gent :refer (refer-regent)]
    [re-mote.repl.schedule :refer (watch seconds)]
+   [re-mote.zero.core :refer (refer-zero)]
    [re-mote.log :refer (setup-logging)]
    [clojure.java.io :refer (file)])
   (:import [re_mote.repl.base Hosts]))
 
 (refer-timbre)
+(refer-zero)
 (refer-base)
 (refer-out)
 (refer-stats)
@@ -127,8 +129,7 @@
 (defn #^{:category :re-gent} re-gent-deploy
   "Copy re-gent setup .curve remotely and fork process"
   [{:keys [auth] :as hs} bin]
-  (let [{:keys [user]} auth
-        home (<< "/home/~{user}")
-        dest (<< "~{home}/.curve")]
+  (let [{:keys [user]} auth home (<< "/home/~{user}") dest (<< "~{home}/.curve")]
     (run (mkdir hs dest "-p") | (scp ".curve/server-public.key" dest) | (pretty))
-    (run (scp hs bin home) | (pick successful) | (re-start home))))
+    (run (kill-agent hs) | (pretty))
+    (run (scp hs bin home) | (pick successful) | (start-agent home) | (pretty))))
