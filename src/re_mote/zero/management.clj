@@ -1,11 +1,11 @@
 (ns re-mote.zero.management
   "Managing client protocol"
   (:require
-    [re-mote.zero.functions :as fns :refer (fn-meta)]
-    [io.aviso.columns :refer  (format-columns write-rows)]
-    [taoensso.timbre :refer  (refer-timbre)]
-    [clojure.core.match :refer [match]]
-    [re-mote.zero.server :refer [send-]]))
+   [re-mote.zero.functions :as fns :refer (fn-meta)]
+   [io.aviso.columns :refer  (format-columns write-rows)]
+   [taoensso.timbre :refer  (refer-timbre)]
+   [clojure.core.match :refer [match]]
+   [re-mote.zero.server :refer [send-]]))
 
 (refer-timbre)
 
@@ -51,9 +51,9 @@
     (write-rows *out* formatter [:hostname :uid :out] (vals @hosts))))
 
 (defn call
-   "Launch a remote function on the cluster
+  "Launch a remote function on the cluster
     The function has to be created using s/fn"
-   [f args]
+  [f args]
   (doseq [[hostname address] @hosts]
     (send- address {:request :execute :fn f :args args :name (-> f fn-meta :name)})))
 
