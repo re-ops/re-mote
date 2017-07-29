@@ -17,7 +17,7 @@
 
 (.bindRoot #'pallet.stevedore/*script-language* :pallet.stevedore.bash/bash)
 
-(defn execute-uuid [auth script host]
+(defn- execute-uuid [auth script host]
   (try
     (let [uuid (gen-uuid)
           code (execute script (merge {:host host} auth) :out-fn (collect-log uuid))]
@@ -25,12 +25,12 @@
     (catch Throwable e
       {:host host :code :fail :error (.getMessage e)})))
 
-(defn map-async
+(defn- map-async
   "Map functions in seperate theads and merge the results"
   [f ms]
   (<!! (async/into [] (async/merge (map #(thread-call (bound-fn []  (f %))) ms)))))
 
-(defn host-upload [auth src dest h]
+(defn- host-upload [auth src dest h]
   (try
     (upload src dest (merge {:host h} auth))
     {:host h :code 0}
