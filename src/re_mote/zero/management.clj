@@ -2,7 +2,6 @@
   "Managing client protocol"
   (:require
     [re-mote.zero.functions :as fns :refer (fn-meta)]
-    [re-share.core :refer (with-temp-ns)]
     [io.aviso.columns :refer  (format-columns write-rows)]
     [taoensso.timbre :refer  (refer-timbre)]
     [clojure.core.match :refer [match]]
