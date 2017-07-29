@@ -33,18 +33,31 @@
   (update [this]
     [this (run-hosts this (script ("sudo" "apt" "update")))])
 
+  (upgrade [this]
+    (upgrade this {}))
+
   (upgrade [this _]
     [this (run-hosts this (script ("sudo" "apt" "upgrade" "-y")))])
 
-  (unlock [this _]
-    [this (run-hosts this (script ("sudo" "rm" "/var/lib/dpkg/lock /var/cache/apt/archives/lock")))])
+  (unlock
+    ([this]
+     (unlock this {}))
 
-  (kill-apt [this _]
-    [this (run-hosts this (script ("sudo" "killall" "apt")))])
+    ([this _]
+     [this (run-hosts this (script ("sudo" "rm" "/var/lib/dpkg/lock /var/cache/apt/archives/lock")))]))
 
-  (install
-    ([this _ pkg] (install this pkg))
-    ([this pkg] [this (run-hosts this (script ("sudo" "apt" "install" ~pkg "-y")))])))
+  (kill-apt
+    ([this]
+     (kill-apt this {}))
+
+    ([this _]
+     [this (run-hosts this (script ("sudo" "killall" "apt")))]))
+
+  (install [this _ pkg]
+    (install this pkg))
+
+  (install [this pkg]
+    [this (run-hosts this (script ("sudo" "apt" "install" ~pkg "-y")))]))
 
 (defn refer-pkg []
   (require '[re-mote.repl.pkg :as pkg :refer (update upgrade install unlock kill-apt)]))

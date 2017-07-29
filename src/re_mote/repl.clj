@@ -82,20 +82,17 @@
   {:to "narkisr@gmail.com" :from "gookup@gmail.com" :subject (<< "Running ~{desc} results")})
 
 ; Packaging
-(defn #^{:category :packaging}
-        aptdate
+(defn #^{:category :packaging} aptdate
   "Apt update on hosts"
   [hs]
   (run (update hs) | (pretty) | (email (tofrom "apt update"))))
 
-(defn #^{:category :packaging}
-        aptgrade
+(defn #^{:category :packaging} aptgrade
   "Apt update and upgrade on hosts, only update successful hosts gets upgraded"
   [hs]
   (run (aptdate hs) | (pick successful) | (upgrade) | (pretty) | (email (tofrom "apt upgrade"))))
 
-(defn #^{:category :packaging}
-        add-package
+(defn #^{:category :packaging} add-package
   "Install a package on hosts"
   [hs pkg]
   (run (install hs pkg) | (pretty)))
@@ -103,7 +100,7 @@
 (defn #^{:category :packaging} apt-rewind
   "try to put apt back on track"
   [hs]
-  (run (unlock hs) | (kill-apt) | (pretty) | (email (tofrom "apt rewind"))))
+  (run (unlock hs) | (kill-apt) | (pretty)))
 
 ; Puppet
 (defn #^{:category :puppet} copy-module

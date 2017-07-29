@@ -14,8 +14,10 @@
 (refer-timbre)
 
 (defprotocol Stats
-  (net [this] [this m])
-  (cpu [this] [this m])
+  (net [this]
+    [this m])
+  (cpu [this]
+    [this m])
   (free [this] [this m])
   (load-avg [this] [this m])
   (collect [this m])
