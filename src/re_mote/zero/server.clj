@@ -22,7 +22,7 @@
 (def sockets (atom {}))
 (def front-port (atom nil))
 
-(defn reply [address content]
+(defn send- [address content]
   (let [{:keys [frontend]} @sockets]
     (.send frontend (freeze address) ZMQ/SNDMORE)
     (.send frontend (freeze content) 0)))

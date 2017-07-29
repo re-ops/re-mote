@@ -1,10 +1,12 @@
 (ns re-mote.zero.management
   "Managing client protocol"
   (:require
-   [io.aviso.columns :refer  (format-columns write-rows)]
-   [taoensso.timbre :refer  (refer-timbre)]
-   [clojure.core.match :refer [match]]
-   [re-mote.zero.server :refer [reply]]))
+    [re-mote.zero.functions :as fns :refer (fn-meta)]
+    [re-share.core :refer (with-temp-ns)]
+    [io.aviso.columns :refer  (format-columns write-rows)]
+    [taoensso.timbre :refer  (refer-timbre)]
+    [clojure.core.match :refer [match]]
+    [re-mote.zero.server :refer [send-]]))
 
 (refer-timbre)
 
@@ -24,7 +26,7 @@
   (swap! hosts (fn [m] (dissoc m hostname))))
 
 (defn ack [address request]
-  (reply address {:response :ok :on (dissoc request :content)}))
+  (send- address {:response :ok :on (dissoc request :content)}))
 
 (defn process
   "Process a message from a client"
@@ -35,6 +37,7 @@
       [{:request :register}] (ack address (register address))
       [{:request :unregister}] (ack address (unregister address))
       [{:reply :metrics :content m}] (swap! results assoc-in [hostname :metrics] m)
+      [{:reply :execute :result r :name name}] (swap! results assoc-in [hostname name] r)
       :else (fail request "no handling clause found for request"))
     (catch Exception e
       (fail request e)
@@ -42,14 +45,24 @@
 
 (defn metrics []
   (doseq [[hostname address] @hosts]
-    (reply address {:request :metrics})))
+    (send- address {:request :metrics})))
 
 (defn registered-hosts []
   (let [formatter (format-columns [:right 10] "  " [:right 20] "  " :none)]
     (write-rows *out* formatter [:hostname :uid :out] (vals @hosts))))
 
+(defn call
+   "Launch a remote function on the cluster
+    The function has to be created using s/fn"
+   [f args]
+  (doseq [[hostname address] @hosts]
+    (send- address {:request :execute :fn f :args args :name (-> f fn-meta :name)})))
+
 (comment
+  (call fns/plus-one [1])
+  (call fns/ls ["/"])
+  (call fns/touch ["/tmp/bla"])
+  (clojure.pprint/pprint @results)
   (clojure.pprint/pprint @hosts)
   (metrics)
-  (clojure.pprint/pprint (keys @results))
   (reset! results {}))
