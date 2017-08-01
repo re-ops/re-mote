@@ -54,7 +54,7 @@
 
 (defn load-script []
   (script
-   (pipe ("uptime") ("awk" "-F" "'[, ]*'" "'NR==1 { print $10 \" \" $11 \" \" $12}'"))))
+   (pipe ("uptime") ("awk" "-F" "'[, ]*'" "'NR==1 { print $(NF-2) \" \" $(NF-1) \" \" $(NF)}'"))))
 
 (defn validate! [f]
   (do-script (bash!) (f)))
