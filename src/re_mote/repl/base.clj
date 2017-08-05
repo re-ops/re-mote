@@ -113,6 +113,11 @@
   (initialize [this])
   (pick [this m f]))
 
+(defn rsync [src target host {:keys [user ssh-key]}]
+  (let [opts (if ssh-key (<< "-ae 'ssh -i ~{ssh-key}'") "-a")
+        dest (<< "~{user}@~{host}:~{target}")]
+    (script ("rsync" "--delete" ~opts  ~src  ~dest))))
+
 (defrecord Hosts [auth hosts]
   Shell
   (ls [this target flags]
@@ -147,7 +152,7 @@
     (sync- this src target))
 
   (sync- [{:keys [auth hosts] :as this} src target]
-    [this (sh-hosts this (fn [host] (safe "rsync" "-a" "--delete" src (<< "~(auth :user)@~{host}:~{target}"))))])
+    [this (sh-hosts this (fn [host] (safe "bash" "-c" (rsync src target host auth))))])
 
   Select
   (initialize [this]
