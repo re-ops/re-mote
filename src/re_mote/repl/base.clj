@@ -23,7 +23,7 @@
           code (execute script (merge {:host host} auth) :out-fn (collect-log uuid))]
       {:host host :code code :uuid uuid})
     (catch Throwable e
-      {:host host :code :fail :error (.getMessage e)})))
+      {:host host :code -1 :error (.getMessage e)})))
 
 (defn- map-async
   "Map functions in seperate theads and merge the results"
