@@ -88,12 +88,8 @@
    {:output-fn (partial output-fn  {:stacktrace-fonts {}})})
   (merge-config!
    {:ns-blacklist ["net.schmizz.*"]})
-  (merge-config! {
-      :appenders {
-          :println (merge {:ns-whitelist ["re-mote.output"]} (println-appender {:stream :auto}))
-           :rolling (rolling-appender {:path "re-mote.log" :pattern :weekly})
-       }
-  }))
+  (merge-config! {:appenders {:println (merge {:ns-whitelist ["re-mote.output"]} (println-appender {:stream :auto}))
+                              :rolling (rolling-appender {:path "re-mote.log" :pattern :weekly})}}))
 
 (defn setup-logging
   "Sets up logging configuration:
