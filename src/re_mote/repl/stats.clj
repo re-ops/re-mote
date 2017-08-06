@@ -42,7 +42,7 @@
 (defn cpu-script []
   (script
    (set! LC_ALL "en_AU.UTF-8")
-   (set! R @("mpstat" "1" "1"))
+   (set! R @("LC_TIME=possix" "mpstat" "1" "1"))
    (if (not (= $? 0)) ("exit" 1))
    (pipe ((println (quoted "${R}"))) ("awk" "'NR==4 { print $3 \" \" $5 \" \" $12 }'"))))
 
