@@ -1,6 +1,7 @@
 (ns re-mote.repl.schedule
   "Schedule tasks"
   (:require
+   [clojure.set :refer (rename-keys)]
    [clj-time.format :as f]
    [clansi.core :refer (style)]
    [clojure.pprint :refer [pprint print-table]]
@@ -69,7 +70,7 @@
   (update m :host (fn [_] (if-not (= code 0) (style host :red) (style host :green)))))
 
 (defn pretty [rs]
-  (let [formatter (format-columns [:right 10] "  " [:right 2] "  " :none)]
+  (let [formatter (format-columns [:right 10] "  " [:right 4] "  " :none)]
     (write-rows *out* formatter [:host :code :out] (map (fn [m] (color-host (select-keys m [:host :code :out]))) rs))))
 
 (defn last-run []
@@ -77,7 +78,7 @@
     (when (and result (vector? result))
       (let [[_ {:keys [success failure]}] result]
         (println "\nResults of running" (name k) "on" (local-str time) ":")
-        (pretty (apply concat (vals failure)))
+        (pretty (map (fn [m] (rename-keys m {:error :out})) (flatten (vals failure))))
         (pretty success)))))
 
 (defn next-run []
