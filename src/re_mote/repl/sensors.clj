@@ -9,7 +9,12 @@
 
 (defn sensors-script []
   (script
-   (pipe ("sensors -A") ("awk" "'{$1=$1};1'"))))
+   ("cat" "/proc/cpuinfo" | "grep" "hypervisor")
+   (if (= "$?" 0)
+   (do
+     (println "'cannot measure temp in a VM'")
+     ("exit" 1))
+    (pipe ("sensors -A") ("awk" "'{$1=$1};1'")))))
 
 (defn parse-lines [lines]
   (mapv
