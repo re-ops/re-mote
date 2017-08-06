@@ -3,7 +3,7 @@
    [hawk.core :as hawk]
    [clojure.java.io :as io]
    [clojure.repl :refer :all]
-   [re-mote.log :refer (debug-on debug-off)]
+   [re-mote.log :refer (debug-on debug-off log-hosts)]
    [clojure.tools.namespace.repl :refer (refresh refresh-all)]
    [re-mote.launch :as launch]
    [re-mote.repl :refer :all])

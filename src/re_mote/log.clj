@@ -18,6 +18,8 @@
 
 (def logs (atom {}))
 
+(def hosts (atom #{}))
+
 (defn log-output
   "Output log stream"
   [out host]
@@ -27,7 +29,7 @@
 (defn process-line
   "process a single log line"
   [host line]
-  (info (<< "[~{host}]:") line) line)
+  (when (or (@hosts host) (@hosts "*")) (info (<< "[~{host}]:") line)) line)
 
 (defn collect-log
   "Collect log output into logs atom"
@@ -78,17 +80,20 @@
    (let [{:keys [level ?err #_vargs msg_ ?ns-str ?file hostname_ timestamp_ ?line]} data]
      (str (style (upper-case (name level)) (level-color level)) " " (force timestamp_) " [" (style ?file :bg-black) "@" ?line "] "  ": " (force msg_)))))
 
-(defn disable-coloring
+(defn- setup
   "See https://github.com/ptaoussanis/timbre"
   []
+  ; disable-coloring
   (merge-config!
    {:output-fn (partial output-fn  {:stacktrace-fonts {}})})
   (merge-config!
    {:ns-blacklist ["net.schmizz.*"]})
-  (merge-config! {:appenders {:println
-                              (merge {:ns-whitelist ["re-mote.output"]} (println-appender {:stream :auto}))
-                              :rolling
-                              (rolling-appender {:path "re-mote.log" :pattern :weekly})}}))
+  (merge-config! {
+      :appenders {
+          :println (merge {:ns-whitelist ["re-mote.output"]} (println-appender {:stream :auto}))
+           :rolling (rolling-appender {:path "re-mote.log" :pattern :weekly})
+       }
+  }))
 
 (defn setup-logging
   "Sets up logging configuration:
@@ -97,7 +102,7 @@
     - log level
   "
   [& {:keys [interval level] :or {interval 10 level :info}}]
-  (disable-coloring)
+  (setup)
   (set-level! level)
   (run-purge interval))
 
@@ -109,3 +114,9 @@
 (defn debug-off []
   (set-level! :info))
 
+(defn log-hosts
+  "Log a specific host by passing him as an argument
+   Log all hosts by passing '*'
+   Clearing all with an empty call"
+  ([] (reset! hosts #{}))
+  ([hs] (swap! hosts conj hs)))
