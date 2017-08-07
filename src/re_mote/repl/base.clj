@@ -111,7 +111,9 @@
 
 (defprotocol Select
   (initialize [this])
-  (pick [this m f]))
+  (pick
+    [this f]
+    [this m f]))
 
 (defn rsync [src target host {:keys [user ssh-key]}]
   (let [opts (if ssh-key (<< "-ae 'ssh -i ~{ssh-key}'") "-a")
@@ -157,6 +159,9 @@
   Select
   (initialize [this]
     [this hosts])
+
+  (pick [this f]
+    (Hosts. auth (filter f hosts)))
 
   (pick [this {:keys [failure success] :as m} f]
     (let [hs (f success failure hosts)]
