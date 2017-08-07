@@ -11,7 +11,9 @@
 (defprotocol Report
   (summary [this target])
   (log- [this m])
-  (pretty [this m]))
+  (pretty
+    [this]
+    [this m]))
 
 (defn summarize [s]
   (let [l (.length s)]
@@ -29,6 +31,9 @@
       (doseq [{:keys [host]} hosts]
         (info  "  " host)))
     [this m])
+
+  (pretty [this]
+    (pretty this {}))
 
   (pretty [this {:keys [success failure] :as m}]
     (println "")
