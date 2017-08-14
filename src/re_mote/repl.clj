@@ -42,7 +42,7 @@
   (setup-logging)
   (setup-stats 10 10))
 
-(def sandbox (Hosts. {:user "vagrant"} ["192.168.2.28" "192.168.2.26" "192.168.2.27"]))
+(def sandbox (Hosts. {:user "vagrant"} ["re-a" "re-b"]))
 
 (def localhost (Hosts. {:user "upgrade"} ["localhost"]))
 

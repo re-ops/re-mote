@@ -61,8 +61,8 @@
      [clojure-future-spec "1.9.0-alpha15"]
      [formation "0.2.0"]
 
-     ; common utilities
-     [re-share "0.1.1"]
+     ; common utilities and shared functions
+     [re-share "0.1.2"]
      ]
 
   :exclusions [org.clojure/clojure]
