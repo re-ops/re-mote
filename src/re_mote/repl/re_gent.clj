@@ -28,16 +28,15 @@
 
 (extend-type Hosts
   Regent
-  (kill-agent 
+  (kill-agent
     ([this _]
-      [this (run-hosts this (kill-script))])
+     [this (run-hosts this (kill-script))])
     ([this]
-      (kill-agent this {})))
-  
-  (start-agent 
+     (kill-agent this {})))
+
+  (start-agent
     ([this _ home]
-      [this (run-hosts this (start-script @front-port home))])
-    ))
+     [this (run-hosts this (start-script @front-port home))])))
 
 (defn refer-regent []
   (require '[re-mote.repl.re-gent :as re-gent :refer (start-agent kill-agent)]))

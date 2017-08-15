@@ -36,7 +36,7 @@
       [{:request :register}] (ack address (register address))
       [{:request :unregister}] (ack address (unregister address))
       [{:reply :execute :result r :name name :uuid id}]
-          (swap! results assoc-in [hostname (keyword name) id] r)
+      (swap! results assoc-in [hostname (keyword name) id] r)
       :else (fail request "no handling clause found for request"))
     (catch Exception e
       (fail request e)
@@ -48,5 +48,4 @@
 
 (defn pretty-result [host k]
   (clojure.pprint/pprint (get-in @results [host k])))
-
 

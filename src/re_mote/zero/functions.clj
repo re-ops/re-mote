@@ -17,16 +17,16 @@
     (touch f)))
 
 (def ^{:doc "apt update"} apt-update
-   (s/fn []
-     (sh "sudo" "apt" "update")))
+  (s/fn []
+    (sh "sudo" "apt" "update")))
 
 (def ^{:doc "running processes"} processes
-   (s/fn []
-     (get-in (read-metrics) [:operatingSystem :processes])))
+  (s/fn []
+    (get-in (read-metrics) [:operatingSystem :processes])))
 
 (defn fn-meta [f]
   (meta
    (second
-     (first
-       (filter #(and (var? (second %)) (= f (var-get (second %)))) (ns-map 're-mote.zero.functions))))))
+    (first
+     (filter #(and (var? (second %)) (= f (var-get (second %)))) (ns-map 're-mote.zero.functions))))))
 
