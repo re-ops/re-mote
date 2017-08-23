@@ -26,6 +26,9 @@
   [hosts uuid timeout]
   (wait-for timeout #() "Failed to collect all hosts"))
 
+(defn refer-zero-base []
+  (require '[re-mote.zero.base :as zbase :refer (call collect)]))
+
 (comment
   (pretty-result "enceladus" :processes)
   (call fns/processes [] re-mote.repl/sandbox)

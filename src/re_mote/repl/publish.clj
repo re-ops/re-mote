@@ -2,7 +2,6 @@
   (:require
    [clojure.java.io :refer (file)]
    [clojure.core.strint :refer (<<)]
-   [formation.core :as form]
    [com.rpl.specter :as s :refer (transform select MAP-VALS ALL ATOM keypath srange)]
    [clojure.pprint :refer (pprint)]
    [taoensso.timbre :refer (refer-timbre)]

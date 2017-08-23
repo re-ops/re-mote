@@ -39,7 +39,7 @@
        (catch Throwable e#
          (throw e#))
        (finally
-         (debug "disconneted ssh")
+         (trace "disconneted ssh")
          (.disconnect ~'ssh)))))
 
 (defn execute
@@ -54,7 +54,7 @@
            (.getExitStatus command)
            (finally
              (.close session)
-             (debug "session closed!"))))))
+             (trace "session closed!"))))))
 
 (def listener
   (proxy [TransferListener] []

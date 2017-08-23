@@ -3,11 +3,13 @@
    [hawk.core :as hawk]
    [clojure.java.io :as io]
    [clojure.repl :refer :all]
-   [re-mote.log :refer (debug-on debug-off log-hosts)]
+   [re-mote.log :refer (refer-logging)]
    [clojure.tools.namespace.repl :refer (refresh refresh-all)]
    [re-mote.launch :as launch]
    [re-mote.repl :refer :all])
   (:import re_mote.repl.base.Hosts))
+
+(refer-logging)
 
 (def system nil)
 
@@ -53,7 +55,7 @@
   (stop)
   (refresh :after 'user/go))
 
-(defn clear
+(defn clrs
   "clean repl"
   []
   (print (str (char 27) "[2J"))

@@ -110,9 +110,18 @@
 (defn debug-off []
   (set-level! :info))
 
+(defn redirect-output [n]
+  (merge-config! {
+    :appenders {
+      :println (merge {:ns-whitelist n} (println-appender {:stream :auto}))
+   }}))
+
 (defn log-hosts
   "Log a specific host by passing him as an argument
    Log all hosts by passing '*'
    Clearing all with an empty call"
   ([] (reset! hosts #{}))
   ([hs] (swap! hosts conj hs)))
+
+(defn refer-logging []
+  (require '[re-mote.log :as log :refer (debug-on debug-off log-hosts redirect-output)]))

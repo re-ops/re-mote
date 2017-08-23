@@ -19,3 +19,6 @@ hosts
 scripts
 re-mote.log*
 .curve
+re-mote.rec
+re-mote.gif
+tty.gif
