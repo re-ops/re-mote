@@ -111,10 +111,7 @@
   (set-level! :info))
 
 (defn redirect-output [n]
-  (merge-config! {
-    :appenders {
-      :println (merge {:ns-whitelist n} (println-appender {:stream :auto}))
-   }}))
+  (merge-config! {:appenders {:println (merge {:ns-whitelist n} (println-appender {:stream :auto}))}}))
 
 (defn log-hosts
   "Log a specific host by passing him as an argument
