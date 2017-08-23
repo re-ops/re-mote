@@ -5,6 +5,7 @@
    [io.aviso.columns :refer  (format-columns write-rows)]
    [taoensso.timbre :refer  (refer-timbre)]
    [clojure.core.match :refer [match]]
+   [puget.printer :as puget]
    [re-mote.zero.server :refer [send-]]))
 
 (refer-timbre)
@@ -46,6 +47,8 @@
   (let [formatter (format-columns [:right 10] "  " [:right 20] "  " :none)]
     (write-rows *out* formatter [:hostname :uid :out] (vals @zmq-hosts))))
 
-(defn pretty-result [host k]
-  (clojure.pprint/pprint (get-in @results [host k])))
+(defn pretty-result
+  "(pretty-result \"reops-0\" :plus-one)"
+  [host k]
+  (puget/cprint (get-in @results [host k])))
 

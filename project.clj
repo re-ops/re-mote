@@ -7,10 +7,14 @@
      [org.clojure/core.incubator "0.1.4"]
      [me.raynes/conch "0.8.0"]
      [org.clojure/core.async "0.3.442"]
-     [narkisr/cliopatra "1.1.0"]
-     [narkisr/clansi "1.2.0"]
      [com.rpl/specter "1.0.1"]
      [org.clojure/core.match "0.3.0-alpha4"]
+
+     ; pretty output
+     [fipp "0.6.10"]
+     [narkisr/clansi "1.2.0"]
+     [mvxcvi/puget "1.0.1"]
+
 
      ; logging
      [com.taoensso/timbre "4.10.0"]
@@ -69,6 +73,7 @@
 
   :plugins  [[jonase/eastwood "0.2.4"]
              [lein-tag "0.1.0"]
+             [mvxcvi/whidbey "1.3.1"]
              [lein-ancient "0.6.7" :exclusions [org.clojure/clojure]]
              [lein-tar "2.0.0"]
              [lein-set-version "0.3.0"] [lein-gorilla "0.4.0"]
@@ -115,5 +120,15 @@
 
   :target-path "target/"
   :signing {:gpg-key "narkisr@gmail.com"}
+  :whidbey {
+    :width 180
+    :map-delimiter ""
+    :extend-notation true
+    :print-meta true
+    :color-scheme {
+      :delimiter [:blue]
+       :tag [:bold :red]
+    }
+  }
 
 )
