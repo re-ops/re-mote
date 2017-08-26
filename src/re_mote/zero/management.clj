@@ -52,3 +52,5 @@
   [host k]
   (puget/cprint (get-in @results [host k])))
 
+(defn refer-zero-manage []
+  (require '[re-mote.zero.management :as zerom :refer (registered-hosts pretty-result)]))
