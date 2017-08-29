@@ -6,9 +6,16 @@
    [re-mote.log :refer (refer-logging)]
    [clojure.tools.namespace.repl :refer (refresh refresh-all)]
    [re-mote.launch :as launch]
+   ; zero
+   [re-mote.zero.base :refer (refer-zero-base)]
+   [re-mote.zero.management :refer (refer-zero-manage)]
+   [re-mote.zero.management :refer (pretty-result)]
+   [re-mote.zero.functions :refer (plus-one ls touch processes)]
    [re-mote.repl :refer :all])
   (:import re_mote.repl.base.Hosts))
 
+(refer-zero-base)
+(refer-zero-manage)
 (refer-logging)
 
 (def system nil)

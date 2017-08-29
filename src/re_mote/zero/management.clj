@@ -47,10 +47,16 @@
   (let [formatter (format-columns [:right 10] "  " [:right 20] "  " :none)]
     (write-rows *out* formatter [:hostname :uid :out] (vals @zmq-hosts))))
 
+(defn result
+   ([uuid k host]
+     (get-in @results [host k uuid]))
+   ([k host]
+     (get-in @results [host k])))
+
 (defn pretty-result
   "(pretty-result \"reops-0\" :plus-one)"
   [host k]
-  (puget/cprint (get-in @results [host k])))
+  (puget/cprint (result k host)))
 
 (defn refer-zero-manage []
-  (require '[re-mote.zero.management :as zerom :refer (registered-hosts pretty-result)]))
+  (require '[re-mote.zero.management :as zerom :refer (registered-hosts pretty-result result)]))

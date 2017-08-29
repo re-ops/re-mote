@@ -20,6 +20,10 @@
   (s/fn []
     (sh "sudo" "apt" "update")))
 
+(def ^{:doc "always fails"} fails
+  (s/fn []
+    (sh "fail")))
+
 (def ^{:doc "running processes"} processes
   (s/fn []
     (get-in (read-metrics) [:operatingSystem :processes])))
