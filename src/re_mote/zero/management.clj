@@ -48,10 +48,10 @@
     (write-rows *out* formatter [:hostname :uid :out] (vals @zmq-hosts))))
 
 (defn result
-   ([uuid k host]
-     (get-in @results [host k uuid]))
-   ([k host]
-     (get-in @results [host k])))
+  ([uuid k host]
+   (get-in @results [host k uuid]))
+  ([k host]
+   (get-in @results [host k])))
 
 (defn pretty-result
   "(pretty-result \"reops-0\" :plus-one)"

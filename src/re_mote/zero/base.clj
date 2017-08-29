@@ -25,13 +25,13 @@
 
 (defn- get-results [{:keys [hosts]} k uuid]
   (let [rs (map (partial result uuid k) hosts)]
-     (when (every? identity rs) (zipmap hosts rs))))
+    (when (every? identity rs) (zipmap hosts rs))))
 
 (defn collect
   "Collect results from the zmq hosts blocking until all results are back"
   [hs k uuid timeout]
   (wait-for {:timeout timeout}
-    #(get-results hs k uuid) "Failed to collect all hosts")
+            #(get-results hs k uuid) "Failed to collect all hosts")
   (get-results hs k uuid))
 
 (defn refer-zero-base []
