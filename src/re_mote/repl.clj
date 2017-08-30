@@ -133,3 +133,9 @@
     (run (mkdir hs dest "-p") | (scp ".curve/server-public.key" dest) | (pretty))
     (run (kill-agent hs) | (pretty))
     (run (scp hs bin home) | (pick successful) | (start-agent home) | (pretty))))
+
+; facts
+
+(defn #^{:category :facts} facts
+   [hs]
+  (run (os hs) | (pretty)))
