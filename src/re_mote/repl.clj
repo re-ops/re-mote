@@ -137,5 +137,5 @@
 ; facts
 
 (defn #^{:category :facts} facts
-   [hs]
+  [hs]
   (run (os hs) | (pretty)))
