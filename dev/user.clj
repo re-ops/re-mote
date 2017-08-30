@@ -10,7 +10,7 @@
    [re-mote.zero.base :refer (refer-zero-base)]
    [re-mote.zero.management :refer (refer-zero-manage)]
    [re-mote.zero.management :refer (pretty-result)]
-   [re-mote.zero.functions :as fns :refer (plus-one ls touch processes)]
+   [re-mote.zero.functions :as fns :refer (plus-one touch processes)]
    [re-mote.repl :refer :all])
   (:import re_mote.repl.base.Hosts))
 
