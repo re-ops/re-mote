@@ -9,11 +9,6 @@
 
 (refer-zero-manage)
 
-(defn- into-zmq-hosts
-  "Get ZMQ addresses from Hosts"
-  [{:keys [hosts]}]
-  (select-keys @zmq-hosts hosts))
-
 (defn call
   "Launch a remote clojure function on hosts
    The function has to support serialization"

@@ -58,5 +58,10 @@
   [host k]
   (puget/cprint (result k host)))
 
+(defn into-zmq-hosts
+  "Get ZMQ addresses from Hosts"
+  [{:keys [hosts]}]
+  (select-keys @zmq-hosts hosts))
+
 (defn refer-zero-manage []
-  (require '[re-mote.zero.management :as zerom :refer (registered-hosts pretty-result result)]))
+  (require '[re-mote.zero.management :as zerom :refer (registered-hosts pretty-result result into-zmq-hosts)]))
