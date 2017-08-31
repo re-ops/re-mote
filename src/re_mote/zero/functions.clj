@@ -24,9 +24,12 @@
   (s/fn []
     (sh "fail")))
 
-(def ^{:doc "running processes"} processes
+(def ^{:doc "Getting all OS metadata"} os-meta
   (s/fn []
-    (get-in (read-metrics) [:operatingSystem :processes])))
+    (get-in (read-metrics) [:operatingSystem])))
+
+(defn refer-zero-fns []
+  (require '[re-mote.zero.functions :as fns :refer (apt-update fails touch plus-one os-meta)]))
 
 (defn fn-meta [f]
   (meta

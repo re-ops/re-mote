@@ -87,8 +87,7 @@
 (defprotocol Tracing
   (ping [this target]))
 
-(defprotocol Facts
-  (os [this]))
+
 
 (defprotocol Copy
   (scp
@@ -122,21 +121,6 @@
   (let [opts (if ssh-key (<< "-ae 'ssh -i ~{ssh-key}'") "-a")
         dest (<< "~{user}@~{host}:~{target}")]
     (script ("rsync" "--delete" ~opts  ~src  ~dest))))
-
-(defn os-script
-  "Detect os type"
-  []
-  (script
-   (defn os-type [src t d]
-     ("grep" "$t" "$src" ">" "/dev/null" "2>&1")
-     (when (= $? 0)
-       (println "$d")
-       ("exit" 0)))
-   ("os-type" "'/var/run/dmesg.boot'" "'FreeBSD'" "Freebsd")
-   ("os-type" "'/proc/version'" "'Ubuntu'" "Ubuntu")
-   ("os-type" "'/proc/version'" "'Red Hat'" "Redhat")
-   ("echo" "not detected")
-   ("exit" 1)))
 
 (defrecord Hosts [auth hosts]
   Shell
@@ -190,10 +174,7 @@
   Tracing
   (ping [this target]
     [this (run-hosts this (script ("ping" "-c" 1 ~target)))])
-
-  Facts
-  (os [this]
-    (zip this (run-hosts this (os-script)) :data :facts :os)))
+ )
 
 (defn successful
   "Used for picking successful"
@@ -206,5 +187,5 @@
     (Hosts. auth hosts)))
 
 (defn refer-base []
-  (require '[re-mote.repl.base :as base :refer (run | initialize pick successful ping ls into-hosts exec scp extract rm nohup mkdir sync- os)]))
+  (require '[re-mote.repl.base :as base :refer (run | initialize pick successful ping ls into-hosts exec scp extract rm nohup mkdir sync-)]))
 
