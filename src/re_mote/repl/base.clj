@@ -87,8 +87,6 @@
 (defprotocol Tracing
   (ping [this target]))
 
-
-
 (defprotocol Copy
   (scp
     [this src dest]
@@ -173,8 +171,7 @@
 
   Tracing
   (ping [this target]
-    [this (run-hosts this (script ("ping" "-c" 1 ~target)))])
- )
+    [this (run-hosts this (script ("ping" "-c" 1 ~target)))]))
 
 (defn successful
   "Used for picking successful"

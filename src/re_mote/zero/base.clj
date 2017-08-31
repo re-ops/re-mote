@@ -17,7 +17,7 @@
   (let [uuid (gen-uuid) zhs (into-zmq-hosts hosts)]
     (doseq [[hostname address] zhs]
       (send- address {:request :execute :uuid  uuid :fn f :args args :name (-> f fn-meta :name)}))
-    (if (empty? zhs) 
+    (if (empty? zhs)
       (throw (ex-info "no registered hosts found!" {:hosts hosts}))
       uuid)))
 
@@ -25,14 +25,14 @@
   (let [rs (map (partial result uuid k) hosts)]
     (when (every? identity rs) (zipmap hosts rs))))
 
-(defn with-codes 
-   [m uuid]
-   (transform [MAP-VALS] (fn [v] {:code (if (= v :failed) -1 0)  :uuid uuid :result v}) m))
+(defn with-codes
+  [m uuid]
+  (transform [MAP-VALS] (fn [v] {:code (if (= v :failed) -1 0)  :uuid uuid :result v}) m))
 
 (defn collect
   "Collect results from the zmq hosts blocking until all results are back"
   [hs k uuid timeout]
-  (wait-for {:timeout timeout} 
+  (wait-for {:timeout timeout}
             #(get-results hs k uuid) "Failed to collect all hosts")
   (with-codes (get-results hs k uuid) uuid))
 
