@@ -17,7 +17,7 @@
 (defprotocol Facts
   (os-type [this]))
 
-(extend-type Hosts
+#_(extend-type Hosts
   Facts
   (os-type [{:keys [hosts] :as m}]
     (let [uuid (call os-meta [] hosts)]
