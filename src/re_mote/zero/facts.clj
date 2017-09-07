@@ -18,10 +18,10 @@
   (os-type [this]))
 
 #_(extend-type Hosts
-  Facts
-  (os-type [{:keys [hosts] :as m}]
-    (let [uuid (call os-meta [] hosts)]
-      [this {}])))
+    Facts
+    (os-type [{:keys [hosts] :as m}]
+      (let [uuid (call os-meta [] hosts)]
+        [this {}])))
 
 (defn refer-facts []
   (require '[re-mote.zero.facts :as facts :refer (os-type)]))
