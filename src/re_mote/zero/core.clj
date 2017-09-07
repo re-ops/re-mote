@@ -7,15 +7,21 @@
 
 (refer-timbre)
 
+(def ctx (atom nil))
+
 (defn start-zero-server []
-  (let [ctx (context)]
-    (setup-server ctx ".curve/server-private.key")
-    (setup-workers ctx 4)
-    (future (bind))))
+  (reset! ctx (context))
+  (setup-server @ctx ".curve/server-private.key")
+  (setup-workers @ctx 4)
+  (future (bind)))
 
 (defn stop-zero-server []
   (stop-workers!)
-  (kill-server!))
+  (kill-server!)
+  (when @ctx
+    (.term @ctx))
+  (reset! ctx nil)
+  )
 
 (defn refer-zero []
   (require '[re-mote.zero.management :as zerom :refer (registered-hosts)]))

@@ -12,7 +12,7 @@
 
 (defn router-socket [ctx private port]
   (doto (server-socket ctx ZMQ/ROUTER private)
-    (.setZAPDomain (.getBytes "global")) ;
+    (.setZapDomain (.getBytes "global")) ;
     (.bind (str "tcp://*:" port))))
 
 (defn backend-socket [ctx]

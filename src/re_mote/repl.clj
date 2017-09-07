@@ -46,6 +46,8 @@
 
 (def localhost (Hosts. {:user "upgrade"} ["localhost"]))
 
+(def enceladus (Hosts. {:user "upgrade"} ["enceladus"]))
+
 (defn #^{:category :shell} listing [hs]
   (run (ls hs "/" "-la") | (pretty)))
 

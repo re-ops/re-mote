@@ -18,13 +18,13 @@
 (defn server-socket
   [ctx t private]
   (doto (.socket ctx t)
-    (.setCurveServer true)
+    (.setAsServerCurve true)
     (.setCurveSecretKey (read-key private))))
 
 (defn client-socket [t parent]
   (doto
    (.socket (context) t)
-    (.setZAPDomain (.getBytes "global"))
+    (.setZapDomain (.getBytes "global"))
     (.setCurveServerKey (read-key (<< "~{parent}/server-public.key")))
     (.setCurvePublicKey (read-key (<< "~{parent}/client-public.key")))
     (.setCurveSecretKey (read-key (<< "~{parent}/client-private.key")))))
