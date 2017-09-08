@@ -11,9 +11,9 @@
 (def workers (atom {}))
 
 (defn worker-socket [ctx]
-   (doto
-     (.socket ctx ZMQ/DEALER)
-     (.connect "inproc://backend")))
+  (doto
+   (.socket ctx ZMQ/DEALER)
+    (.connect "inproc://backend")))
 
 (defn handle-message [socket address content]
   (try
@@ -37,8 +37,7 @@
       (finally
         (.setLinger socket 0)
         (.close socket)
-        (info "closed worker socket")
-        ))))
+        (info "closed worker socket")))))
 
 (defn setup-workers [ctx n]
   (reset! workers (into {} (map (fn [i] [i (future (worker ctx))]) (range n)))))
