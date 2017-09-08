@@ -48,6 +48,8 @@
 
 (def enceladus (Hosts. {:user "upgrade"} ["enceladus"]))
 
+(def bsd (Hosts. {:user "upgrade"} ["11.0.1.10"]))
+
 (defn #^{:category :shell} listing [hs]
   (run (ls hs "/" "-la") | (pretty)))
 

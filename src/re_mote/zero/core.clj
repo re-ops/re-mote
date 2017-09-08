@@ -2,7 +2,7 @@
   (:require
    [taoensso.timbre :refer  (refer-timbre)]
    [re-mote.zero.common :refer  (context)]
-   [re-mote.zero.server :refer (setup-server kill-server! bind)]
+   [re-mote.zero.server :refer (setup-server kill-server! bind-future)]
    [re-mote.zero.worker :refer (setup-workers stop-workers!)]))
 
 (refer-timbre)
@@ -13,14 +13,15 @@
   (reset! ctx (context))
   (setup-server @ctx ".curve/server-private.key")
   (setup-workers @ctx 4)
-  (future (bind)))
+  (bind-future))
 
 (defn stop-zero-server []
-  (stop-workers!)
-  (kill-server!)
+  (info "terminating ctx")
   (when @ctx
     (.term @ctx))
-  (reset! ctx nil))
+  (reset! ctx nil)
+  (kill-server!)
+  (stop-workers!))
 
 (defn refer-zero []
   (require '[re-mote.zero.management :as zerom :refer (registered-hosts)]))

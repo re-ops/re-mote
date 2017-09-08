@@ -8,13 +8,12 @@
 
 (refer-timbre)
 
-(defn worker-socket [ctx]
-  (doto (.socket ctx ZMQ/DEALER)
-    (.connect "inproc://backend")))
-
-(def work (atom true))
-
 (def workers (atom {}))
+
+(defn worker-socket [ctx]
+   (doto
+     (.socket ctx ZMQ/DEALER)
+     (.connect "inproc://backend")))
 
 (defn handle-message [socket address content]
   (try
@@ -28,20 +27,24 @@
   (let [socket (worker-socket ctx)]
     (try
       (info "worker running")
-      (while @work
+      (while (not (Thread/interrupted))
         (let [msg (ZMsg/recvMsg socket) address (.pop msg) content (.pop msg)]
           (assert (not (nil? content)))
           (handle-message socket (.getData address) (.getData content))))
       (info "worker going down")
       (catch Exception e
-        (error e (.getMessage e))))))
+        (error e (.getMessage e) (.getStackTrace e)))
+      (finally
+        (.setLinger socket 0)
+        (.close socket)
+        (info "closed worker socket")
+        ))))
 
 (defn setup-workers [ctx n]
-  (reset! workers (into {} (map (fn [i] [i (future (worker ctx))]) (range n))))
-  (reset! work true))
+  (reset! workers (into {} (map (fn [i] [i (future (worker ctx))]) (range n)))))
 
 (defn stop-workers! []
-  (reset! work false)
+  (info "stopping worker")
   (doseq [[i w] @workers]
     (future-cancel w))
   (reset! workers {}))

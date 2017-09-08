@@ -35,12 +35,29 @@
     (reset! front-port port)
     (reset! sockets {:frontend frontend :backend backend})))
 
-(defn bind []
+(def t (atom nil))
+
+(defn- bind []
   (let [{:keys [frontend backend]} @sockets]
-    (ZMQ/proxy frontend backend nil)))
+    (try
+      (ZMQ/proxy frontend backend nil)
+    (finally
+      (.close frontend)
+      (.close backend)
+      (info "frontend backend sockets closed")
+      ))))
+
+(defn bind-future []
+  (reset! t (future (bind))))
 
 (defn kill-server! []
-  (close! @sockets))
+  (info "killing server")
+  (when @t
+    (future-cancel @t)
+    (info "cancel server thread")
+    (reset! t nil))
+  (reset! sockets {})
+  )
 
 (comment
   (kill-server!)
