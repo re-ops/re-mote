@@ -19,12 +19,14 @@
    [re-mote.repl.re-gent :refer (refer-regent)]
    [re-mote.repl.schedule :refer (watch seconds)]
    [re-mote.zero.core :refer (refer-zero)]
+   [re-mote.zero.facts :refer (refer-facts)]
    [re-mote.log :refer (setup-logging)]
    [clojure.java.io :refer (file)])
   (:import [re_mote.repl.base Hosts]))
 
 (refer-timbre)
 (refer-zero)
+(refer-facts)
 (refer-base)
 (refer-out)
 (refer-stats)
@@ -42,11 +44,11 @@
   (setup-logging)
   (setup-stats 10 10))
 
-(def sandbox (Hosts. {:user "vagrant"} ["re-a" "re-b" "re-c" "re-d"]))
+(def sandbox (Hosts. {:user "vagrant"} ["re-a" "re-b"]))
 
 (def localhost (Hosts. {:user "upgrade"} ["localhost"]))
 
-(def enceladus (Hosts. {:user "upgrade"} ["enceladus"]))
+(def methone (Hosts. {:user "upgrade"} ["methone"]))
 
 (def bsd (Hosts. {:user "upgrade"} ["11.0.1.10"]))
 
@@ -130,10 +132,18 @@
 
 ; re-gent
 
-(defn #^{:category :re-gent} re-gent-deploy
-  "Copy re-gent setup .curve remotely and fork process"
+(defn #^{:category :re-gent} deploy
+  "deploy re-gent and setup .curve remotely:
+     (deploy sandbox \"path/to/re-gent\")
+  "
   [{:keys [auth] :as hs} bin]
   (let [{:keys [user]} auth home (<< "/home/~{user}") dest (<< "~{home}/.curve")]
     (run (mkdir hs dest "-p") | (scp ".curve/server-public.key" dest) | (pretty))
     (run (kill-agent hs) | (pretty))
     (run (scp hs bin home) | (pick successful) | (start-agent home) | (pretty))))
+
+(defn filter-hosts
+  [hs f]
+  (run (os-info hs) | (pick (partial results-filter f))))
+
+

@@ -11,6 +11,8 @@
 (defprotocol Report
   (summary [this target])
   (log- [this m])
+  (pretty!
+    [this m])
   (pretty
     [this]
     [this m]))
@@ -32,6 +34,9 @@
         (info  "  " host)))
     [this m])
 
+  (pretty! [this m]
+    (let [[this m] (pretty this m)] this))
+
   (pretty [this]
     (pretty this {}))
 
@@ -47,4 +52,4 @@
     [this m]))
 
 (defn refer-out []
-  (require '[re-mote.repl.output :as out :refer (log- pretty)]))
+  (require '[re-mote.repl.output :as out :refer (log- pretty pretty!)]))

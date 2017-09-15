@@ -175,7 +175,8 @@
 
 (defn successful
   "Used for picking successful"
-  [success _ hs] (filter (into #{} (map :host success)) hs))
+  [success _ hs]
+  (filter (into #{} (map :host success)) hs))
 
 (defn into-hosts
   "builds hosts from an edn file"

@@ -40,7 +40,8 @@
         (info "closed worker socket")))))
 
 (defn setup-workers [ctx n]
-  (reset! workers (into {} (map (fn [i] [i (future (worker ctx))]) (range n)))))
+  (reset! workers 
+     (into {} (map (fn [i] [i (future (worker ctx))]) (range n)))))
 
 (defn stop-workers! []
   (info "stopping worker")

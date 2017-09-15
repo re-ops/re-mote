@@ -6,9 +6,12 @@
      [org.clojure/clojure "1.8.0"]
      [org.clojure/core.incubator "0.1.4"]
      [me.raynes/conch "0.8.0"]
-     [org.clojure/core.async "0.3.442"]
-     [com.rpl/specter "1.0.1"]
+     [org.clojure/core.async "0.3.443"]
+     [com.rpl/specter "1.0.3"]
+
+     ; in memory query
      [org.clojure/core.match "0.3.0-alpha4"]
+     [datascript "0.16.2"]
 
      ; pretty output
      [fipp "0.6.10"]
@@ -19,12 +22,12 @@
      ; logging
      [com.taoensso/timbre "4.10.0"]
      [timbre-ns-pattern-level "0.1.2"]
-     [com.fzakaria/slf4j-timbre "0.3.5"]
+     [com.fzakaria/slf4j-timbre "0.3.7"]
      [org.clojure/tools.trace "0.7.9"]
 
      ; repl
      [com.palletops/stevedore "0.8.0-beta.7"]
-     [io.aviso/pretty "0.1.33"]
+     [io.aviso/pretty "0.1.34"]
      [progrock "0.1.2"]
      [hawk "0.2.11"]
 
@@ -32,6 +35,7 @@
      [serializable-fn "1.1.4"]
      [org.clojure/data.codec "0.1.0"]
      [com.taoensso/nippy "2.13.0"]
+     [cheshire "5.8.0"]
 
      ; remote execution
      [com.hierynomus/sshj "0.21.1" :exclusions [org.slf4j/slf4j-api]]
@@ -67,6 +71,7 @@
 
      ; common utilities and shared functions
      [re-share "0.2.0"]
+
      ]
 
   :exclusions [org.clojure/clojure]

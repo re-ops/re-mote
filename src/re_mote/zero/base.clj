@@ -27,7 +27,7 @@
 
 (defn with-codes
   [m uuid]
-  (transform [MAP-VALS] (fn [v] {:code (if (= v :failed) -1 0)  :uuid uuid :result v}) m))
+  (transform [ALL] (fn [[h v]] [h {:host h :code (if (= v :failed) -1 0)  :uuid uuid :result v}]) m))
 
 (defn collect
   "Collect results from the zmq hosts blocking until all results are back"

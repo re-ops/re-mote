@@ -11,11 +11,13 @@
    [re-mote.zero.management :refer (refer-zero-manage)]
    [re-mote.zero.management :refer (pretty-result)]
    [re-mote.zero.functions :refer (refer-zero-fns)]
+   [re-mote.zero.facts :refer (refer-facts)]
    [re-mote.repl :refer :all])
   (:import re_mote.repl.base.Hosts))
 
 (refer-zero-base)
 (refer-zero-manage)
+(refer-facts)
 (refer-logging)
 (refer-zero-fns)
 
