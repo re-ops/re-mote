@@ -31,8 +31,7 @@
 
 (def ^{:doc "Puppet facter facts"} facter
   (s/fn []
-    (parse-string (:out (sh "facter" "--json")) true)
-    ))
+    (parse-string (:out (sh "facter" "--json")) true)))
 
 (defn refer-zero-fns []
   (require '[re-mote.zero.functions :as fns :refer (apt-update fails touch plus-one oshi-os)]))

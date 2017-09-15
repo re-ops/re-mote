@@ -24,8 +24,8 @@
 
 (extend-type Hosts
   Facts
-    (os-info [this]
-      [this (run-hosts this oshi-os [])]))
+  (os-info [this]
+    [this (run-hosts this oshi-os [])]))
 
 (defn used [{:keys [usableSpace totalSpace name]}]
   (when (> totalSpace 0)
@@ -38,12 +38,11 @@
         breaching (filter (fn [[name u]] (> (- 100 u) percent)) (filter second fs))]
     (when-not (empty? breaching)
       (info "found" breaching "disks for host" host))
-    (empty? breaching)
-    ))
+    (empty? breaching)))
 
 (defn results-filter [f success _ hs]
   (let [results (apply merge (transform [ALL] (fn [{:keys [host] :as m}] {host m}) success))]
-     (filter (fn [h] (f (results h))) hs)))
+    (filter (fn [h] (f (results h))) hs)))
 
 (defn refer-facts []
   (require '[re-mote.zero.facts :as facts :refer (os-info results-filter space-breach)]))
