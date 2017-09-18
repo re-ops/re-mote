@@ -13,11 +13,14 @@
 (refer-zero-base)
 (refer-zero-fns)
 
-(defn run-hosts [hosts f args]
-  (let [uuid (call f args hosts)
-        results (collect hosts (-> f fn-meta :name keyword) uuid [5 :minute])
-        grouped (group-by :code (vals results))]
-    {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
+(defn run-hosts
+  #_([hosts f args]
+    (run-hosts hosts f args [5 :minute]))
+  [hosts f args]
+    (let [uuid (call f args hosts)
+         results (collect hosts (-> f fn-meta :name keyword) uuid [10 :second])
+         grouped (group-by :code (vals results))]
+     {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
 
 (defprotocol Facts
   (os-info [this]))
@@ -25,7 +28,7 @@
 (extend-type Hosts
   Facts
   (os-info [this]
-    [this (run-hosts this oshi-os [])]))
+    [this (run-hosts this oshi-os)]))
 
 (defn used [{:keys [usableSpace totalSpace name]}]
   (when (> totalSpace 0)
@@ -40,7 +43,8 @@
       (info "found" breaching "disks for host" host))
     (empty? breaching)))
 
-(defn results-filter [f success _ hs]
+(defn results-filter [f success fail hs]
+  (println fail)
   (let [results (apply merge (transform [ALL] (fn [{:keys [host] :as m}] {host m}) success))]
     (filter (fn [h] (f (results h))) hs)))
 

@@ -123,13 +123,13 @@
 (defrecord Hosts [auth hosts]
   Shell
   (ls [this target flags]
-    [this (run-hosts this (script ("ls" ~target ~flags)))])
+    [this (run-hosts this (script ("ls" ~flags ~target)))])
 
   (mkdir [this folder flags]
-    [this (run-hosts this (script ("mkdir" ~folder ~flags)))])
+    [this (run-hosts this (script ("mkdir" ~flags ~folder)))])
 
   (rm [this target flags]
-    [this (run-hosts this (script ("rm" ~target ~flags)))])
+    [this (run-hosts this (script ("rm" ~flags ~target)))])
 
   (rm [this _ target flags]
     (rm this target flags))

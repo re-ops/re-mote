@@ -15,9 +15,20 @@
     [this m home]))
 
 (defn kill-script []
-  (script
-   (pipe
-    (pipe ("ps" "aux") ("awk" "'/re-gent -jar/  {print $2}'")) ("xargs" "kill" "-9"))))
+  (let [flags "" position ""]
+    (script
+      (pipe ("cat" "/var/run/dmesg.boot") ("grep" "FreeBSD"))
+      (if (= $? 0)
+        (pipe
+         (pipe 
+          (pipe ("ps" "-f") ("grep" "'[r]e-gent'")) ("awk" "'{print $1}'")) 
+           ("xargs" "kill" "-9")))
+      (pipe ("cat" "/proc/version") ("grep" "Linux"))
+      (if (= $? 0)
+        (pipe
+         (pipe 
+          (pipe ("ps" "ux") ("grep" "'[r]e-gent'")) ("awk" "'{print $2}'")) 
+           ("xargs" "kill" "-9"))))))
 
 (defn start-script [port home]
   (let [bin (<< "~{home}/re-gent") cmd (<< "\"~{bin} ${IP} ~{port} &\"")]

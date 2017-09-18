@@ -44,7 +44,7 @@
       (error e (.getMessage e)))))
 
 (defn registered-hosts []
-  (let [formatter (format-columns [:right 10] "  " [:right 20] "  " :none)]
+  (let [formatter (format-columns [:right 20] "  " [:right 10] "  " :none)]
     (write-rows *out* formatter [:hostname :uid :out] (vals @zmq-hosts))))
 
 (defn result
