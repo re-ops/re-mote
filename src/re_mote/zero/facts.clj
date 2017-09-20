@@ -14,13 +14,13 @@
 (refer-zero-fns)
 
 (defn run-hosts
-  #_([hosts f args]
-     (run-hosts hosts f args [5 :minute]))
-  [hosts f args]
-  (let [uuid (call f args hosts)
-        results (collect hosts (-> f fn-meta :name keyword) uuid [10 :second])
-        grouped (group-by :code (vals results))]
-    {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
+  ([hosts f args]
+   (run-hosts hosts f args [10 :second]))
+  ([hosts f args timeout]
+   (let [uuid (call f args hosts)
+         results (collect hosts (-> f fn-meta :name keyword) uuid timeout)
+         grouped (group-by :code (vals results))]
+     {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)})))
 
 (defprotocol Facts
   (os-info [this]))
@@ -28,7 +28,7 @@
 (extend-type Hosts
   Facts
   (os-info [this]
-    [this (run-hosts this oshi-os)]))
+    [this (run-hosts this oshi-os [])]))
 
 (defn used [{:keys [usableSpace totalSpace name]}]
   (when (> totalSpace 0)
