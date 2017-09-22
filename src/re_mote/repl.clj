@@ -44,13 +44,13 @@
   (setup-logging)
   (setup-stats 10 10))
 
-(def develop (Hosts. {:user "vagrant"} ["re-a" "freebsd-vagrant"]))
+(def develop (Hosts. {:user "vagrant"} ["re-a" "re-e"]))
 
 (def localhost (Hosts. {:user "upgrade"} ["localhost"]))
 
 (def methone (Hosts. {:user "upgrade"} ["methone"]))
 
-(def bsd (Hosts. {:user "upgrade"} ["11.0.1.10"]))
+(def bsd (Hosts. {:user "upgrade"} ["re-e"]))
 
 (defn #^{:category :shell} listing [hs]
   (run (ls hs "/" "-la") | (pretty)))
