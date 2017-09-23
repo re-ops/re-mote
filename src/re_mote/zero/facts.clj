@@ -23,25 +23,17 @@
      {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)})))
 
 (defprotocol Facts
-  (os-info [this]))
+  (os-info [this])
+  (hardware-info [this])
+  )
 
 (extend-type Hosts
   Facts
   (os-info [this]
-    [this (run-hosts this oshi-os [])]))
-
-(defn used [{:keys [usableSpace totalSpace name]}]
-  (when (> totalSpace 0)
-    [name (int (* (/ usableSpace totalSpace) 100))]))
-
-(defn space-breach
-  "space breach per host for all its disks when usage is above percentage"
-  [percent {:keys [result host]}]
-  (let [fs (map used (get-in result [:fileSystem :fileStores]))
-        breaching (filter (fn [[name u]] (> (- 100 u) percent)) (filter second fs))]
-    (when-not (empty? breaching)
-      (info "found" breaching "disks for host" host))
-    (empty? breaching)))
+    [this (run-hosts this oshi-os [])])
+  (hardware-info [this]
+    [this (run-hosts this oshi-hardware [])])
+  )
 
 (defn results-filter [f success fail hs]
   (println fail)
@@ -49,4 +41,4 @@
     (filter (fn [h] (f (results h))) hs)))
 
 (defn refer-facts []
-  (require '[re-mote.zero.facts :as facts :refer (os-info results-filter space-breach)]))
+  (require '[re-mote.zero.facts :as facts :refer (os-info hardware-info results-filter space-breach)]))

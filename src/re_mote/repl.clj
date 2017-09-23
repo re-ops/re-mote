@@ -144,5 +144,5 @@
 
 (defn filter-hosts
   [hs f]
-  (run (os-info hs) | (pick (partial results-filter f))))
+  (run (os-info hs) | (pick (partial results-filter f)) | (pretty)))
 
