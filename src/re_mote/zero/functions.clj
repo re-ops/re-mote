@@ -46,7 +46,5 @@
     (first
      (filter #(and (var? (second %)) (= f (var-get (second %)))) (ns-map 're-mote.zero.functions))))))
 
-
-(comment 
-  (clojure.pprint/pprint (:hardware (read-metrics))) 
-  )
+(comment
+  (clojure.pprint/pprint (:hardware (read-metrics))))

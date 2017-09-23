@@ -24,16 +24,14 @@
 
 (defprotocol Facts
   (os-info [this])
-  (hardware-info [this])
-  )
+  (hardware-info [this]))
 
 (extend-type Hosts
   Facts
   (os-info [this]
     [this (run-hosts this oshi-os [])])
   (hardware-info [this]
-    [this (run-hosts this oshi-hardware [])])
-  )
+    [this (run-hosts this oshi-hardware [])]))
 
 (defn results-filter [f success fail hs]
   (println fail)
