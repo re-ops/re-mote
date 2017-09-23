@@ -9,6 +9,7 @@
 (refer-timbre)
 
 (def workers (atom {}))
+(def flags (atom {}))
 
 (defn worker-socket [ctx]
   (doto
@@ -23,17 +24,17 @@
     (catch Exception e
       (error e (.getMessage e)))))
 
-(defn worker [ctx]
+(defn worker [ctx i]
   (let [socket (worker-socket ctx)]
     (try
       (info "worker running")
-      (while (not (Thread/interrupted))
-        (let [msg (ZMsg/recvMsg socket) address (.pop msg) content (.pop msg)]
-          (assert (not (nil? content)))
-          (handle-message socket (.getData address) (.getData content))))
+      (while (@flags i)
+        (when-let [msg (ZMsg/recvMsg socket)]
+          (let [address (.pop msg) content (.pop msg)]
+            (handle-message socket (.getData address) (.getData content)))))
       (info "worker going down")
       (catch Exception e
-        (error e (.getMessage e) (.getStackTrace e)))
+        (error e (.getMessage e) (.getStacktrace e)))
       (finally
         (.setLinger socket 0)
         (.close socket)
@@ -41,10 +42,13 @@
 
 (defn setup-workers [ctx n]
   (reset! workers
-          (into {} (map (fn [i] [i (future (worker ctx))]) (range n)))))
+    (into {}
+     (map
+       (fn [i] (swap! flags assoc i true) [i (future (worker ctx i))]) (range n)))))
 
 (defn stop-workers! []
   (info "stopping worker")
   (doseq [[i w] @workers]
-    (future-cancel w))
+    (swap! flags assoc i false))
+  (reset! flags {})
   (reset! workers {}))

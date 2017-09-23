@@ -46,7 +46,7 @@
 
 (def develop (Hosts. {:user "vagrant"} ["re-a" "re-e"]))
 
-(def localhost (Hosts. {:user "upgrade"} ["localhost"]))
+(def localhost (Hosts. {:user "upgrade"} ["rosetta"]))
 
 (def methone (Hosts. {:user "upgrade"} ["methone"]))
 

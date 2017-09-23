@@ -13,7 +13,9 @@
   (.getBytes (slurp k) utf8))
 
 (defn close! [sockets]
-  (doseq [[k s] sockets] (.close s)))
+  (doseq [[k s] sockets]
+    (.setLinger s 0)
+    (.close s)))
 
 (defn server-socket
   [ctx t private]

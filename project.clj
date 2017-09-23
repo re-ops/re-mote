@@ -70,7 +70,7 @@
      [formation "0.2.0"]
 
      ; common utilities and shared functions
-     [re-share "0.2.0"]
+     [re-share "0.2.1"]
 
      ]
 
@@ -93,8 +93,6 @@
    }
 
   :clean-targets [:target-path "out"]
-
-  :jvm-opts ^:replace ["-Djava.library.path=/usr/lib:/usr/local/lib"]
 
   :cljsbuild {
     :builds [

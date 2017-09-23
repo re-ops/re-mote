@@ -16,12 +16,13 @@
   (bind-future))
 
 (defn stop-zero-server []
+  (kill-server!)
+  (stop-workers!)
   (info "terminating ctx")
   (when @ctx
-    (.term @ctx))
-  (reset! ctx nil)
-  (kill-server!)
-  (stop-workers!))
+    (.term @ctx)
+    (reset! ctx nil))
+  )
 
 (defn refer-zero []
   (require '[re-mote.zero.management :as zerom :refer (registered-hosts)]))

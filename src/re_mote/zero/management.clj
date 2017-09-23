@@ -63,5 +63,8 @@
   [{:keys [hosts]}]
   (select-keys @zmq-hosts hosts))
 
+(defn clear-registered []
+  (reset! zmq-hosts {}))
+
 (defn refer-zero-manage []
-  (require '[re-mote.zero.management :as zerom :refer (registered-hosts pretty-result result into-zmq-hosts)]))
+  (require '[re-mote.zero.management :as zerom :refer (registered-hosts pretty-result result into-zmq-hosts clear-registered)]))

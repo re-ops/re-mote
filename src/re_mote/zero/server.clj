@@ -19,6 +19,16 @@
   (doto (.socket ctx ZMQ/DEALER)
     (.bind "inproc://backend")))
 
+
+(defn control-sub-socket [ctx]
+  (doto (.socket ctx ZMQ/SUB)
+    (.subscribe ZMQ/SUBSCRIPTION_ALL)
+    (.connect "inproc://control")))
+
+(defn control-pub-socket [ctx]
+  (doto (.socket ctx ZMQ/PUB)
+    (.bind "inproc://control")))
+
 (def sockets (atom {}))
 (def front-port (atom nil))
 
@@ -30,33 +40,41 @@
 (defn setup-server [ctx private]
   (let [port (find-port 9000 9010)
         frontend (router-socket ctx private port)
-        backend (backend-socket ctx)]
+        backend (backend-socket ctx)
+        control-pub (control-pub-socket ctx)
+        control-sub  (control-sub-socket ctx)]
     (info "started zeromq server router socket on port" port)
     (reset! front-port port)
-    (reset! sockets {:frontend frontend :backend backend})))
+    (reset! sockets {:frontend frontend :backend backend :control-sub control-sub :control-pub control-pub})))
 
 (def t (atom nil))
 
 (defn- bind []
-  (let [{:keys [frontend backend]} @sockets]
+  (let [{:keys [frontend backend control-sub]} @sockets]
     (try
-      (ZMQ/proxy frontend backend nil)
+      (ZMQ/proxy frontend backend nil control-sub)
       (finally
-        (.close frontend)
-        (.close backend)
-        (info "frontend backend sockets closed")))))
+        (info "proxy closed")))))
 
 (defn bind-future []
   (reset! t (future (bind))))
 
 (defn kill-server! []
   (info "killing server")
+  (when @sockets
+    (when-let [pub (@sockets :control-pub)]
+      (try
+        (debug "proxy shutdown call")
+        (assert (.send pub "TERMINATE" 0))
+        (catch Exception e
+          (error (.getMessage e) (.getStacktrace e)))))
+    (close! @sockets)
+    (reset! sockets nil))
   (when @t
-    (future-cancel @t)
-    (info "cancel server thread")
-    (reset! t nil))
-  (reset! sockets {}))
+    (reset! t nil)))
 
 (comment
   (kill-server!)
+  (close! @sockets)
+  (reset! sockets {})
   (setup-server (context) ".curve/server-private.key"))
