@@ -19,7 +19,6 @@
   (doto (.socket ctx ZMQ/DEALER)
     (.bind "inproc://backend")))
 
-
 (defn control-sub-socket [ctx]
   (doto (.socket ctx ZMQ/SUB)
     (.subscribe ZMQ/SUBSCRIPTION_ALL)
@@ -54,6 +53,8 @@
     (try
       (ZMQ/proxy frontend backend nil control-sub)
       (finally
+        (close! @sockets)
+        (reset! sockets nil)
         (info "proxy closed")))))
 
 (defn bind-future []
@@ -67,9 +68,7 @@
         (debug "proxy shutdown call")
         (assert (.send pub "TERMINATE" 0))
         (catch Exception e
-          (error (.getMessage e) (.getStacktrace e)))))
-    (close! @sockets)
-    (reset! sockets nil))
+          (error (.getMessage e) (.getStacktrace e))))))
   (when @t
     (reset! t nil)))
 

@@ -2,6 +2,7 @@
   (:require
    [taoensso.timbre :refer  (refer-timbre)]
    [re-mote.zero.common :refer  (context)]
+   [re-mote.zero.management :refer  (clear-registered)]
    [re-mote.zero.server :refer (setup-server kill-server! bind-future)]
    [re-mote.zero.worker :refer (setup-workers stop-workers!)]))
 
@@ -22,7 +23,7 @@
   (when @ctx
     (.term @ctx)
     (reset! ctx nil))
-  )
+  (clear-registered))
 
 (defn refer-zero []
   (require '[re-mote.zero.management :as zerom :refer (registered-hosts)]))
