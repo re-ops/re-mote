@@ -17,9 +17,9 @@
   (s/fn [f]
     (touch f)))
 
-(def ^{:doc "apt update"} apt-update
+(def ^{:doc "update package manager"} update
   (s/fn []
-    (sh "sudo" "apt" "update")))
+    ))
 
 (def ^{:doc "always fails"} fails
   (s/fn []
