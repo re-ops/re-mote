@@ -39,4 +39,4 @@
     (filter (fn [h] (f (results h))) hs)))
 
 (defn refer-facts []
-  (require '[re-mote.zero.facts :as facts :refer (os-info hardware-info results-filter space-breach)]))
+  (require '[re-mote.zero.facts :as facts :refer (os-info hardware-info results-filter)]))
