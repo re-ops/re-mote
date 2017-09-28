@@ -1,10 +1,10 @@
 (ns re-mote.zero.functions
   (:require
    [cheshire.core :refer (parse-string)]
-   [re-share.metrics :refer (read-metrics)]
+   [re-share.oshi :refer (read-metrics os)]
    [clojure.java.shell :refer [sh]]
    [serializable.fn :as s]
-   [me.raynes.fs :refer (list-dir)]))
+   [me.raynes.fs :refer (list-dir temp-file delete)]))
 
 (def ^{:doc "adding one"} plus-one
   (s/fn [x] (+ 1 x)))
@@ -13,13 +13,26 @@
   (s/fn [d]
     (map str (list-dir d))))
 
-(def ^{:doc "touch a file"} touch
-  (s/fn [f]
-    (touch f)))
+(def ^{:doc "Excute a script using bash"} shell
+  (s/fn [script]
+    (let [f (temp-file "/tmp/")]
+      (try
+        (spit f script)
+        (sh "bash" f)
+        (finally
+          (delete f))))))
 
-(def ^{:doc "update package manager"} update
+(def ^{:doc "update package manager"} pkg-update
   (s/fn []
-    ))
+    (case (os)
+      :Ubuntu (sh "sudo" "apt" "update")
+      :FreeBSD (sh "sudo" "pkg" "update"))))
+
+(def ^{:doc "upgrade all packages"} pkg-upgrade
+  (s/fn []
+    (case (os)
+      :Ubuntu (sh "sudo" "apt" "upgrade" "-y")
+      :FreeBSD (sh "sudo" "pkg" "upgrade" "-y"))))
 
 (def ^{:doc "always fails"} fails
   (s/fn []
@@ -38,7 +51,7 @@
     (parse-string (:out (sh "facter" "--json")) true)))
 
 (defn refer-zero-fns []
-  (require '[re-mote.zero.functions :as fns :refer (apt-update fails touch plus-one oshi-os oshi-hardware)]))
+  (require '[re-mote.zero.functions :as fns :refer (pkg-update pkg-upgrade fails shell plus-one oshi-os oshi-hardware)]))
 
 (defn fn-meta [f]
   (meta
@@ -47,4 +60,5 @@
      (filter #(and (var? (second %)) (= f (var-get (second %)))) (ns-map 're-mote.zero.functions))))))
 
 (comment
-  (clojure.pprint/pprint (:hardware (read-metrics))))
+  (sh (into []  (.split (re-mote.repl.stats/net-script) "\n")))
+  (clojure.pprint/pprint (:family (:operatingSystem (read-metrics)))))

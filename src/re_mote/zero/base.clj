@@ -36,6 +36,15 @@
             #(get-results hs k uuid) "Failed to collect all hosts")
   (with-codes (get-results hs k uuid) uuid))
 
+(defn run-hosts
+  ([hosts f args]
+   (run-hosts hosts f args [10 :second]))
+  ([hosts f args timeout]
+   (let [uuid (call f args hosts)
+         results (collect hosts (-> f fn-meta :name keyword) uuid timeout)
+         grouped (group-by :code (vals results))]
+     {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)})))
+
 (defn refer-zero-base []
   (require '[re-mote.zero.base :as zbase :refer (call collect)]))
 

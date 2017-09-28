@@ -10,7 +10,7 @@
    [re-mote.repl.base :refer (refer-base)]
    [re-mote.repl.zfs :refer (refer-zfs)]
    [re-mote.repl.output :refer (refer-out)]
-   [re-mote.repl.pkg :refer (refer-pkg)]
+   [re-mote.repl.apt :refer (refer-apt)]
    [re-mote.repl.publish :refer (refer-publish)]
    [re-mote.repl.puppet :refer (refer-puppet)]
    [re-mote.repl.octo :refer (refer-octo)]
@@ -20,6 +20,7 @@
    [re-mote.repl.schedule :refer (watch seconds)]
    [re-mote.zero.core :refer (refer-zero)]
    [re-mote.zero.facts :refer (refer-facts)]
+   [re-mote.zero.pkg :refer (refer-pkg)]
    [re-mote.log :refer (setup-logging)]
    [clojure.java.io :refer (file)])
   (:import [re_mote.repl.base Hosts]))
@@ -31,6 +32,7 @@
 (refer-out)
 (refer-stats)
 (refer-sensors)
+(refer-apt)
 (refer-pkg)
 (refer-puppet)
 (refer-zfs)
@@ -90,15 +92,15 @@
   {:to "narkisr@gmail.com" :from "gookup@gmail.com" :subject (<< "Running ~{desc} results")})
 
 ; Packaging
-(defn #^{:category :packaging} aptdate
+(defn #^{:category :packaging} update
   "Apt update on hosts"
   [hs]
-  (run (update hs) | (pretty) | (email (tofrom "apt update"))))
+  (run (pkg/update hs) | (pretty) | (email (tofrom "package update"))))
 
-(defn #^{:category :packaging} aptgrade
+(defn #^{:category :packaging} upgrade
   "Apt update and upgrade on hosts, only update successful hosts gets upgraded"
   [hs]
-  (run (aptdate hs) | (pick successful) | (upgrade) | (pretty) | (email (tofrom "apt upgrade"))))
+  (run (pkg/update hs) | (pick successful) | (pkg/upgrade) | (pretty) | (email (tofrom "package upgrade"))))
 
 (defn #^{:category :packaging} add-package
   "Install a package on hosts"

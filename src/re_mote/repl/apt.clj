@@ -1,5 +1,5 @@
-(ns re-mote.repl.pkg
-  "Package automation"
+(ns re-mote.repl.apt
+  "APT Package automation"
   (:refer-clojure :exclude  [update])
   (:require
    [clojure.string :refer (split join)]
@@ -9,12 +9,6 @@
   (:import [re_mote.repl.base Hosts]))
 
 (defprotocol Apt
-  (update
-    [this]
-    [this m])
-  (upgrade
-    [this]
-    [this m])
   (unlock
     [this]
     [this m])
@@ -27,18 +21,6 @@
 
 (extend-type Hosts
   Apt
-  (update [this _]
-    (update this))
-
-  (update [this]
-    [this (run-hosts this (script ("sudo" "apt" "update")))])
-
-  (upgrade [this]
-    (upgrade this {}))
-
-  (upgrade [this _]
-    [this (run-hosts this (script ("sudo" "apt" "upgrade" "-y")))])
-
   (unlock
     ([this]
      (unlock this {}))
@@ -59,5 +41,5 @@
   (install [this pkg]
     [this (run-hosts this (script ("sudo" "apt" "install" ~pkg "-y")))]))
 
-(defn refer-pkg []
-  (require '[re-mote.repl.pkg :as pkg :refer (update upgrade install unlock kill-apt)]))
+(defn refer-apt []
+  (require '[re-mote.repl.apt :as apt :refer (install unlock kill-apt)]))
