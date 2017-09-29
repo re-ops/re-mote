@@ -144,6 +144,21 @@
     (run (kill-agent hs) | (pretty))
     (run (scp hs bin home) | (pick successful) | (start-agent home) | (pretty))))
 
+(defn #^{:category :re-gent} kill
+  "kill re-gent process:
+     (kill sandbox)
+  "
+  [{:keys [auth] :as hs}]
+    (run (kill-agent hs) | (pretty)))
+
+(defn #^{:category :re-gent} launch
+  "start re-gent process:
+     (start sandbox)
+  "
+  [{:keys [auth] :as hs}]
+    (let [{:keys [user]} auth home (<< "/home/~{user}")]
+      (run (start-agent hs home) | (pretty))))
+
 (defn filter-hosts
   [hs f]
   (run (os-info hs) | (pick (partial results-filter f)) | (pretty)))
