@@ -1,12 +1,14 @@
-(ns re-mote.repl.stats
+(ns re-mote.zero.stats
   "General stats"
   (:require
    [clojure.tools.trace :as tr]
+   [re-mote.zero.base :refer (run-hosts)]
    [taoensso.timbre :refer (refer-timbre)]
    [com.rpl.specter :as s :refer (transform select MAP-VALS ALL ATOM keypath srange)]
    [clj-time.core :as t]
    [clj-time.coerce :refer (to-long)]
-   [re-mote.repl.base :refer (run-hosts zip)]
+   [re-mote.repl.base :refer (zip)]
+   [re-mote.zero.functions :refer (shell)]
    [re-mote.repl.schedule :refer (watch seconds)]
    [pallet.stevedore :refer (script do-script)])
   (:import [re_mote.repl.base Hosts]))
@@ -98,28 +100,28 @@
 (extend-type Hosts
   Stats
   (net
-    ([this]
-     (into-dec
-      (zip this (run-hosts this (validate! net-script))
-           :stats :net :rxpck/s :txpck/s :rxkB/s :txkB/s :rxcmp/s :txcmp/s :rxmcst/s :ifutil)))
     ([this _]
-     (net this)))
+     (net this))
+    ([this]
+      (into-dec
+       (zip this (run-hosts this shell [(validate! net-script)] [10 :second])
+           :stats :net :rxpck/s :txpck/s :rxkB/s :txkB/s :rxcmp/s :txcmp/s :rxmcst/s :ifutil))))
 
   (cpu
     ([this]
-     (into-dec (zip this (run-hosts this (validate! cpu-script)) :stats :cpu :usr :sys :idle)))
+     (into-dec (zip this (run-hosts this shell [(validate! cpu-script)] [10 :second]) :stats :cpu :usr :sys :idle)))
     ([this _]
      (cpu this)))
 
   (free
     ([this]
-     (into-dec (zip this (run-hosts this (validate! free-script)) :stats :free :total :used :free)))
+     (into-dec (zip this (run-hosts this shell [(validate! free-script)] [10 :second]) :stats :free :total :used :free)))
     ([this _]
      (free this)))
 
   (load-avg
     ([this]
-     (into-dec (zip this (run-hosts this (validate! load-script)) :stats :load :one :five :fifteen)))
+     (into-dec (zip this (run-hosts this shell [(validate! load-script)] [10 :second]) :stats :load :one :five :fifteen)))
     ([this _]
      (free this)))
 
@@ -168,7 +170,7 @@
     (apply mapcat avg-data-point (select [ATOM MAP-VALS r k] readings))))
 
 (defn refer-stats []
-  (require '[re-mote.repl.stats :as stats :refer (load-avg net cpu free collect sliding avg setup-stats)]))
+  (require '[re-mote.zero.stats :as stats :refer (load-avg net cpu free collect sliding avg setup-stats)]))
 
 (comment
   (reset! readings {}))

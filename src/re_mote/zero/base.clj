@@ -33,8 +33,9 @@
   "Collect results from the zmq hosts blocking until all results are back"
   [hs k uuid timeout]
   (wait-for {:timeout timeout}
-            #(get-results hs k uuid) "Failed to collect all hosts")
-  (with-codes (get-results hs k uuid) uuid))
+    (fn [] (get-results hs k uuid)) "Failed to collect all hosts")
+  (with-codes
+    (get-results hs k uuid) uuid))
 
 (defn run-hosts
   ([hosts f args]

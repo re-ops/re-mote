@@ -14,7 +14,7 @@
    [re-mote.repl.publish :refer (refer-publish)]
    [re-mote.repl.puppet :refer (refer-puppet)]
    [re-mote.repl.octo :refer (refer-octo)]
-   [re-mote.repl.stats :refer (refer-stats)]
+   [re-mote.zero.stats :refer (refer-stats)]
    [re-mote.repl.sensors :refer (refer-sensors)]
    [re-mote.repl.re-gent :refer (refer-regent)]
    [re-mote.repl.schedule :refer (watch seconds)]

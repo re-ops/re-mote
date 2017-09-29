@@ -15,10 +15,10 @@
 
 (def ^{:doc "Excute a script using bash"} shell
   (s/fn [script]
-    (let [f (temp-file "/tmp/")]
+    (let [f (temp-file "")]
       (try
         (spit f script)
-        (sh "bash" f)
+        (sh "bash" (.getPath f))
         (finally
           (delete f))))))
 
@@ -60,5 +60,5 @@
      (filter #(and (var? (second %)) (= f (var-get (second %)))) (ns-map 're-mote.zero.functions))))))
 
 (comment
-  (sh (into []  (.split (re-mote.repl.stats/net-script) "\n")))
+  (shell (re-mote.zero.stats/cpu-script))
   (clojure.pprint/pprint (:family (:operatingSystem (read-metrics)))))
