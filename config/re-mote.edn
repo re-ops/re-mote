@@ -1,0 +1,9 @@
+{
+  :smtp {
+     :host "smtp.gmail.com"
+     :user ""
+     :pass ""
+     :ssl :yes!!!11
+  }
+}
+
