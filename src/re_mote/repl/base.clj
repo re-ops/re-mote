@@ -3,7 +3,6 @@
    [clojure.java.shell :refer [sh]]
    [clojure.core.strint :refer (<<)]
    [clojure.edn :as edn]
-   [clojure.string :refer (split)]
    [clojure.tools.trace :as t]
    [clojure.core.async :refer (<!! thread thread-call) :as async]
    [clojure.java.io :refer (reader file)]
@@ -100,14 +99,6 @@
 
 (defprotocol Performance
   (measure [this m]))
-
-(defn zip
-  "Collecting output into a hash, must be defined outside protocoal because of var args"
-  [this {:keys [success failure] :as res} parent k & ks]
-  (let [zipped (fn [{:keys [out] :as m}] (assoc-in m [parent k] (zipmap ks (split out #"\s"))))
-        success' (map zipped (get-logs success))
-        failure' (into {} (map (fn [[code rs]] [code (get-logs rs)]) failure))]
-    [this (assoc (assoc res :success success') :failure failure')]))
 
 (defprotocol Select
   (initialize [this])

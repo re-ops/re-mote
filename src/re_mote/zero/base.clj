@@ -1,6 +1,7 @@
 (ns re-mote.zero.base
   "Base ns for zeromq pipeline support"
   (:require
+   [taoensso.timbre :refer  (refer-timbre)]
    [com.rpl.specter :refer (transform MAP-VALS ALL)]
    [re-mote.zero.management :refer (refer-zero-manage)]
    [re-mote.zero.functions :as fns :refer (fn-meta)]
@@ -8,6 +9,7 @@
    [re-mote.log :refer (gen-uuid)]
    [re-share.core :refer (wait-for)]))
 
+(refer-timbre)
 (refer-zero-manage)
 
 (defn call
@@ -23,17 +25,25 @@
 
 (defn- get-results [{:keys [hosts]} k uuid]
   (let [rs (map (partial result uuid k) hosts)]
-    (when (every? identity rs) (zipmap hosts rs))))
+    (when (every? identity rs) 
+      (zipmap hosts rs))))
+
+(defn- all-results [{:keys [hosts]} k uuid]
+  (let [rs (map (partial result uuid k) hosts)]
+     (zipmap hosts rs)))
 
 (defn with-codes
   [m uuid]
   (transform [ALL] (fn [[h v]] [h {:host h :code (if (= v :failed) -1 0)  :uuid uuid :result v}]) m))
 
 (defn collect
-  "Collect results from the zmq hosts blocking until all results are back"
+  "Collect results from the zmq hosts blocking until all results are back or timeout end"
   [hs k uuid timeout]
-  (wait-for {:timeout timeout}
-    (fn [] (get-results hs k uuid)) "Failed to collect all hosts")
+  (try 
+    (wait-for {:timeout timeout}
+      (fn [] (get-results hs k uuid)) "Failed to collect all hosts")
+     (catch Exception e
+       (warn "Failed to get results" (assoc (ex-data e) :all-results (all-results hs k uuid)))))
   (with-codes
     (get-results hs k uuid) uuid))
 

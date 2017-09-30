@@ -19,17 +19,17 @@
 
 (extend-type Hosts
   Pkg
-  (update [this _]
-    (update this))
+  (update
+    ([this _]
+      (update this))
+    ([this]
+      [this (run-hosts this pkg-update [] [2 :minute])]))
 
-  (update [this]
-    [this (run-hosts this pkg-update [] [5 :minute])])
-
-  (upgrade [this]
-    (upgrade this {}))
-
-  (upgrade [this]
-    [this (run-hosts this pkg-upgrade [] [5 :minute])]))
+  (upgrade
+    ([this]
+       (upgrade this {}))
+    ([this m]
+      [this (run-hosts this pkg-upgrade [] [5 :minute])])))
 
 (defn refer-pkg []
   (require '[re-mote.zero.pkg :as pkg]))
