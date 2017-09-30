@@ -25,12 +25,12 @@
 
 (defn- get-results [{:keys [hosts]} k uuid]
   (let [rs (map (partial result uuid k) hosts)]
-    (when (every? identity rs) 
+    (when (every? identity rs)
       (zipmap hosts rs))))
 
 (defn- all-results [{:keys [hosts]} k uuid]
   (let [rs (map (partial result uuid k) hosts)]
-     (zipmap hosts rs)))
+    (zipmap hosts rs)))
 
 (defn with-codes
   [m uuid]
@@ -39,11 +39,11 @@
 (defn collect
   "Collect results from the zmq hosts blocking until all results are back or timeout end"
   [hs k uuid timeout]
-  (try 
+  (try
     (wait-for {:timeout timeout}
-      (fn [] (get-results hs k uuid)) "Failed to collect all hosts")
-     (catch Exception e
-       (warn "Failed to get results" (assoc (ex-data e) :all-results (all-results hs k uuid)))))
+              (fn [] (get-results hs k uuid)) "Failed to collect all hosts")
+    (catch Exception e
+      (warn "Failed to get results" (assoc (ex-data e) :all-results (all-results hs k uuid)))))
   (with-codes
     (get-results hs k uuid) uuid))
 

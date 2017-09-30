@@ -18,7 +18,7 @@
 (defn zip
   "Collecting output into a hash, must be defined outside protocoal because of var args"
   [this {:keys [success failure] :as res} parent k & ks]
-  (let [zipped (fn [{:keys [result] :as m}] (assoc-in m [parent k] (zipmap ks (split (result :out) #"\s"))))
+  (let [zipped (fn [{:keys [result] :as m}] (info (result :out)) (assoc-in m [parent k] (zipmap ks (split (result :out) #"\s"))))
         success' (map zipped success)
         #_(into {} (map (fn [[code rs]] [code (get-logs rs)]) failure))]
     [this (assoc (assoc res :success success') :failure failure)]))
@@ -113,8 +113,8 @@
     ([this _]
      (net this))
     ([this]
-      (into-dec
-       (zip this (run-hosts this shell [(validate! net-script)] timeout)
+     (into-dec
+      (zip this (run-hosts this shell [(validate! net-script)] timeout)
            :stats :net :rxpck/s :txpck/s :rxkB/s :txkB/s :rxcmp/s :txcmp/s :rxmcst/s :ifutil))))
 
   (cpu

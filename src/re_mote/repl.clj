@@ -149,15 +149,15 @@
      (kill sandbox)
   "
   [{:keys [auth] :as hs}]
-    (run (kill-agent hs) | (pretty)))
+  (run (kill-agent hs) | (pretty)))
 
 (defn #^{:category :re-gent} launch
   "start re-gent process:
      (start sandbox)
   "
   [{:keys [auth] :as hs}]
-    (let [{:keys [user]} auth home (<< "/home/~{user}")]
-      (run (start-agent hs home) | (pretty))))
+  (let [{:keys [user]} auth home (<< "/home/~{user}")]
+    (run (start-agent hs home) | (pretty))))
 
 (defn filter-hosts
   [hs f]
