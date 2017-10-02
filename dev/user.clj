@@ -13,7 +13,9 @@
    [re-mote.zero.functions :refer (refer-zero-fns)]
    [re-mote.zero.facts :refer (refer-facts)]
    [re-mote.repl :refer :all])
-  (:import re_mote.repl.base.Hosts))
+  (:import
+   java.io.File
+   re_mote.repl.base.Hosts))
 
 (refer-zero-base)
 (refer-zero-manage)
@@ -58,7 +60,7 @@
   (when watch (auto-reload))
   (init)
   (start)
-  (doseq [f (filter #(and (.isFile %) (.endsWith (.getName %) ".clj")) (file-seq (io/file "scripts")))]
+  (doseq [f (filter (fn [^File v] (and (.isFile v) (.endsWith (.getName v) ".clj"))) (file-seq (io/file "scripts")))]
     (load-file (.getPath f))))
 
 (defn reset []

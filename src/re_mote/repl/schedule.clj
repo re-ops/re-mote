@@ -15,7 +15,7 @@
    [clj-time.core :as t]
    [clj-time.local :refer [local-now to-local-date-time]]
    [clojure.core.async :as a :refer [<! go-loop close!]])
-  (:import [org.joda.time DateTimeConstants DateTimeZone]))
+  (:import [org.joda.time DateTimeConstants DateTimeZone DateTime]))
 
 (refer-timbre)
 
@@ -30,15 +30,15 @@
   ([n] (periodic-seq (local-now) (-> n t/seconds))))
 
 (defn every-day [hour]
-  (let [now (local-now) dates (periodic-seq (.. now (withTime hour 0 0 0)) (t/days 1))]
+  (let [^DateTime now (local-now) dates (periodic-seq (.. now (withTime hour 0 0 0)) (t/days 1))]
     (if (> (c/to-long (first dates)) (c/to-long now)) dates (rest dates))))
 
 (defn on-weekdays [hour]
   (->> (every-day hour)
-       (remove (comp #{DateTimeConstants/SATURDAY DateTimeConstants/SUNDAY} #(.getDayOfWeek %)))))
+       (remove (comp #{DateTimeConstants/SATURDAY DateTimeConstants/SUNDAY} #(.getDayOfWeek ^DateTime %)))))
 
 (defn at-day [day hour]
-  (->> (every-day hour) (filter (comp #{day} #(.getDayOfWeek %)))))
+  (->> (every-day hour) (filter (comp #{day} #(.getDayOfWeek ^DateTime %)))))
 
 (defn watch
   "run f using provided period"

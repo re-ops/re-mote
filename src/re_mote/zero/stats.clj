@@ -108,8 +108,8 @@
 
 (def timeout [5 :second])
 
-(defn args [script]
-  [(md5 (script)) (validate! script)])
+(defn args [bs]
+  [(md5 (bs)) (validate! bs)])
 
 (extend-type Hosts
   Stats

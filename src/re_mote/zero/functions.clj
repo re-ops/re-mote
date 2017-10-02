@@ -14,21 +14,21 @@
     (case (os)
       :Ubuntu (sh "sudo" "apt" "update")
       :FreeBSD (sh "sudo" "pkg" "update")
-      (throw (ex-info "not supported")))))
+      (throw (ex-info "not supported" {:os (os)})))))
 
 (def ^{:doc "upgrade all packages"} pkg-upgrade
   (s/fn []
     (case (os)
       :Ubuntu (sh "sudo" "apt" "upgrade" "-y")
       :FreeBSD (sh "sudo" "pkg" "upgrade" "-y")
-      (throw (ex-info "not supported")))))
+      (throw (ex-info "not supported" {:os (os)})))))
 
 (def ^{:doc "install a package"} pkg-install
   (s/fn [pkg]
     (case (os)
       :Ubuntu (sh "sudo" "apt" "install" pkg "-y")
       :FreeBSD (sh "sudo" "pkg" "install" pkg "-y")
-      (throw (ex-info "not supported")))))
+      (throw (ex-info "not supported" {:os (os)})))))
 
 (def ^{:doc "Fix package provider"} pkg-fix
   (s/fn []

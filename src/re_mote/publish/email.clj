@@ -5,7 +5,7 @@
    [hiccup.core :refer [html]]
    [hiccup.page :refer [html5 include-js include-css]]))
 
-(defn summarize [s]
+(defn summarize [^String s]
   (let [l (.length s)]
     (if (< l 50) s (.substring s (- l 50) l))))
 

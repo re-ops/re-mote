@@ -4,7 +4,9 @@
    [re-mote.zero.common :refer  (context)]
    [re-mote.zero.management :refer  (clear-registered)]
    [re-mote.zero.server :refer (setup-server kill-server! bind-future)]
-   [re-mote.zero.worker :refer (setup-workers stop-workers!)]))
+   [re-mote.zero.worker :refer (setup-workers stop-workers!)])
+  (:import
+   org.zeromq.ZMQ$Context))
 
 (refer-timbre)
 
@@ -21,7 +23,7 @@
   (stop-workers!)
   (info "terminating ctx")
   (when @ctx
-    (.term @ctx)
+    (.term ^ZMQ$Context @ctx)
     (reset! ctx nil))
   (clear-registered))
 

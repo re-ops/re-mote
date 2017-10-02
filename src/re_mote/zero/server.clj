@@ -42,6 +42,7 @@
 (defn setup-server [ctx private]
   (let [port (find-port 9000 9010)]
     (send frontend (fn [_] (router-socket ctx private port)))
+    (await-for 1000 frontend)
     (info "started zeromq server router socket on port" port)
     (reset! front-port port)
     (reset! sockets {:backend (backend-socket ctx) :control-sub (control-sub-socket ctx)
@@ -56,6 +57,7 @@
       (finally
         (close! (assoc @sockets :frontend @frontend))
         (send frontend (fn [_] nil))
+        (await-for 1000 frontend)
         (reset! sockets nil)
         (info "proxy closed")))))
 
