@@ -33,10 +33,13 @@
 (def front-port (atom nil))
 
 (defn send- [address content]
-  (send frontend
-        (fn [socket]
-          (.send socket (freeze address) ZMQ/SNDMORE)
-          (.send socket (freeze content) 0)
+  (send-off frontend
+     (fn [socket]
+          (try
+             (.send socket (freeze address) ZMQ/SNDMORE)
+             (.send socket (freeze content) 0)
+            (catch Exception e
+              (error (.getMessage e))))
           socket)))
 
 (defn setup-server [ctx private]
