@@ -28,6 +28,9 @@
 (defn ack [address request]
   (send- address {:response :ok :on (dissoc request :content)}))
 
+(defn reply [hostname name id r t]
+  (swap! results assoc-in [hostname (keyword name) id] r))
+
 (defn process
   "Process a message from a client"
   [{:keys [hostname uid] :as address} request]
@@ -36,8 +39,7 @@
     (match [request]
       [{:request :register}] (ack address (register address))
       [{:request :unregister}] (ack address (unregister address))
-      [{:reply :execute :result r :name name :uuid id}]
-      (swap! results assoc-in [hostname (keyword name) id] r)
+      [{:reply :execute :result r :time t :name name :uuid id}] (reply hostname name id r t)
       :else (fail request "no handling clause found for request"))
     (catch Exception e
       (fail request e)

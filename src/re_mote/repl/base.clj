@@ -1,5 +1,6 @@
 (ns re-mote.repl.base
   (:require
+   [me.raynes.fs :as fs]
    [clojure.java.shell :refer [sh]]
    [clojure.core.strint :refer (<<)]
    [clojure.edn :as edn]
@@ -44,6 +45,8 @@
     {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
 
 (defn upload-hosts [{:keys [auth hosts]} src dest]
+  (when-not (fs/exists? src)
+    (throw (ex-info (<< "missing source file to upload ~{src}") {:src src})))
   (let [results (map-async (partial host-upload auth src dest) hosts)
         grouped (group-by :code results)]
     {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))

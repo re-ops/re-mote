@@ -1,6 +1,7 @@
 (ns re-mote.zero.stats
   "General stats"
   (:require
+   [re-share.core :refer (md5)]
    [clojure.string :refer (split)]
    [clojure.tools.trace :as tr]
    [re-mote.zero.base :refer (run-hosts)]
@@ -18,7 +19,7 @@
 (defn zip
   "Collecting output into a hash, must be defined outside protocoal because of var args"
   [this {:keys [success failure] :as res} parent k & ks]
-  (let [zipped (fn [{:keys [result] :as m}] (info (result :out)) (assoc-in m [parent k] (zipmap ks (split (result :out) #"\s"))))
+  (let [zipped (fn [{:keys [result] :as m}] (assoc-in m [parent k] (zipmap ks (split (result :out) #"\s"))))
         success' (map zipped success)
         #_(into {} (map (fn [[code rs]] [code (get-logs rs)]) failure))]
     [this (assoc (assoc res :success success') :failure failure)]))
@@ -105,7 +106,10 @@
   (let [v (into [] (into (sorted-map) m)) c (count v)]
     (if (< c n) m (into (sorted-map) (subvec v (- c n) c)))))
 
-(def timeout [120 :second])
+(def timeout [5 :second])
+
+(defn args [script]
+  [(md5 (script)) (validate! script)])
 
 (extend-type Hosts
   Stats
@@ -114,24 +118,24 @@
      (net this))
     ([this]
      (into-dec
-      (zip this (run-hosts this shell [(validate! net-script)] timeout)
+      (zip this (run-hosts this shell (args net-script) timeout)
            :stats :net :rxpck/s :txpck/s :rxkB/s :txkB/s :rxcmp/s :txcmp/s :rxmcst/s :ifutil))))
 
   (cpu
     ([this]
-     (into-dec (zip this (run-hosts this shell [(validate! cpu-script)] timeout) :stats :cpu :usr :sys :idle)))
+     (into-dec (zip this (run-hosts this shell (args cpu-script) timeout) :stats :cpu :usr :sys :idle)))
     ([this _]
      (cpu this)))
 
   (free
     ([this]
-     (into-dec (zip this (run-hosts this shell [(validate! free-script)] timeout) :stats :free :total :used :free)))
+     (into-dec (zip this (run-hosts this shell (args free-script) timeout) :stats :free :total :used :free)))
     ([this _]
      (free this)))
 
   (load-avg
     ([this]
-     (into-dec (zip this (run-hosts this shell [(validate! load-script)] timeout) :stats :load :one :five :fifteen)))
+     (into-dec (zip this (run-hosts this shell (args load-script) timeout) :stats :load :one :five :fifteen)))
     ([this _]
      (free this)))
 

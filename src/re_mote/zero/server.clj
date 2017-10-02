@@ -29,31 +29,36 @@
     (.bind "inproc://control")))
 
 (def sockets (atom {}))
+(def frontend (agent nil))
 (def front-port (atom nil))
 
 (defn send- [address content]
-  (let [{:keys [frontend]} @sockets]
-    (.send frontend (freeze address) ZMQ/SNDMORE)
-    (.send frontend (freeze content) 0)))
+  (send frontend
+    (fn [socket]
+      (.send socket (freeze address) ZMQ/SNDMORE)
+      (.send socket (freeze content) 0)
+       socket
+      )))
 
 (defn setup-server [ctx private]
-  (let [port (find-port 9000 9010)
-        frontend (router-socket ctx private port)
-        backend (backend-socket ctx)
-        control-pub (control-pub-socket ctx)
-        control-sub  (control-sub-socket ctx)]
+  (let [port (find-port 9000 9010)]
+    (send frontend (fn [_] (router-socket ctx private port)))
     (info "started zeromq server router socket on port" port)
     (reset! front-port port)
-    (reset! sockets {:frontend frontend :backend backend :control-sub control-sub :control-pub control-pub})))
+    (reset! sockets {
+       :backend (backend-socket ctx) :control-sub (control-sub-socket ctx)
+       :control-pub (control-pub-socket ctx)
+    })))
 
 (def t (atom nil))
 
 (defn- bind []
-  (let [{:keys [frontend backend control-sub]} @sockets]
+  (let [{:keys [backend control-sub]} @sockets]
     (try
-      (ZMQ/proxy frontend backend nil control-sub)
+      (ZMQ/proxy @frontend backend nil control-sub)
       (finally
-        (close! @sockets)
+        (close! (assoc @sockets :frontend @frontend))
+        (send frontend (fn [_] nil))
         (reset! sockets nil)
         (info "proxy closed")))))
 

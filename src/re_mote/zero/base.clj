@@ -1,6 +1,7 @@
 (ns re-mote.zero.base
   "Base ns for zeromq pipeline support"
   (:require
+   [clojure.core.match :refer [match]]
    [taoensso.timbre :refer  (refer-timbre)]
    [com.rpl.specter :refer (transform MAP-VALS ALL)]
    [re-mote.zero.management :refer (refer-zero-manage)]
@@ -32,16 +33,22 @@
   (let [rs (map (partial result uuid k) hosts)]
     (zipmap hosts rs)))
 
+(defn codes [v]
+  (match [v]
+    [:failed] -1
+    [{:exit e}] e
+    :else 0))
+
 (defn with-codes
   [m uuid]
-  (transform [ALL] (fn [[h v]] [h {:host h :code (if (= v :failed) -1 0)  :uuid uuid :result v}]) m))
+  (transform [ALL] (fn [[h v]] [h {:host h :code (codes v)  :uuid uuid :result v}]) m))
 
 (defn collect
   "Collect results from the zmq hosts blocking until all results are back or timeout end"
   [hs k uuid timeout]
   (try
-    (wait-for {:timeout timeout}
-              (fn [] (get-results hs k uuid)) "Failed to collect all hosts")
+    (wait-for {:timeout timeout :sleep [500 :ms]}
+       (fn [] (get-results hs k uuid)) "Failed to collect all hosts")
     (catch Exception e
       (warn "Failed to get results" (assoc (ex-data e) :all-results (all-results hs k uuid)))))
   (with-codes

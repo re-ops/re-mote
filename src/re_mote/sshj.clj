@@ -47,7 +47,7 @@
   [cmd remote & {:keys [out-fn err-fn] :or {out-fn log-output err-fn log-output}}]
   (with-ssh remote
     (let [session (doto (.startSession ssh) (.allocateDefaultPTY)) command (.exec session cmd)]
-      (try (debug (<< "[~(remote :host)]:") cmd)
+      (try (trace (<< "[~(remote :host)]:") cmd)
            (out-fn (.getInputStream command) (remote :host))
            (err-fn (.getErrorStream command) (remote :host))
            (.join command 60 TimeUnit/SECONDS)

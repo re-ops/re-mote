@@ -15,7 +15,17 @@
     [this m])
   (upgrade
     [this]
-    [this m]))
+    [this m])
+  (install
+    [this pkg]
+    [this m pkg])
+  (fix
+    [this]
+    [this m])
+  (kill
+    [this]
+    [this m])
+  )
 
 (extend-type Hosts
   Pkg
@@ -29,7 +39,25 @@
     ([this]
      (upgrade this {}))
     ([this m]
-     [this (run-hosts this pkg-upgrade [] [5 :minute])])))
+     [this (run-hosts this pkg-upgrade [] [5 :minute])]))
+
+  (install
+    ([this pkg]
+     (install this {} pkg))
+    ([this m pkg]
+     [this (run-hosts this pkg-install [pkg] [5 :minute])]))
+
+  (fix
+    ([this]
+      (fix this {}))
+    ([this m]
+      ([this (run-hosts this pkg-fix [] [1 :minute])])))
+
+  (kill
+    ([this]
+      (kill this {}))
+    ([this m]
+      ([this (run-hosts this pkg-kill [] [1 :minute])]))))
 
 (defn refer-pkg []
   (require '[re-mote.zero.pkg :as pkg]))

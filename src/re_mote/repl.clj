@@ -10,7 +10,6 @@
    [re-mote.repl.base :refer (refer-base)]
    [re-mote.repl.zfs :refer (refer-zfs)]
    [re-mote.repl.output :refer (refer-out)]
-   [re-mote.repl.apt :refer (refer-apt)]
    [re-mote.repl.publish :refer (refer-publish)]
    [re-mote.repl.puppet :refer (refer-puppet)]
    [re-mote.repl.octo :refer (refer-octo)]
@@ -32,7 +31,6 @@
 (refer-out)
 (refer-stats)
 (refer-sensors)
-(refer-apt)
 (refer-pkg)
 (refer-puppet)
 (refer-zfs)
@@ -102,15 +100,15 @@
   [hs]
   (run (pkg/update hs) | (pick successful) | (pkg/upgrade) | (pretty) | (email (tofrom "package upgrade"))))
 
-(defn #^{:category :packaging} add-package
+(defn #^{:category :packaging} install
   "Install a package on hosts"
   [hs pkg]
-  (run (install hs pkg) | (pretty)))
+  (run (pkg/install hs pkg) | (pretty)))
 
-(defn #^{:category :packaging} apt-rewind
-  "try to put apt back on track"
+(defn #^{:category :packaging} pakage-fix
+  "Fix package provider"
   [hs]
-  (run (unlock hs) | (kill-apt) | (pretty)))
+  (run (pkg/fix hs) | (pkg/kill) | (pretty)))
 
 ; Puppet
 (defn #^{:category :puppet} copy-module
