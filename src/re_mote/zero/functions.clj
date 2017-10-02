@@ -60,9 +60,9 @@
 (def ^{:doc "Excute a script using bash"} shell
   (s/fn [sum script]
     (let [f (file (tmpdir) sum)]
-       (when-not (exists? f)
-          (spit f script))
-       (sh "bash" (.getPath f)))))
+      (when-not (exists? f)
+        (spit f script))
+      (sh "bash" (.getPath f)))))
 ; Misc
 (def ^{:doc "list dir"} ls
   (s/fn [d]
@@ -76,8 +76,8 @@
     (sh "fail")))
 
 (defn refer-zero-fns []
-  (require '[re-mote.zero.functions :as fns :refer 
-    (pkg-update pkg-upgrade pkg-fix pkg-kill pkg-install fails shell plus-one oshi-os oshi-hardware)]))
+  (require '[re-mote.zero.functions :as fns :refer
+             (pkg-update pkg-upgrade pkg-fix pkg-kill pkg-install fails shell plus-one oshi-os oshi-hardware)]))
 
 (defn fn-meta [f]
   (meta

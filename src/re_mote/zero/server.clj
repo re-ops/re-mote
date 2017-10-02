@@ -34,21 +34,18 @@
 
 (defn send- [address content]
   (send frontend
-    (fn [socket]
-      (.send socket (freeze address) ZMQ/SNDMORE)
-      (.send socket (freeze content) 0)
-       socket
-      )))
+        (fn [socket]
+          (.send socket (freeze address) ZMQ/SNDMORE)
+          (.send socket (freeze content) 0)
+          socket)))
 
 (defn setup-server [ctx private]
   (let [port (find-port 9000 9010)]
     (send frontend (fn [_] (router-socket ctx private port)))
     (info "started zeromq server router socket on port" port)
     (reset! front-port port)
-    (reset! sockets {
-       :backend (backend-socket ctx) :control-sub (control-sub-socket ctx)
-       :control-pub (control-pub-socket ctx)
-    })))
+    (reset! sockets {:backend (backend-socket ctx) :control-sub (control-sub-socket ctx)
+                     :control-pub (control-pub-socket ctx)})))
 
 (def t (atom nil))
 

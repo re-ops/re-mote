@@ -24,8 +24,7 @@
     [this m])
   (kill
     [this]
-    [this m])
-  )
+    [this m]))
 
 (extend-type Hosts
   Pkg
@@ -49,15 +48,15 @@
 
   (fix
     ([this]
-      (fix this {}))
+     (fix this {}))
     ([this m]
-      ([this (run-hosts this pkg-fix [] [1 :minute])])))
+     ([this (run-hosts this pkg-fix [] [1 :minute])])))
 
   (kill
     ([this]
-      (kill this {}))
+     (kill this {}))
     ([this m]
-      ([this (run-hosts this pkg-kill [] [1 :minute])]))))
+     ([this (run-hosts this pkg-kill [] [1 :minute])]))))
 
 (defn refer-pkg []
   (require '[re-mote.zero.pkg :as pkg]))
