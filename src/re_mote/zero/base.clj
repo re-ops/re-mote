@@ -6,7 +6,7 @@
    [com.rpl.specter :refer (transform MAP-VALS ALL)]
    [re-mote.zero.management :refer (refer-zero-manage)]
    [re-mote.zero.functions :as fns :refer (fn-meta)]
-   [re-mote.zero.server :refer [send-]]
+   [re-mote.zero.frontend :refer [send-]]
    [re-mote.log :refer (gen-uuid)]
    [re-share.core :refer (wait-for)]))
 

@@ -106,7 +106,7 @@
   (let [v (into [] (into (sorted-map) m)) c (count v)]
     (if (< c n) m (into (sorted-map) (subvec v (- c n) c)))))
 
-(def timeout [10 :second])
+(def timeout [20 :second])
 
 (defn args [bs]
   [(md5 (bs)) (validate! bs)])

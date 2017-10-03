@@ -4,7 +4,7 @@
    [re-mote.zero.stats :refer (validate!)]
    [pallet.stevedore :refer (script chained-script)]
    [clojure.core.strint :refer (<<)]
-   [re-mote.zero.server :refer (front-port)]
+   [re-mote.zero.frontend :refer (used-port)]
    [re-mote.repl.base :refer (run-hosts)])
   (:import [re_mote.repl.base Hosts]))
 
@@ -49,7 +49,7 @@
 
   (start-agent
     ([this _ home]
-     [this (run-hosts this (start-script @front-port home))])
+     [this (run-hosts this (start-script (used-port) home))])
     ([this home]
      (start-agent this nil home))))
 

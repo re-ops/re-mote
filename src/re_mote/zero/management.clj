@@ -6,7 +6,7 @@
    [taoensso.timbre :refer  (refer-timbre)]
    [clojure.core.match :refer [match]]
    [puget.printer :as puget]
-   [re-mote.zero.server :refer [send-]]))
+   [re-mote.zero.frontend :refer [send-]]))
 
 (refer-timbre)
 

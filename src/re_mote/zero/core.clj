@@ -4,6 +4,7 @@
    [re-mote.zero.common :refer  (context)]
    [re-mote.zero.management :refer  (clear-registered)]
    [re-mote.zero.server :refer (setup-server kill-server! bind-future)]
+   [re-mote.zero.frontend :refer (setup-front stop-front!)]
    [re-mote.zero.worker :refer (setup-workers stop-workers!)])
   (:import
    org.zeromq.ZMQ$Context))
@@ -14,13 +15,15 @@
 
 (defn start-zero-server []
   (reset! ctx (context))
-  (setup-server @ctx ".curve/server-private.key")
-  (setup-workers @ctx 4)
-  (bind-future))
+  (let [private ".curve/server-private.key" frontend (setup-front @ctx private)]
+    (setup-server @ctx private)
+    (setup-workers @ctx 4)
+    (bind-future frontend)))
 
 (defn stop-zero-server []
   (kill-server!)
   (stop-workers!)
+  (stop-front!)
   (info "terminating ctx")
   (when @ctx
     (.term ^ZMQ$Context @ctx)

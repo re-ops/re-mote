@@ -1,19 +1,12 @@
 (ns re-mote.zero.server
   "An orchestration re-mote server using Zeromq router socket"
   (:require
-   [re-share.core :refer (find-port)]
-   [taoensso.nippy :as nippy :refer (freeze)]
-   [clojure.core.strint :refer  (<<)]
-   [taoensso.timbre :refer  (refer-timbre)]
-   [re-mote.zero.common :refer  (read-key server-socket context close!)])
+    [clojure.core.strint :refer  (<<)]
+    [taoensso.timbre :refer  (refer-timbre)]
+    [re-mote.zero.common :refer  (read-key server-socket context close!)])
   (:import [org.zeromq ZMQ]))
 
 (refer-timbre)
-
-(defn router-socket [ctx private port]
-  (doto (server-socket ctx ZMQ/ROUTER private)
-    (.setZapDomain (.getBytes "global")) ;
-    (.bind (str "tcp://*:" port))))
 
 (defn backend-socket [ctx]
   (doto (.socket ctx ZMQ/DEALER)
@@ -29,43 +22,26 @@
     (.bind "inproc://control")))
 
 (def sockets (atom {}))
-(def frontend (agent nil))
-(def front-port (atom nil))
-
-(defn send- [address content]
-  (send-off frontend
-     (fn [socket]
-          (try
-             (.send socket (freeze address) ZMQ/SNDMORE)
-             (.send socket (freeze content) 0)
-            (catch Exception e
-              (error (.getMessage e))))
-          socket)))
 
 (defn setup-server [ctx private]
-  (let [port (find-port 9000 9010)]
-    (send frontend (fn [_] (router-socket ctx private port)))
-    (await-for 1000 frontend)
-    (info "started zeromq server router socket on port" port)
-    (reset! front-port port)
-    (reset! sockets {:backend (backend-socket ctx) :control-sub (control-sub-socket ctx)
-                     :control-pub (control-pub-socket ctx)})))
+  (reset! sockets {
+     :backend (backend-socket ctx)
+     :control-sub (control-sub-socket ctx)
+     :control-pub (control-pub-socket ctx)}))
 
 (def t (atom nil))
 
-(defn- bind []
+(defn- bind [frontend]
   (let [{:keys [backend control-sub]} @sockets]
     (try
-      (ZMQ/proxy @frontend backend nil control-sub)
+      (ZMQ/proxy frontend backend nil control-sub)
       (finally
-        (close! (assoc @sockets :frontend @frontend))
-        (send frontend (fn [_] nil))
-        (await-for 1000 frontend)
+        (close! @sockets)
         (reset! sockets nil)
         (info "proxy closed")))))
 
-(defn bind-future []
-  (reset! t (future (bind))))
+(defn bind-future [frontend]
+  (reset! t (future (bind frontend))))
 
 (defn kill-server! []
   (info "killing server")
