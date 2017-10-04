@@ -1,12 +1,12 @@
 (ns re-mote.zero.frontend
   "frontend socket loop"
   (:require
-    [re-share.core :refer (error-m)]
-    [re-mote.zero.common :refer (close)]
-    [taoensso.nippy :as nippy :refer (freeze)]
-    [re-share.core :refer (find-port)]
-    [taoensso.timbre :refer  (refer-timbre)]
-    [re-mote.zero.common :refer  (server-socket)])
+   [re-share.core :refer (error-m)]
+   [re-mote.zero.common :refer (close)]
+   [taoensso.nippy :as nippy :refer (freeze)]
+   [re-share.core :refer (find-port)]
+   [taoensso.timbre :refer  (refer-timbre)]
+   [re-mote.zero.common :refer  (server-socket)])
   (:import [org.zeromq ZMQ]))
 
 (refer-timbre)
@@ -55,12 +55,10 @@
   (info "pre socket close")
   (close @front-socket)
   (reset! front-socket nil)
-  (info "front socket closed")
-  )
+  (info "front socket closed"))
 
 (defn send- [address content]
   (swap! send-queue conj [address content]))
 
 (defn used-port []
-  @front-port
-  )
+  @front-port)

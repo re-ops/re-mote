@@ -72,7 +72,7 @@
 (defn pretty [rs]
   (let [formatter (format-columns [:right 10] "  " [:right 4] "  " :none)]
     (write-rows *out* formatter [:host :code :out]
-      (map (fn [{:keys [result] :as m}] (color-host (merge (select-keys (merge m result) [:host :code :out])))) rs))))
+                (map (fn [{:keys [result] :as m}] (color-host (merge (select-keys (merge m result) [:host :code :out])))) rs))))
 
 (defn last-run []
   (doseq [[k {:keys [result period time]}] @status]

@@ -43,7 +43,7 @@
 
 (defn setup-workers [ctx n]
   (reset! workers
-    (into {} (map (fn [i] (swap! flags assoc i true) [i (future (worker ctx i))]) (range n)))))
+          (into {} (map (fn [i] (swap! flags assoc i true) [i (future (worker ctx i))]) (range n)))))
 
 (defn stop-workers! []
   (info "stopping worker")

@@ -51,8 +51,8 @@
     (wait-for {:timeout timeout :sleep [500 :ms]}
               (fn [] (get-results hs k uuid)) "Failed to collect all hosts")
     (catch Exception e
-      (warn "Failed to get results" 
-        (assoc (ex-data e) :missing (filter (fn [[k v]] (not v)) (all-results hs k uuid))))))
+      (warn "Failed to get results"
+            (assoc (ex-data e) :missing (filter (fn [[k v]] (not v)) (all-results hs k uuid))))))
   (with-codes
     (get-results hs k uuid) uuid))
 

@@ -1,10 +1,10 @@
 (ns re-mote.zero.server
   "An orchestration re-mote server using Zeromq router socket"
   (:require
-    [clojure.core.strint :refer  (<<)]
-    [taoensso.timbre :refer  (refer-timbre)]
-    [re-share.core :refer (error-m)]
-    [re-mote.zero.common :refer (read-key server-socket context close!)])
+   [clojure.core.strint :refer  (<<)]
+   [taoensso.timbre :refer  (refer-timbre)]
+   [re-share.core :refer (error-m)]
+   [re-mote.zero.common :refer (read-key server-socket context close!)])
   (:import [org.zeromq ZMQ]))
 
 (refer-timbre)
@@ -25,10 +25,9 @@
 (def sockets (atom {}))
 
 (defn setup-server [ctx private]
-  (reset! sockets {
-     :backend (backend-socket ctx)
-     :control-sub (control-sub-socket ctx)
-     :control-pub (control-pub-socket ctx)}))
+  (reset! sockets {:backend (backend-socket ctx)
+                   :control-sub (control-sub-socket ctx)
+                   :control-pub (control-pub-socket ctx)}))
 
 (def t (atom nil))
 

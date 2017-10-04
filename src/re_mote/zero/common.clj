@@ -14,11 +14,11 @@
   (.getBytes (slurp k) utf8))
 
 (defn close [s]
-   (try 
-     (.setLinger s 0)
-     (.close s)
-     (catch Exception e
-       (error-m e))))
+  (try
+    (.setLinger s 0)
+    (.close s)
+    (catch Exception e
+      (error-m e))))
 
 (defn close! [sockets]
   (doseq [[k s] sockets] (close s)))
