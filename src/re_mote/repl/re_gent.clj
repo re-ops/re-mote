@@ -33,7 +33,7 @@
         ("xargs" "kill" "-9"))))))
 
 (defn start-script [port home]
-  (let [bin (<< "~{home}/re-gent") cmd (<< "\"~{bin} ${IP} ~{port} &\"")]
+  (let [bin (<< "~{home}/re-gent") cmd (<< "\"~{bin} ${IP} ~{port} debug &\"")]
     (script
      (set! IP @(pipe ("echo" "$SSH_CLIENT") ("awk" "'{print $1}'")))
      ("chmod" "+x"  ~bin)

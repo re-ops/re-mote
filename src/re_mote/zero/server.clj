@@ -3,7 +3,8 @@
   (:require
     [clojure.core.strint :refer  (<<)]
     [taoensso.timbre :refer  (refer-timbre)]
-    [re-mote.zero.common :refer  (read-key server-socket context close!)])
+    [re-share.core :refer (error-m)]
+    [re-mote.zero.common :refer (read-key server-socket context close!)])
   (:import [org.zeromq ZMQ]))
 
 (refer-timbre)
@@ -41,7 +42,7 @@
         (info "proxy closed")))))
 
 (defn bind-future [frontend]
-  (reset! t (future (bind frontend))))
+  (future (bind frontend)))
 
 (defn kill-server! []
   (info "killing server")
@@ -51,9 +52,7 @@
         (debug "proxy shutdown call")
         (assert (.send pub "TERMINATE" 0))
         (catch Exception e
-          (error (.getMessage e) (.getStacktrace e))))))
-  (when @t
-    (reset! t nil)))
+          (error-m e))))))
 
 (comment
   (kill-server!)

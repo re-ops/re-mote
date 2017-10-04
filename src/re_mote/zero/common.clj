@@ -1,5 +1,6 @@
 (ns re-mote.zero.common
   (:require
+   [re-share.core :refer (error-m)]
    [clojure.core.strint :refer  (<<)])
   (:import
    [org.zeromq ZMQ]
@@ -13,8 +14,11 @@
   (.getBytes (slurp k) utf8))
 
 (defn close [s]
-   (.setLinger s 0)
-   (.close s))
+   (try 
+     (.setLinger s 0)
+     (.close s)
+     (catch Exception e
+       (error-m e))))
 
 (defn close! [sockets]
   (doseq [[k s] sockets] (close s)))

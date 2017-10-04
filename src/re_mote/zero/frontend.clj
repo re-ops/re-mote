@@ -1,6 +1,7 @@
 (ns re-mote.zero.frontend
   "frontend socket loop"
   (:require
+    [re-share.core :refer (error-m)]
     [re-mote.zero.common :refer (close)]
     [taoensso.nippy :as nippy :refer (freeze)]
     [re-share.core :refer (find-port)]
@@ -10,7 +11,7 @@
 
 (refer-timbre)
 
-(def send-queue (agent (clojure.lang.PersistentQueue/EMPTY)))
+(def send-queue (atom (clojure.lang.PersistentQueue/EMPTY)))
 
 (def front-port (atom nil))
 
@@ -25,17 +26,15 @@
 
 (defn front-loop [frontend]
   (info "front loop running")
-  (try 
-    (while @front-flag
-      (if-let [[address content] (peek @send-queue)]
-        (do 
-          (.send frontend (freeze address) ZMQ/SNDMORE)
-          (.send frontend (freeze content) 0)
-          (send send-queue pop))
-        (Thread/sleep 100)))
-    (finally
-      (close @front-socket) 
-      (reset! front-socket nil)))
+  (while @front-flag
+    (if-let [[address content] (peek @send-queue)]
+      (try
+        (.send frontend (freeze address) ZMQ/SNDMORE)
+        (.send frontend (freeze content) 0)
+        (swap! send-queue pop)
+        (catch Exception e
+          (error-m e)))
+      (Thread/sleep 100)))
   (info "front loop done"))
 
 (defn setup-front [ctx private]
@@ -44,7 +43,7 @@
     (reset! front-port port)
     (info "started zeromq server router socket on port" port))
   (reset! front-flag true)
-  (send send-queue (fn [_] (clojure.lang.PersistentQueue/EMPTY)))
+  (reset! send-queue (clojure.lang.PersistentQueue/EMPTY))
   (future (front-loop @front-socket))
   @front-socket)
 
@@ -52,10 +51,15 @@
   (info "killing front loop")
   (reset! front-port nil)
   (reset! front-flag nil)
-  (send send-queue (fn [_] nil)))
+  (reset! send-queue nil)
+  (info "pre socket close")
+  (close @front-socket)
+  (reset! front-socket nil)
+  (info "front socket closed")
+  )
 
 (defn send- [address content]
-  (send send-queue conj [address content]))
+  (swap! send-queue conj [address content]))
 
 (defn used-port []
   @front-port

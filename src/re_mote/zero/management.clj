@@ -1,6 +1,7 @@
 (ns re-mote.zero.management
   "Managing client protocol"
   (:require
+   [re-share.core :refer (error-m)]
    [re-mote.zero.functions :as fns :refer (fn-meta)]
    [io.aviso.columns :refer  (format-columns write-rows)]
    [taoensso.timbre :refer  (refer-timbre)]
@@ -17,16 +18,19 @@
 (defn fail [request e]
   {:response :fail :on request :cause e})
 
+(defn ack [address on]
+  (info "acking" address)
+  (send- address {:response :ok :on on}))
+
 (defn register [{:keys [hostname uid] :as address}]
   (debug "register" hostname uid)
-  (swap! zmq-hosts (fn [m] (assoc m hostname address))))
+  (swap! zmq-hosts assoc hostname address)
+  (ack address {:request :register}))
 
 (defn unregister [{:keys [hostname uid] :as address}]
   (debug "unregister" hostname uid)
-  (swap! zmq-hosts (fn [m] (dissoc m hostname))))
-
-(defn ack [address request]
-  (send- address {:response :ok :on (dissoc request :content)}))
+  (swap! zmq-hosts dissoc hostname)
+  (ack address {:request :unregister}))
 
 (defn reply [hostname name id r t]
   (swap! results assoc-in [hostname (keyword name) id] r))
@@ -35,15 +39,15 @@
   "Process a message from a client"
   [{:keys [hostname uid] :as address} request]
   (try
-    (debug "got" address request)
+    (trace "got" address request)
     (match [request]
-      [{:request :register}] (ack address (register address))
-      [{:request :unregister}] (ack address (unregister address))
+      [{:request :register}] (register address)
+      [{:request :unregister}] (unregister address)
       [{:reply :execute :result r :time t :name name :uuid id}] (reply hostname name id r t)
       :else (fail request "no handling clause found for request"))
     (catch Exception e
       (fail request e)
-      (error e (.getMessage e)))))
+      (error-m e))))
 
 (defn registered-hosts []
   (let [formatter (format-columns [:right 20] "  " [:right 10] "  " :none)]

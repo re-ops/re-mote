@@ -27,6 +27,7 @@
 (defn- get-results [{:keys [hosts]} k uuid]
   (let [rs (map (partial result uuid k) hosts)]
     (when (every? identity rs)
+      (debug "got all results for" k uuid)
       (zipmap hosts rs))))
 
 (defn- all-results [{:keys [hosts]} k uuid]
@@ -50,7 +51,8 @@
     (wait-for {:timeout timeout :sleep [500 :ms]}
               (fn [] (get-results hs k uuid)) "Failed to collect all hosts")
     (catch Exception e
-      (warn "Failed to get results" (assoc (ex-data e) :all-results (all-results hs k uuid)))))
+      (warn "Failed to get results" 
+        (assoc (ex-data e) :missing (filter (fn [[k v]] (not v)) (all-results hs k uuid))))))
   (with-codes
     (get-results hs k uuid) uuid))
 

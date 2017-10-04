@@ -2,6 +2,8 @@
   (:require
    [taoensso.timbre :refer  (refer-timbre)]
    [taoensso.nippy :as nippy :refer (freeze thaw)]
+   [re-mote.zero.common :refer (close)]
+   [re-share.core :refer (error-m)]
    [re-mote.zero.management :refer (process)])
   (:import
    [org.zeromq ZMQ ZMsg]))
@@ -19,10 +21,10 @@
 (defn handle-message [socket address content]
   (try
     (let [{:keys [hostname uid] :as m} (thaw address)]
-      (debug "got message from" hostname "uid" uid)
+      (trace "got message from" hostname "uid" uid)
       (process m (thaw content)))
     (catch Exception e
-      (error e (.getMessage e)))))
+      (error-m e))))
 
 (defn worker [ctx i]
   (let [socket (worker-socket ctx)]
@@ -34,17 +36,14 @@
             (handle-message socket (.getData address) (.getData content)))))
       (info "worker going down")
       (catch Exception e
-        (error e (.getMessage e) (.getStacktrace e)))
+        (error-m e))
       (finally
-        (.setLinger socket 0)
-        (.close socket)
+        (close socket)
         (info "closed worker socket")))))
 
 (defn setup-workers [ctx n]
   (reset! workers
-          (into {}
-                (map
-                 (fn [i] (swap! flags assoc i true) [i (future (worker ctx i))]) (range n)))))
+    (into {} (map (fn [i] (swap! flags assoc i true) [i (future (worker ctx i))]) (range n)))))
 
 (defn stop-workers! []
   (info "stopping worker")
