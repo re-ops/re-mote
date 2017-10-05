@@ -52,13 +52,14 @@
   (reset! front-port nil)
   (reset! front-flag nil)
   (reset! send-queue nil)
-  (info "pre socket close")
-  (close @front-socket)
-  (reset! front-socket nil)
-  (info "front socket closed"))
+  (debug "pre socket close")
+  (when @front-socket
+    (close @front-socket)
+    (reset! front-socket nil)
+    (info "front socket closed")))
 
 (defn send- [address content]
-  (swap! send-queue conj [address content]))
+  (when @send-queue
+    (swap! send-queue conj [address content])))
 
-(defn used-port []
-  @front-port)
+(defn used-port [] @front-port)

@@ -31,9 +31,10 @@
     (try
       (info "worker running")
       (while (@flags i)
-        (when-let [msg (ZMsg/recvMsg socket)]
+        (if-let [msg (ZMsg/recvMsg socket ZMQ/DONTWAIT)]
           (let [address (.pop msg) content (.pop msg)]
-            (handle-message socket (.getData address) (.getData content)))))
+            (handle-message socket (.getData address) (.getData content)))
+          (Thread/sleep 10)))
       (info "worker going down")
       (catch Exception e
         (error-m e))

@@ -21,9 +21,10 @@
     (bind-future frontend)))
 
 (defn stop-zero-server []
-  (kill-server!)
   (stop-workers!)
   (stop-front!)
+  (kill-server!)
+  (Thread/sleep 1000)
   (info "terminating ctx")
   (when @ctx
     (.term ^ZMQ$Context @ctx)
