@@ -2,7 +2,7 @@
   (:require
    [taoensso.timbre :refer  (refer-timbre)]
    [taoensso.nippy :as nippy :refer (freeze thaw)]
-   [re-mote.zero.common :refer (close)]
+   [re-share.zero.common :refer (close)]
    [re-share.core :refer (error-m)]
    [re-mote.zero.management :refer (process)])
   (:import

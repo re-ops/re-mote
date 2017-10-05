@@ -1,10 +1,11 @@
 (ns re-mote.zero.server
-  "An orchestration re-mote server using Zeromq router socket"
+  "An orchestration re-mote server using ZeroMq router socket"
   (:require
    [clojure.core.strint :refer  (<<)]
    [taoensso.timbre :refer  (refer-timbre)]
    [re-share.core :refer (error-m)]
-   [re-mote.zero.common :refer (read-key server-socket context close!)])
+   [re-share.zero.common :refer (context close!)]
+   [re-mote.zero.common :refer (read-key server-socket)])
   (:import [org.zeromq ZMQ]))
 
 (refer-timbre)
@@ -29,8 +30,6 @@
                    :control-sub (control-sub-socket ctx)
                    :control-pub (control-pub-socket ctx)}))
 
-(def t (atom nil))
-
 (defn- bind [frontend]
   (let [{:keys [backend control-sub]} @sockets]
     (try
@@ -52,9 +51,3 @@
         (assert (.send pub "TERMINATE" 0))
         (catch Exception e
           (error-m e))))))
-
-(comment
-  (kill-server!)
-  (close! @sockets)
-  (reset! sockets {})
-  (setup-server (context) ".curve/server-private.key"))

@@ -1,7 +1,7 @@
 (ns re-mote.zero.core
   (:require
    [taoensso.timbre :refer  (refer-timbre)]
-   [re-mote.zero.common :refer  (context)]
+   [re-share.zero.common :refer  (context)]
    [re-mote.zero.management :refer  (clear-registered)]
    [re-mote.zero.server :refer (setup-server kill-server! bind-future)]
    [re-mote.zero.frontend :refer (setup-front stop-front!)]

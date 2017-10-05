@@ -2,7 +2,7 @@
   "frontend socket loop"
   (:require
    [re-share.core :refer (error-m)]
-   [re-mote.zero.common :refer (close)]
+   [re-share.zero.common :refer (close)]
    [taoensso.nippy :as nippy :refer (freeze)]
    [re-share.core :refer (find-port)]
    [taoensso.timbre :refer  (refer-timbre)]
