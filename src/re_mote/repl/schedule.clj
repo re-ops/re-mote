@@ -69,10 +69,13 @@
 (defn color-host [{:keys [host code] :as m}]
   (update m :host (fn [_] (if-not (= code 0) (style host :red) (style host :green)))))
 
+(defn pretify [{:keys [result] :as m}]
+  (select-keys (merge m result) [:host :code :out]))
+
 (defn pretty [rs]
   (let [formatter (format-columns [:right 10] "  " [:right 4] "  " :none)]
     (write-rows *out* formatter [:host :code :out]
-                (map (fn [{:keys [result] :as m}] (color-host (merge (select-keys (merge m result) [:host :code :out])))) rs))))
+                (map (comp color-host pretify)  rs))))
 
 (defn last-run []
   (doseq [[k {:keys [result period time]}] @status]
