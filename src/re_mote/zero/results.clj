@@ -16,7 +16,7 @@
       (swap! results assoc-in [(keyword name) id] (atom {hostname v})))))
 
 (defn- result [uuid k]
-  (when-let [a (get-in @results [k uuid])] @a))
+  (if-let [a (get-in @results [k uuid])] @a {}))
 
 (defn clear-results
   [uuid k hs]
@@ -35,7 +35,7 @@
   "(pretty-result \"reops-0\" :plus-one)"
   [k uuid host]
   (puget/cprint
-   (when-let [r (result k uuid)] (r host))))
+   (let [r (result k uuid)] (r host))))
 
 (defn refer-zero-results []
   (require '[re-mote.zero.results :as zerors :refer (pretty-result clear-results add-result get-results missing-results)]))
