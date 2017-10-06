@@ -16,12 +16,13 @@
 
 (refer-timbre)
 
+(defn zipped [parent k ks {:keys [result] :as m}]
+  (assoc-in m [parent k] (zipmap ks (split (get-in result [:r :out]) #"\s"))))
+
 (defn zip
   "Collecting output into a hash, must be defined outside protocoal because of var args"
   [this {:keys [success failure] :as res} parent k & ks]
-  (let [zipped (fn [{:keys [result] :as m}] (assoc-in m [parent k] (zipmap ks (split (result :out) #"\s"))))
-        success' (map zipped success)
-        #_(into {} (map (fn [[code rs]] [code (get-logs rs)]) failure))]
+  (let [success' (map (partial zipped parent k ks) success)]
     [this (assoc (assoc res :success success') :failure failure)]))
 
 (defprotocol Stats
@@ -106,7 +107,7 @@
   (let [v (into [] (into (sorted-map) m)) c (count v)]
     (if (< c n) m (into (sorted-map) (subvec v (- c n) c)))))
 
-(def timeout [10 :second])
+(def timeout [5 :second])
 
 (defn args [bs]
   [(md5 (bs)) (validate! bs)])

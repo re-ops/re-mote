@@ -9,7 +9,7 @@
    ; zero
    [re-mote.zero.base :refer (refer-zero-base)]
    [re-mote.zero.management :refer (refer-zero-manage)]
-   [re-mote.zero.management :refer (pretty-result)]
+   [re-mote.zero.results :refer (pretty-result)]
    [re-mote.zero.functions :refer (refer-zero-fns)]
    [re-mote.zero.facts :refer (refer-facts)]
    [re-mote.repl :refer :all])

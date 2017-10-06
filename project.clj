@@ -44,6 +44,7 @@
      ; run at
      [jarohen/chime "0.2.1" :exclusions [org.clojure/core.async]]
      [clj-time/clj-time "0.13.0"]
+     [im.chit/hara.data.map "2.5.10"]
 
      ;publishing
      [compojure "1.6.0"]

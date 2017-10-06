@@ -5,6 +5,7 @@
    [taoensso.timbre :refer  (refer-timbre)]
    [com.rpl.specter :refer (transform MAP-VALS ALL)]
    [re-mote.zero.management :refer (refer-zero-manage)]
+   [re-mote.zero.results :refer (refer-zero-results)]
    [re-mote.zero.functions :as fns :refer (fn-meta)]
    [re-mote.zero.frontend :refer [send-]]
    [re-mote.log :refer (gen-uuid)]
@@ -12,6 +13,7 @@
 
 (refer-timbre)
 (refer-zero-manage)
+(refer-zero-results)
 
 (defn call
   "Launch a remote clojure function on hosts
@@ -23,16 +25,6 @@
     (if (empty? zhs)
       (throw (ex-info "no registered hosts found!" {:hosts hosts}))
       uuid)))
-
-(defn- get-results [{:keys [hosts]} k uuid]
-  (let [rs (map (partial result uuid k) hosts)]
-    (when (every? identity rs)
-      (debug "got all results for" k uuid)
-      (zipmap hosts rs))))
-
-(defn- all-results [{:keys [hosts]} k uuid]
-  (let [rs (map (partial result uuid k) hosts)]
-    (zipmap hosts rs)))
 
 (defn codes [v]
   (match [v]
@@ -48,13 +40,15 @@
   "Collect results from the zmq hosts blocking until all results are back or timeout end"
   [hs k uuid timeout]
   (try
-    (wait-for {:timeout timeout :sleep [500 :ms]}
-              (fn [] (get-results hs k uuid)) "Failed to collect all hosts")
+    (wait-for {:timeout timeout :sleep [100 :ms]}
+      (fn [] (get-results hs k uuid)) "Failed to collect all hosts")
     (catch Exception e
       (warn "Failed to get results"
-            (assoc (ex-data e) :missing (filter (fn [[k v]] (not v)) (all-results hs k uuid))))))
-  (with-codes
-    (get-results hs k uuid) uuid))
+            (assoc (ex-data e) :missing (missing-results hs k uuid)))))
+  (let [rs (with-codes (get-results hs k uuid) uuid)]
+    (clear-results hs k uuid) 
+    rs
+    ))
 
 (defn run-hosts
   ([hosts f args]
