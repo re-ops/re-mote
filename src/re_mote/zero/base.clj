@@ -41,14 +41,13 @@
   [hs k uuid timeout]
   (try
     (wait-for {:timeout timeout :sleep [100 :ms]}
-      (fn [] (get-results hs k uuid)) "Failed to collect all hosts")
+              (fn [] (get-results hs k uuid)) "Failed to collect all hosts")
     (catch Exception e
       (warn "Failed to get results"
             (assoc (ex-data e) :missing (missing-results hs k uuid)))))
   (let [rs (with-codes (get-results hs k uuid) uuid)]
-    (clear-results hs k uuid) 
-    rs
-    ))
+    (clear-results hs k uuid)
+    rs))
 
 (defn run-hosts
   ([hosts f args]
