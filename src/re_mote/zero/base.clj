@@ -44,7 +44,7 @@
               (fn [] (get-results hs k uuid)) "Failed to collect all hosts")
     (catch Exception e
       (warn "Failed to get results"
-            (assoc (ex-data e) :missing (missing-results hs k uuid)))))
+            (merge (ex-data e) {:missing (missing-results hs k uuid) :k k :uuid uuid}))))
   (let [rs (with-codes (get-results hs k uuid) uuid)]
     (clear-results hs k uuid)
     rs))
