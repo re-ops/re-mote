@@ -32,8 +32,8 @@
          (pipe ("ps" "ux") ("grep" "'[r]e-gent'")) ("awk" "'{print $2}'"))
         ("xargs" "kill" "-9"))))))
 
-(defn start-script [port home]
-  (let [bin (<< "~{home}/re-gent") cmd (<< "\"~{bin} ${IP} ~{port} debug &\"")]
+(defn start-script [port home level]
+  (let [bin (<< "~{home}/re-gent") cmd (<< "\"~{bin} ${IP} ~{port} ~{level} &\"")]
     (script
      (set! IP @(pipe ("echo" "$SSH_CLIENT") ("awk" "'{print $1}'")))
      ("chmod" "+x"  ~bin)
@@ -49,7 +49,7 @@
 
   (start-agent
     ([this _ home]
-     [this (run-hosts this (start-script (used-port) home))])
+     [this (run-hosts this (start-script (used-port) home "info"))])
     ([this home]
      (start-agent this nil home))))
 

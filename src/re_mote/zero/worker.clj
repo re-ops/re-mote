@@ -14,8 +14,7 @@
 (def flags (atom {}))
 
 (defn worker-socket [ctx]
-  (doto
-   (.socket ctx ZMQ/DEALER)
+  (doto (.socket ctx ZMQ/DEALER)
     (.connect "inproc://backend")))
 
 (defn handle-message [socket address content]
@@ -26,15 +25,20 @@
     (catch Exception e
       (error-m e))))
 
+(defn do-work [socket]
+  (if-let [msg (ZMsg/recvMsg socket ZMQ/DONTWAIT)]
+    (let [address (.pop msg) content (.pop msg)]
+      (handle-message socket (.getData address) (.getData content)))
+    (do
+      (debug "no work!" (Thread/currentThread))
+      (Thread/sleep 100))))
+
 (defn worker [ctx i]
   (let [socket (worker-socket ctx)]
     (try
       (info "worker running")
       (while (@flags i)
-        (if-let [msg (ZMsg/recvMsg socket ZMQ/DONTWAIT)]
-          (let [address (.pop msg) content (.pop msg)]
-            (handle-message socket (.getData address) (.getData content)))
-          (Thread/sleep 10)))
+        (do-work socket))
       (info "worker going down")
       (catch Exception e
         (error-m e))
