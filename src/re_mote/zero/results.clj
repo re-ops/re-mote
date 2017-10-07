@@ -21,14 +21,14 @@
 (defn add-result [hostname uuid r t]
   (let [v {:r r :t t} b (bucket uuid)]
     (dosync
-      (alter b assoc-in [uuid hostname] v))))
+     (alter b assoc-in [uuid hostname] v))))
 
 (defn result [uuid]
   (get @(bucket uuid) uuid {}))
 
 (defn clear-results [uuid]
   (dosync
-    (alter (bucket uuid) dissoc uuid)))
+   (alter (bucket uuid) dissoc uuid)))
 
 (defn get-results [{:keys [hosts]} uuid]
   (let [ks (set (keys (result uuid)))]
@@ -48,6 +48,5 @@
 (defn refer-zero-results []
   (require '[re-mote.zero.results :as zerors :refer (pretty-result clear-results add-result get-results missing-results capacity)]))
 
-(comment 
- (println (capacity)) 
-  )
+(comment
+  (println (capacity)))
