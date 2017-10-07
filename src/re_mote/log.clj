@@ -89,7 +89,11 @@
   (merge-config!
    {:ns-blacklist ["net.schmizz.*"]})
   (merge-config! {:appenders {:println (merge {:ns-whitelist ["re-mote.output"]} (println-appender {:stream :auto}))
-                              :rolling (rolling-appender {:path "re-mote.log" :pattern :weekly})}}))
+                              :rolling (rolling-appender {:path "re-mote.log" :pattern :weekly})}})
+  
+  (merge-config! 
+      {:timestamp-opts {:timezone  (java.util.TimeZone/getDefault)}}) 
+  )
 
 (defn setup-logging
   "Sets up logging configuration:
