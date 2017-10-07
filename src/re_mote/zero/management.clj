@@ -38,7 +38,7 @@
     (match [request]
       [{:request :register}] (register address)
       [{:request :unregister}] (unregister address)
-      [{:reply :execute :result r :time t :name name :uuid id}] (add-result hostname name id r t)
+      [{:reply :execute :result r :time t :name name :uuid id}] (future (add-result hostname name id r t))
       :else (fail request "no handling clause found for request"))
     (catch Exception e
       (fail request e)
