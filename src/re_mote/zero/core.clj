@@ -2,6 +2,7 @@
   (:require
    [taoensso.timbre :refer  (refer-timbre)]
    [re-share.zero.common :refer  (context)]
+   [re-share.core :refer  (enable-waits stop-waits)]
    [re-mote.zero.management :refer  (clear-registered)]
    [re-mote.zero.server :refer (setup-server kill-server! bind-future)]
    [re-mote.zero.frontend :refer (setup-front stop-front!)]
@@ -13,14 +14,16 @@
 
 (def ctx (atom nil))
 
-(defn start-zero-server []
+(defn start []
   (reset! ctx (context))
   (let [private ".curve/server-private.key" frontend (setup-front @ctx private)]
     (setup-server @ctx private)
     (setup-workers @ctx 4)
+    (enable-waits)
     (bind-future frontend)))
 
-(defn stop-zero-server []
+(defn stop []
+  (stop-waits)
   (stop-workers!)
   (stop-front!)
   (kill-server!)
