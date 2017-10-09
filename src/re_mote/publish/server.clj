@@ -60,7 +60,7 @@
 
 (defn start-server [port]
   (reset! server (run-server #'app {:port port}))
-  (info "started re-mote server socket on port " port))
+  (info "started web-socket on" port))
 
 (defn broadcast! [m]
   (let [uids (:any @connected-uids)]

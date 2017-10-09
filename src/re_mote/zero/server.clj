@@ -42,12 +42,12 @@
           frontend (router-socket ctx private port)
           control (control-sub-socket ctx)]
       (reset! front-port port)
-      (info "started zeromq server router socket on port" port)
+      (info "started zeromq on" port)
       (ZMQ/proxy frontend backend nil control)
       (close frontend)
       (close backend)
       (close control)
-      (info "server closed"))))
+      (info "stopped zeromq"))))
 
 (defn stop [ctx]
   (let [control (control-pub-socket ctx)]

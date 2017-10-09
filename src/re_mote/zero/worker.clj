@@ -45,7 +45,7 @@
 (defn worker [ctx i]
   (let [ws (worker-socket ctx)]
     (try
-      (info "worker running")
+      (debug "worker running")
       (while (@flags i)
         (let [incoming (handle-incomming ws) sends (handle-sends ws)]
           (when-not (or incoming sends)
@@ -53,14 +53,15 @@
       (finally
         (close ws)
         (Thread/sleep 100)
-        (info "closed worker sockets")))))
+        (debug "closed worker sockets")))))
 
 (defn start [ctx n]
+  (info "started workers")
   (reset! workers
           (into {} (map (fn [i] (swap! flags assoc i true) [i (future (worker ctx i))]) (range n)))))
 
 (defn stop []
-  (info "stopping worker")
+  (info "stopped workers")
   (doseq [[i w] @workers]
     (swap! flags assoc i false))
   (reset! flags {})
