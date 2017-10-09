@@ -8,7 +8,7 @@
    [re-mote.zero.results :refer (refer-zero-results)]
    [re-mote.zero.functions :as fns :refer (fn-meta)]
    [re-mote.log :refer (gen-uuid)]
-   [re-mote.zero.common :refer (send-)]
+   [re-mote.zero.send :refer (send-)]
    [re-mote.zero.core :refer (ctx)]
    [re-share.core :refer (wait-for)]))
 
@@ -22,9 +22,7 @@
   [f args hosts]
   (let [uuid (gen-uuid) zhs (into-zmq-hosts hosts)]
     (doseq [[hostname address] zhs]
-      #_(send- (send-socket @ctx)
-               {:address address
-                :content {:request :execute :uuid  uuid :fn f :args args :name (-> f fn-meta :name)}}))
+      (send- address {:request :execute :uuid  uuid :fn f :args args :name (-> f fn-meta :name)}))
     (if (empty? zhs)
       (throw (ex-info "no registered hosts found!" {:hosts hosts}))
       uuid)))

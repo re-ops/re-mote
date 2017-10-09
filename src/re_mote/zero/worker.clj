@@ -1,5 +1,6 @@
 (ns re-mote.zero.worker
   (:require
+   [re-mote.zero.send :refer (take-)]
    [taoensso.timbre :refer  (refer-timbre)]
    [taoensso.nippy :as nippy :refer (freeze thaw)]
    [re-mote.zero.common :refer (send-)]
@@ -20,11 +21,6 @@
     (.setLinger 0)
     (.connect "inproc://backend")))
 
-(defn send-socket [ctx]
-  (doto (.socket ctx ZMQ/PULL)
-    (.setLinger 0)
-    (.connect "inproc://send-out")))
-
 (defn unpack [msg]
   (-> msg (.pop) (.getData) thaw))
 
@@ -40,23 +36,21 @@
     (catch Exception e
       (error-m e))))
 
-(defn handle-sends [in out]
-  (when-let [msg (ZMsg/recvMsg in ZMQ/DONTWAIT)]
-    (let [{:keys [address content]} (unpack msg)]
-      (info address content)
-      (send- out address content)
-      true)))
+(defn handle-sends [socket]
+  (when-let [[address content] (take-)]
+    (debug "sending" address content)
+    (send- socket address content)
+    true))
 
 (defn worker [ctx i]
-  (let [ws (worker-socket ctx) snd (send-socket ctx)]
+  (let [ws (worker-socket ctx)]
     (try
       (info "worker running")
       (while (@flags i)
-        (let [incoming (handle-incomming ws) sends (handle-sends snd ws)]
+        (let [incoming (handle-incomming ws) sends (handle-sends ws)]
           (when-not (or incoming sends)
             (Thread/sleep 100))))
       (finally
-        (close snd)
         (close ws)
         (Thread/sleep 100)
         (info "closed worker sockets")))))

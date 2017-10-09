@@ -17,7 +17,7 @@
 
 (defn start []
   (reset! ctx (context))
-  (snd/start @ctx)
+  (snd/start)
   (srv/start @ctx ".curve/server-private.key")
   (wrk/start @ctx 4)
   ;; (enable-waits)
@@ -25,8 +25,8 @@
 
 (defn stop []
   ;; (stop-waits)
+  (snd/stop)
   (when @ctx
-    (snd/stop @ctx)
     (wrk/stop)
     (srv/stop @ctx)
     (future

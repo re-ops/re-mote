@@ -6,66 +6,22 @@
    [taoensso.nippy :as nippy :refer (freeze thaw)]
    [re-share.zero.common :refer (close)])
   (:import
+   [java.util.concurrent TimeUnit]
    [org.zeromq ZMQ ZMsg]))
 
 (refer-timbre)
 
-(defn send-push [ctx]
-  (doto (.socket ctx ZMQ/PUSH)
-    (.setLinger 0)
-    (.connect "inproc://send-in")))
+(def maxx 1000)
 
-(defn control-sub-socket [ctx]
-  (doto (.socket ctx ZMQ/SUB)
-    (.setLinger 0)
-    (.subscribe ZMQ/SUBSCRIPTION_ALL)
-    (.connect "inproc://sndc")))
+(def queue (java.util.concurrent.LinkedBlockingQueue. maxx))
 
-(defn control-pub-socket [ctx]
-  (doto (.socket ctx ZMQ/PUB)
-    (.setLinger 0)
-    (.bind "inproc://sndc")))
+(defn take- []
+  (.poll queue 10 TimeUnit/MILLISECONDS))
 
-(defn inproc [ctx end t]
-  (doto
-   (.socket ctx t)
-    (.setLinger 0)
-    (.bind (<< "inproc://~{end}"))))
+(defn send- [address content]
+  (.offer queue [address content] 100 TimeUnit/MILLISECONDS))
 
-(def pool (ref []))
+(defn start [])
 
-(defn take- [pool]
-  (dosync
-   (let [[h & t] @pool]
-     (ref-set pool (vec t))
-     h)))
-
-(defn put [pool x]
-  (dosync
-   (alter pool conj x)
-   nil))
-
-(defn start [ctx]
-  (future
-    (dotimes [i 1]
-      (put pool (send-push ctx)))
-    (let [rcv (inproc ctx "send-in" ZMQ/PULL)
-          snd (inproc ctx "send-out" ZMQ/PUSH)
-          control (control-sub-socket ctx)]
-      (ZMQ/proxy rcv snd nil control)
-      (close rcv)
-      (close snd)
-      (close control)
-      (info "send closed"))))
-
-(defn stop [ctx]
-  (when @pool
-    (info "clearing pool")
-    (dosync
-     (doseq [push @pool]
-       (close push))
-     (ref-set pool [])))
-  (let [control (control-pub-socket ctx)]
-    (info (.send control "TERMINATE" 0))
-    (close control)
-    (info "send shutdown called")))
+(defn stop []
+  (.clear queue))
