@@ -7,7 +7,11 @@
    [io.aviso.columns :refer  (format-columns write-rows)]
    [taoensso.timbre :refer  (refer-timbre)]
    [clojure.core.match :refer [match]]
-   [re-mote.zero.frontend :refer [send-]]))
+   [taoensso.nippy :as nippy :refer (freeze thaw)]
+   #_[re-mote.zero.frontend :refer [send-]])
+  (:import
+   [org.zeromq ZMQ ZMsg])
+  )
 
 (refer-timbre)
 
@@ -18,7 +22,7 @@
 
 (defn ack [address on]
   (info "acking" address)
-  (send- address {:response :ok :on on}))
+  {:reply {:response :ok :on on}})
 
 (defn register [{:keys [hostname uid] :as address}]
   (debug "register" hostname uid)

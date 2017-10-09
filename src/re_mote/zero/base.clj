@@ -7,9 +7,11 @@
    [re-mote.zero.management :refer (refer-zero-manage)]
    [re-mote.zero.results :refer (refer-zero-results)]
    [re-mote.zero.functions :as fns :refer (fn-meta)]
-   [re-mote.zero.frontend :refer [send-]]
    [re-mote.log :refer (gen-uuid)]
-   [re-share.core :refer (wait-for)]))
+   [re-mote.zero.common :refer (send-)]
+   [re-mote.zero.core :refer (ctx)]
+   [re-share.core :refer (wait-for)])
+  )
 
 (refer-timbre)
 (refer-zero-manage)
@@ -21,10 +23,14 @@
   [f args hosts]
   (let [uuid (gen-uuid) zhs (into-zmq-hosts hosts)]
     (doseq [[hostname address] zhs]
-      (send- address {:request :execute :uuid  uuid :fn f :args args :name (-> f fn-meta :name)}))
+      #_(send- (send-socket @ctx)
+        {:address address
+         :content {:request :execute :uuid  uuid :fn f :args args :name (-> f fn-meta :name)}}))
     (if (empty? zhs)
       (throw (ex-info "no registered hosts found!" {:hosts hosts}))
       uuid)))
+
+
 
 (defn codes [v]
   (match [v]
@@ -61,3 +67,6 @@
 (defn refer-zero-base []
   (require '[re-mote.zero.base :as zbase :refer (call collect)]))
 
+(comment
+   (send- (send-socket @ctx) {:address 1234 :content {:request :execute}})
+  )

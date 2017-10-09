@@ -1,53 +1,59 @@
 (ns re-mote.zero.server
   "An orchestration re-mote server using ZeroMq router socket"
   (:require
+   [re-share.core :refer  (find-port)]
    [clojure.core.strint :refer  (<<)]
    [taoensso.timbre :refer  (refer-timbre)]
    [re-share.core :refer (error-m)]
-   [re-share.zero.common :refer (context close!)]
+   [re-share.zero.common :refer (context close)]
    [re-mote.zero.common :refer (read-key server-socket)])
   (:import [org.zeromq ZMQ]))
 
 (refer-timbre)
 
+(defn router-socket [ctx private port]
+  (doto (server-socket ctx ZMQ/ROUTER private)
+    (.setLinger 0)
+    (.setZapDomain (.getBytes "global")) ;
+    (.bind (str "tcp://*:" port))))
+
 (defn backend-socket [ctx]
   (doto (.socket ctx ZMQ/DEALER)
+    (.setLinger 0)
     (.bind "inproc://backend")))
 
 (defn control-sub-socket [ctx]
   (doto (.socket ctx ZMQ/SUB)
+    (.setLinger 0)
     (.subscribe ZMQ/SUBSCRIPTION_ALL)
     (.connect "inproc://control")))
 
 (defn control-pub-socket [ctx]
   (doto (.socket ctx ZMQ/PUB)
+    (.setLinger 0)
     (.bind "inproc://control")))
 
-(def sockets (atom {}))
+(def front-port (atom nil))
 
-(defn setup-server [ctx private]
-  (reset! sockets {:backend (backend-socket ctx)
-                   :control-sub (control-sub-socket ctx)
-                   :control-pub (control-pub-socket ctx)}))
+(defn start [ctx private]
+  (future
+    (let [port (find-port 9000 9010)
+          backend (backend-socket ctx)
+          frontend (router-socket ctx private port)
+          control (control-sub-socket ctx)]
+      (reset! front-port port)
+      (info "started zeromq server router socket on port" port)
+      (ZMQ/proxy frontend backend nil control)
+      (close frontend)
+      (close backend)
+      (close control)
+      (info "server closed"))))
 
-(defn- bind [frontend]
-  (let [{:keys [backend control-sub]} @sockets]
-    (try
-      (ZMQ/proxy frontend backend nil control-sub)
-      (finally
-        (close! @sockets)
-        (reset! sockets nil)
-        (info "proxy closed")))))
+(defn stop [ctx]
+  (let [control (control-pub-socket ctx)]
+    (info (.send control "TERMINATE" 0))
+    (close control)
+    (info "server shutdown called")
+    (reset! front-port nil)))
 
-(defn bind-future [frontend]
-  (future (bind frontend)))
-
-(defn kill-server! []
-  (info "killing server")
-  (when @sockets
-    (when-let [pub (@sockets :control-pub)]
-      (try
-        (debug "proxy shutdown call")
-        (assert (.send pub "TERMINATE" 0))
-        (catch Exception e
-          (error-m e))))))
+(defn used-port [] front-port)

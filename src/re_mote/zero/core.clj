@@ -1,13 +1,14 @@
 (ns re-mote.zero.core
   (:require
    [taoensso.timbre :refer  (refer-timbre)]
-   [re-share.zero.common :refer  (context)]
+   [re-share.zero.common :refer  (context close!)]
    [re-share.core :refer  (enable-waits stop-waits)]
    [re-mote.zero.management :refer  (clear-registered)]
-   [re-mote.zero.server :refer (setup-server kill-server! bind-future)]
-   [re-mote.zero.frontend :refer (setup-front stop-front!)]
-   [re-mote.zero.worker :refer (setup-workers stop-workers!)])
+   [re-mote.zero.server :as srv]
+   [re-mote.zero.send :as snd]
+   [re-mote.zero.worker :as wrk])
   (:import
+   org.zeromq.ZMQ
    org.zeromq.ZMQ$Context))
 
 (refer-timbre)
@@ -16,22 +17,24 @@
 
 (defn start []
   (reset! ctx (context))
-  (let [private ".curve/server-private.key" frontend (setup-front @ctx private)]
-    (setup-server @ctx private)
-    (setup-workers @ctx 4)
-    (enable-waits)
-    (bind-future frontend)))
+  (snd/start @ctx)
+  (srv/start @ctx ".curve/server-private.key")
+  (wrk/start @ctx 4)
+  ;; (enable-waits)
+  )
 
 (defn stop []
-  (stop-waits)
-  (stop-workers!)
-  (stop-front!)
-  (kill-server!)
-  (Thread/sleep 1000)
-  (info "terminating ctx")
-  (when @ctx
-    (.term ^ZMQ$Context @ctx)
-    (reset! ctx nil))
+  ;; (stop-waits)
+  (when @ctx 
+    (snd/stop @ctx)
+    (wrk/stop)
+    (srv/stop @ctx)
+    (future
+      (info "terminating ctx")
+      (let [c @ctx] 
+         (reset! ctx nil)
+        (.term c))
+      (info "terminated ctx")))
   (clear-registered))
 
 (defn refer-zero []
