@@ -1,4 +1,4 @@
-(ns re-mote.zero.base
+(ns re-mote.zero.pipeline
   "Base ns for zeromq pipeline support"
   (:require
    [clojure.core.match :refer [match]]
@@ -9,7 +9,7 @@
    [re-mote.zero.functions :as fns :refer (fn-meta)]
    [re-mote.log :refer (gen-uuid)]
    [re-mote.zero.send :refer (send-)]
-   [re-mote.zero.core :refer (ctx)]
+   [re-mote.zero.cycle :refer (ctx)]
    [re-share.core :refer (wait-for)]))
 
 (refer-timbre)
@@ -59,8 +59,8 @@
          grouped (group-by :code (vals results))]
      {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)})))
 
-(defn refer-zero-base []
-  (require '[re-mote.zero.base :as zbase :refer (call collect)]))
+(defn refer-zero-pipe []
+  (require '[re-mote.zero.pipeline :as zpipe :refer (call collect)]))
 
 (comment
   (send- (send-socket @ctx) {:address 1234 :content {:request :execute}}))

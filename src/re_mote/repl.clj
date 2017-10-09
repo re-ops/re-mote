@@ -17,7 +17,6 @@
    [re-mote.repl.sensors :refer (refer-sensors)]
    [re-mote.repl.re-gent :refer (refer-regent)]
    [re-mote.repl.schedule :refer (watch seconds)]
-   [re-mote.zero.core :refer (refer-zero)]
    [re-mote.zero.facts :refer (refer-facts)]
    [re-mote.zero.pkg :refer (refer-pkg)]
    [re-mote.log :refer (setup-logging)]
@@ -25,7 +24,6 @@
   (:import [re_mote.repl.base Hosts]))
 
 (refer-timbre)
-(refer-zero)
 (refer-facts)
 (refer-base)
 (refer-out)

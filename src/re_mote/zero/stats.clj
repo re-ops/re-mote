@@ -4,7 +4,7 @@
    [re-share.core :refer (md5)]
    [clojure.string :refer (split)]
    [clojure.tools.trace :as tr]
-   [re-mote.zero.base :refer (run-hosts)]
+   [re-mote.zero.pipeline :refer (run-hosts)]
    [taoensso.timbre :refer (refer-timbre)]
    [com.rpl.specter :as s :refer (transform select MAP-VALS ALL ATOM keypath srange)]
    [clj-time.core :as t]

@@ -5,7 +5,7 @@
    [clojure.tools.trace :as t]
    [re-mote.zero.functions :as fns :refer (fn-meta)]
    [taoensso.timbre :refer  (refer-timbre)]
-   [re-mote.zero.base :refer (run-hosts)]
+   [re-mote.zero.pipeline :refer (run-hosts)]
    [re-mote.zero.functions :refer (refer-zero-fns)])
   (:import [re_mote.repl.base Hosts]))
 

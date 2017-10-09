@@ -1,11 +1,11 @@
 (ns re-mote.launch
   (:require
-   [re-mote.zero.core :as zero]
+   [re-mote.zero.cycle :as zero]
    [taoensso.timbre :refer (refer-timbre)]
    [re-mote.publish.server :as web]
    [re-mote.repl :as repl]
    [re-share.zero.keys :as k]
-   [re-mote.repl.schedule :as sc])
+   [re-mote.repl.schedule :as sched])
   (:gen-class true))
 
 (refer-timbre)
@@ -19,7 +19,7 @@
   (zero/start))
 
 (defn stop [_]
-  (sc/halt!)
+  (sched/halt!)
   (zero/stop)
   (web/stop))
 

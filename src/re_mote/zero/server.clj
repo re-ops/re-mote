@@ -51,9 +51,9 @@
 
 (defn stop [ctx]
   (let [control (control-pub-socket ctx)]
-    (info (.send control "TERMINATE" 0))
+    (assert (.send control "TERMINATE" 0))
     (close control)
-    (info "server shutdown called")
+    (debug "server proxy shutdown called")
     (reset! front-port nil)))
 
 (defn used-port [] front-port)
