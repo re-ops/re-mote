@@ -10,8 +10,7 @@
    [taoensso.nippy :as nippy :refer (freeze thaw)]
    #_[re-mote.zero.frontend :refer [send-]])
   (:import
-   [org.zeromq ZMQ ZMsg])
-  )
+   [org.zeromq ZMQ ZMsg]))
 
 (refer-timbre)
 

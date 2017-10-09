@@ -36,8 +36,7 @@
         (debug "got message from" hostname "uid" uid)
         (when-let [reply (:reply (process m content))]
           (send- socket address reply))
-        true
-        ))
+        true))
     (catch Exception e
       (error-m e))))
 
@@ -46,8 +45,7 @@
     (let [{:keys [address content]} (unpack msg)]
       (info address content)
       (send- out address content)
-      true
-      )))
+      true)))
 
 (defn worker [ctx i]
   (let [ws (worker-socket ctx) snd (send-socket ctx)]
@@ -65,7 +63,7 @@
 
 (defn start [ctx n]
   (reset! workers
-    (into {} (map (fn [i] (swap! flags assoc i true) [i (future (worker ctx i))]) (range n)))))
+          (into {} (map (fn [i] (swap! flags assoc i true) [i (future (worker ctx i))]) (range n)))))
 
 (defn stop []
   (info "stopping worker")

@@ -1,12 +1,12 @@
 (ns re-mote.zero.send
   "Sending back responses to the agents"
   (:require
-    [clojure.core.strint :refer  (<<)]
-    [taoensso.timbre :refer  (refer-timbre)]
-    [taoensso.nippy :as nippy :refer (freeze thaw)]
-    [re-share.zero.common :refer (close)])
+   [clojure.core.strint :refer  (<<)]
+   [taoensso.timbre :refer  (refer-timbre)]
+   [taoensso.nippy :as nippy :refer (freeze thaw)]
+   [re-share.zero.common :refer (close)])
   (:import
-    [org.zeromq ZMQ ZMsg]))
+   [org.zeromq ZMQ ZMsg]))
 
 (refer-timbre)
 
@@ -28,7 +28,7 @@
 
 (defn inproc [ctx end t]
   (doto
-    (.socket ctx t)
+   (.socket ctx t)
     (.setLinger 0)
     (.bind (<< "inproc://~{end}"))))
 
@@ -36,20 +36,20 @@
 
 (defn take- [pool]
   (dosync
-    (let [[h & t] @pool]
-      (ref-set pool (vec t))
-      h)))
+   (let [[h & t] @pool]
+     (ref-set pool (vec t))
+     h)))
 
 (defn put [pool x]
   (dosync
-    (alter pool conj x)
-    nil))
+   (alter pool conj x)
+   nil))
 
 (defn start [ctx]
   (future
     (dotimes [i 1]
-      (put pool (send-push ctx))) 
-    (let [rcv (inproc ctx "send-in" ZMQ/PULL) 
+      (put pool (send-push ctx)))
+    (let [rcv (inproc ctx "send-in" ZMQ/PULL)
           snd (inproc ctx "send-out" ZMQ/PUSH)
           control (control-sub-socket ctx)]
       (ZMQ/proxy rcv snd nil control)
@@ -59,12 +59,12 @@
       (info "send closed"))))
 
 (defn stop [ctx]
-  (when @pool 
+  (when @pool
     (info "clearing pool")
     (dosync
-      (doseq [push @pool]
-        (close push))
-      (ref-set pool [])))
+     (doseq [push @pool]
+       (close push))
+     (ref-set pool [])))
   (let [control (control-pub-socket ctx)]
     (info (.send control "TERMINATE" 0))
     (close control)

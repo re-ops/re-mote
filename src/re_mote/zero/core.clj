@@ -21,18 +21,18 @@
   (srv/start @ctx ".curve/server-private.key")
   (wrk/start @ctx 4)
   ;; (enable-waits)
-  )
+)
 
 (defn stop []
   ;; (stop-waits)
-  (when @ctx 
+  (when @ctx
     (snd/stop @ctx)
     (wrk/stop)
     (srv/stop @ctx)
     (future
       (info "terminating ctx")
-      (let [c @ctx] 
-         (reset! ctx nil)
+      (let [c @ctx]
+        (reset! ctx nil)
         (.term c))
       (info "terminated ctx")))
   (clear-registered))
