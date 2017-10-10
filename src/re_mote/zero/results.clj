@@ -37,7 +37,7 @@
       (result uuid))))
 
 (defn missing-results [{:keys [hosts]} uuid]
-  (filter (result uuid) hosts))
+  (filter (comp not (result uuid)) hosts))
 
 (defn pretty-result
   "(pretty-result \"reops-0\" :plus-one)"
