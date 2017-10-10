@@ -1,7 +1,6 @@
 (ns re-mote.zero.stats
   "General stats"
   (:require
-   [re-share.core :refer (md5)]
    [clojure.string :refer (split)]
    [clojure.tools.trace :as tr]
    [re-mote.zero.pipeline :refer (run-hosts)]
@@ -9,6 +8,7 @@
    [com.rpl.specter :as s :refer (transform select MAP-VALS ALL ATOM keypath srange)]
    [clj-time.core :as t]
    [clj-time.coerce :refer (to-long)]
+   [re-mote.zero.shell :refer (args)]
    [re-mote.zero.functions :refer (shell)]
    [re-mote.repl.schedule :refer (watch seconds)]
    [pallet.stevedore :refer (script do-script)])
@@ -35,17 +35,10 @@
   (collect [this m])
   (sliding [this m f k]))
 
-(defn bash!
-  "check that we are running within bash!"
-  []
-  (script
-   ("[" "!" "-n" "\"$BASH\"" "]" "&&" "echo" "Please set default user shell to bash" "&&" "exit" 1)))
-
 (defn net-script []
   (script
    (set! LC_ALL "en_AU.UTF-8")
-   (set! WHO @(pipe ("who" "am" "i") ("awk" "'{l = length($5) - 2; print substr($5, 2, l)}'")))
-   (set! IFC @(pipe (pipe ((println (quoted "${WHO}"))) ("xargs" "ip" "route" "get")) ("awk" "'NR==1 {print $3}'")))
+   (set! IFC @(pipe ("ip" "route" "get" "1") ("awk" "'{print $5;exit}'")))
    (set! R @(("sar" "-n" "DEV" "1" "1")))
    (if (not (= $? 0)) ("exit" 1))
    (set! L @(pipe ((println (quoted "${R}"))) ("grep" (quoted "${IFC}"))))
@@ -67,9 +60,6 @@
 (defn load-script []
   (script
    (pipe ("uptime") ("awk" "-F" "'[, ]*'" "'NR==1 { print $(NF-2) \" \" $(NF-1) \" \" $(NF)}'"))))
-
-(defn validate! [f]
-  (do-script (bash!) (f)))
 
 (def readings (atom {}))
 
@@ -108,9 +98,6 @@
     (if (< c n) m (into (sorted-map) (subvec v (- c n) c)))))
 
 (def timeout [5 :second])
-
-(defn args [bs]
-  [(md5 (bs)) (validate! bs)])
 
 (extend-type Hosts
   Stats

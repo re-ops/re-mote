@@ -85,6 +85,4 @@
     (first
      (filter #(and (var? (second %)) (= f (var-get (second %)))) (ns-map 're-mote.zero.functions))))))
 
-(comment
-  (shell (re-share.core/md5 (re-mote.zero.stats/cpu-script)) (re-mote.zero.stats/cpu-script))
-  (clojure.pprint/pprint (:family (:operatingSystem (read-metrics)))))
+(comment)
