@@ -18,7 +18,6 @@
      [narkisr/clansi "1.2.0"]
      [mvxcvi/puget "1.0.1"]
 
-
      ; logging
      [com.taoensso/timbre "4.10.0"]
      [timbre-ns-pattern-level "0.1.2"]
@@ -28,8 +27,11 @@
      ; repl
      [com.palletops/stevedore "0.8.0-beta.7"]
      [io.aviso/pretty "0.1.34"]
-     [progrock "0.1.2"]
-     [hawk "0.2.11"]
+     [im.chit/lucid.package "1.3.13"]
+
+     ; git repl
+     [im.chit/lucid.git "1.3.13"]
+     [org.eclipse.jgit "4.8.0.201706111038-r"]
 
      ; serialization
      [serializable-fn "1.1.4"]

@@ -43,7 +43,7 @@
   (setup-logging)
   (setup-stats 10 10))
 
-(def develop (Hosts. {:user "vagrant"} ["re-a" "re-e"]))
+(def develop (Hosts. {:user "vagrant"} ["re-a" "re-b"]))
 
 (def localhost (Hosts. {:user "upgrade"} ["rosetta"]))
 
@@ -130,7 +130,6 @@
     (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (apply-module dest "") | (pretty))))
 
 ; re-gent
-
 (defn #^{:category :re-gent} deploy
   "deploy re-gent and setup .curve remotely:
      (deploy sandbox \"path/to/re-gent\")

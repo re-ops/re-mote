@@ -1,6 +1,7 @@
 (ns user
   (:require
-   [hawk.core :as hawk]
+   [lucid.git :refer [git]]
+   [lucid.package :as lp]
    [clojure.java.io :as io]
    [clojure.repl :refer :all]
    [re-mote.log :refer (refer-logging)]
@@ -47,17 +48,12 @@
     (binding [*ns* (find-ns 'user)]
       (refresh)
       (stop)
-      (go :watch false)))
+      (go)))
   ctx)
-
-(defn auto-reload []
-  (println "watching src")
-  (hawk/watch! [{:paths ["src"] :handler refesh-on}]))
 
 (defn go
   "Initializes the current development system and starts it running."
-  [& {:keys [watch]}]
-  (when watch (auto-reload))
+  []
   (init)
   (start)
   (doseq [f (filter (fn [^File v] (and (.isFile v) (.endsWith (.getName v) ".clj"))) (file-seq (io/file "scripts")))]

@@ -2,6 +2,7 @@
   "Copy .curve server public key and run agent remotly"
   (:require
    [re-mote.zero.shell :refer (validate!)]
+   [clojure.java.shell :refer (sh with-sh-dir)]
    [pallet.stevedore :refer (script chained-script)]
    [clojure.core.strint :refer (<<)]
    [re-mote.zero.server :refer (used-port)]
@@ -39,6 +40,10 @@
      ("chmod" "+x"  ~bin)
      ("nohup" "sh" "-c" ~cmd "&>/dev/null"))))
 
+(defn build []
+  (with-sh-dir "../re-gent"
+    (sh "bash" "bin/binary.sh")))
+
 (extend-type Hosts
   Regent
   (kill-agent
@@ -54,5 +59,5 @@
      (start-agent this nil home))))
 
 (defn refer-regent []
-  (require '[re-mote.repl.re-gent :as re-gent :refer (start-agent kill-agent)]))
+  (require '[re-mote.repl.re-gent :as re-gent :refer (start-agent kill-agent build)]))
 
