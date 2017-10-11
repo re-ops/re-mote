@@ -3,7 +3,8 @@
    [taoensso.timbre :refer  (refer-timbre)]
    [re-share.zero.common :refer  (context close!)]
    [re-share.core :refer  (enable-waits stop-waits)]
-   [re-mote.zero.management :refer  (clear-registered)]
+   [re-mote.zero.management :as mgmt]
+   [re-mote.zero.results :as res]
    [re-mote.zero.server :as srv]
    [re-mote.zero.send :as snd]
    [re-mote.zero.worker :as wrk])
@@ -34,7 +35,8 @@
         (reset! ctx nil)
         (.term c)))
     (info "terminated ctx"))
-  (clear-registered))
+  (res/clear-results)
+  (mgmt/clear-registered))
 
 (comment
   (start-zero-server))

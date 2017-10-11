@@ -18,17 +18,27 @@
 (defn bucket [uuid]
   (results (mod (BigInteger. uuid 16) buckets)))
 
-(defn add-result [hostname uuid r t]
-  (let [v {:r r :t t} b (bucket uuid)]
-    (dosync
-     (alter b assoc-in [uuid hostname] v))))
+(defn add-result
+  ([hostname uuid r]
+   (let [v {:r r} b (bucket uuid)]
+     (dosync
+       (alter b assoc-in [uuid hostname] v))))
+  ([hostname uuid r t]
+   (let [v {:r r :t t} b (bucket uuid)]
+     (dosync
+       (alter b assoc-in [uuid hostname] v)))))
 
 (defn result [uuid]
   (get @(bucket uuid) uuid {}))
 
-(defn clear-results [uuid]
-  (dosync
-   (alter (bucket uuid) dissoc uuid)))
+(defn clear-results
+  ([]
+   (doseq [[k _] results]
+     (dosync
+       (alter (results k) assoc k (ref {})))))
+  ([uuid]
+   (dosync
+     (alter (bucket uuid) dissoc uuid))))
 
 (defn get-results [{:keys [hosts]} uuid]
   (let [ks (set (keys (result uuid)))]
@@ -43,7 +53,7 @@
   "(pretty-result \"reops-0\" :plus-one)"
   [uuid host]
   (puget/cprint
-   (let [r (result uuid)] (r host))))
+    (let [r (result uuid)] (r host))))
 
 (defn refer-zero-results []
   (require '[re-mote.zero.results :as zerors :refer (pretty-result clear-results add-result get-results missing-results capacity)]))

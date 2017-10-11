@@ -37,11 +37,12 @@
   "Process a message from a client"
   [{:keys [hostname uid] :as address} request]
   (try
-    (trace "got" address request)
+    (debug "got" address request)
     (match [request]
       [{:request :register}] (register address)
       [{:request :unregister}] (unregister address)
       [{:reply :execute :result r :time t :name name :uuid id}] (add-result hostname id r t)
+      [{:reply :execute :result :failed :name name :uuid id}] (add-result hostname id :failed)
       :else (fail request "no handling clause found for request"))
     (catch Exception e
       (fail request e)

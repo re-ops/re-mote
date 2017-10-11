@@ -64,7 +64,7 @@
         (spit f script))
       (sh "bash" (.getPath f)))))
 ; Misc
-(def ^{:doc "list dir"} ls
+(def ^{:doc "list dir"} listdir
   (s/fn [d]
     (map str (list-dir d))))
 
@@ -77,7 +77,7 @@
 
 (defn refer-zero-fns []
   (require '[re-mote.zero.functions :as fns :refer
-             (pkg-update pkg-upgrade pkg-fix pkg-kill pkg-install fails shell plus-one oshi-os oshi-hardware)]))
+     (pkg-update pkg-upgrade pkg-fix pkg-kill pkg-install fails shell plus-one oshi-os oshi-hardware listdir)]))
 
 (defn fn-meta [f]
   (meta

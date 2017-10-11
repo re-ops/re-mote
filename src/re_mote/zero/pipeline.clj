@@ -29,8 +29,8 @@
 
 (defn codes [v]
   (match [v]
-    [:failed] -1
-    [{:exit e}] e
+    [{:r :failed}] -1
+    [{:r {:exit e}}] e
     :else 0))
 
 (defn with-codes
@@ -42,7 +42,7 @@
   [hs k uuid timeout]
   (try
     (wait-for {:timeout timeout :sleep [100 :ms]}
-              (fn [] (get-results hs uuid)) "Failed to collect all hosts")
+       (fn [] (get-results hs uuid)) "Failed to collect all hosts")
     (catch Exception e
       (warn "Failed to get results"
             (merge (ex-data e) {:missing (missing-results hs uuid) :k k :uuid uuid}))))
