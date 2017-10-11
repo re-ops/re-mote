@@ -18,6 +18,7 @@
    [re-mote.repl.re-gent :refer (refer-regent)]
    [re-mote.repl.schedule :refer (watch seconds)]
    [re-mote.zero.facts :refer (refer-facts)]
+   [re-mote.zero.test :as tst]
    [re-mote.zero.pkg :refer (refer-pkg)]
    [re-mote.log :refer (setup-logging)]
    [clojure.java.io :refer (file)])
@@ -159,3 +160,7 @@
   [hs f]
   (run (os-info hs) | (pick (partial results-filter f)) | (pretty)))
 
+; sanity testing
+
+(defn failing [hs]
+  (run (tst/ls hs "/") | (pick successful) | (tst/fail) | (pretty)))
