@@ -77,7 +77,7 @@
 
 (defn refer-zero-fns []
   (require '[re-mote.zero.functions :as fns :refer
-     (pkg-update pkg-upgrade pkg-fix pkg-kill pkg-install fails shell plus-one oshi-os oshi-hardware listdir)]))
+             (pkg-update pkg-upgrade pkg-fix pkg-kill pkg-install fails shell plus-one oshi-os oshi-hardware listdir)]))
 
 (defn fn-meta [f]
   (meta

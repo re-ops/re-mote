@@ -28,8 +28,7 @@
     ([this target]
      (ls this target {}))
     ([this target m]
-     [this (run-hosts this listdir [target] [1 :second])]))
-  )
+     [this (run-hosts this listdir [target] [1 :second])])))
 
 (defn refer-base []
   (require '[re-mote.zero.test :as ztest]))
