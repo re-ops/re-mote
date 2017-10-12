@@ -25,7 +25,7 @@
 
 (defn register [{:keys [hostname uid] :as address}]
   (debug "register" hostname uid)
-  (swap! zmq-hosts assoc hostname address)
+  (swap! zmq-hosts assoc hostname {:address address :counters {:disconnects 0}})
   (ack address {:request :register}))
 
 (defn unregister [{:keys [hostname uid] :as address}]
@@ -50,12 +50,13 @@
 
 (defn registered-hosts []
   (let [formatter (format-columns [:right 20] "  " [:right 10] "  " :none)]
-    (write-rows *out* formatter [:hostname :uid :out] (vals @zmq-hosts))))
+    (write-rows *out* formatter [:hostname :uid :disconnects :out]
+      (map (fn [m] (apply merge (vals m))) (vals @zmq-hosts)))))
 
 (defn into-zmq-hosts
   "Get ZMQ addresses from Hosts"
   [{:keys [hosts]}]
-  (select-keys @zmq-hosts hosts))
+  (map :address (select-keys @zmq-hosts hosts)))
 
 (defn clear-registered []
   (reset! zmq-hosts {}))
