@@ -12,6 +12,7 @@
   (when (= e-type :disconnected)
     (let [hosts (all-hosts) uuid (call ping [] hosts)]
       (Thread/sleep 1000)
-      (doseq [absent (missing-results {:hosts (keys hosts)} uuid)]
-        (debug absent "host is down!")
-        (unregister (hosts absent))))))
+      (doseq [absent (missing-results (keys hosts) uuid)]
+        (info absent "went down!")
+        (when-let [host (hosts absent)]
+          (unregister host))))))

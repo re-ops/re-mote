@@ -32,8 +32,7 @@
 
 (defn unregister [{:keys [hostname uid] :as address}]
   (debug "unregister" hostname uid)
-  (swap! zmq-hosts dissoc hostname)
-  (ack address {:request :unregister}))
+  (swap! zmq-hosts dissoc hostname))
 
 (defn process
   "Process a message from a client"

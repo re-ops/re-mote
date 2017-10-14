@@ -43,7 +43,7 @@
   ([hs f args timeout]
    (let [hosts (into-zmq-hosts hs)
          uuid (call f args hosts)
-         results (collect hosts (-> f fn-meta :name keyword) uuid timeout)
+         results (collect (keys hosts) (-> f fn-meta :name keyword) uuid timeout)
          grouped (group-by :code (vals results))]
      {:hosts hs :success (grouped 0) :failure (dissoc grouped 0)})))
 
