@@ -19,8 +19,7 @@
 (defn worker-socket [ctx]
   (doto (.socket ctx ZMQ/DEALER)
     (.setLinger 0)
-    (.connect "inproc://backend")
-    ))
+    (.connect "inproc://backend")))
 
 (defn unpack [msg]
   (-> msg (.pop) (.getData) thaw))

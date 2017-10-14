@@ -41,10 +41,10 @@
   ([hs f args]
    (run-hosts hs f args [10 :second]))
   ([hs f args timeout]
-    (let [hosts (into-zmq-hosts hs)
-          uuid (call f args hosts)
-          results (collect hosts (-> f fn-meta :name keyword) uuid timeout)
-          grouped (group-by :code (vals results))]
+   (let [hosts (into-zmq-hosts hs)
+         uuid (call f args hosts)
+         results (collect hosts (-> f fn-meta :name keyword) uuid timeout)
+         grouped (group-by :code (vals results))]
      {:hosts hs :success (grouped 0) :failure (dissoc grouped 0)})))
 
 (defn refer-zero-pipe []

@@ -16,8 +16,7 @@
 (def zmq-hosts (atom {}))
 
 (defn all-hosts []
-   @zmq-hosts
-  )
+  @zmq-hosts)
 
 (defn fail [request e]
   {:response :fail :on request :cause e})

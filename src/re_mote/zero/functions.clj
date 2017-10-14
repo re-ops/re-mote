@@ -85,8 +85,8 @@
 
 (defn refer-zero-fns []
   (require '[re-mote.zero.functions :as fns :refer
-             (pkg-update pkg-upgrade pkg-fix pkg-kill pkg-install fails 
-              shell plus-one oshi-os oshi-hardware listdir call)]))
+             (pkg-update pkg-upgrade pkg-fix pkg-kill pkg-install fails
+                         shell plus-one oshi-os oshi-hardware listdir call)]))
 
 (defn fn-meta [f]
   (meta
@@ -101,7 +101,6 @@
   (let [uuid (gen-uuid)]
     (doseq [[hostname address] zhs]
       (send- address {:request :execute :uuid  uuid :fn f :args args :name (-> f fn-meta :name)}))
-    uuid
-    ))
+    uuid))
 
 (comment)
