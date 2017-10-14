@@ -43,6 +43,7 @@
           control (control-sub-socket ctx)]
       (reset! front-port port)
       (info "started zeromq on" port)
+      (.monitor frontend "inproc://events" ZMQ/EVENT_ALL)
       (ZMQ/proxy frontend backend nil control)
       (close frontend)
       (close backend)

@@ -6,26 +6,13 @@
    [com.rpl.specter :refer (transform MAP-VALS ALL)]
    [re-mote.zero.management :refer (refer-zero-manage)]
    [re-mote.zero.results :refer (refer-zero-results)]
-   [re-mote.zero.functions :as fns :refer (fn-meta)]
-   [re-mote.log :refer (gen-uuid)]
-   [re-mote.zero.send :refer (send-)]
+   [re-mote.zero.functions :as fns :refer (fn-meta call)]
    [re-mote.zero.cycle :refer (ctx)]
    [re-share.core :refer (wait-for)]))
 
 (refer-timbre)
 (refer-zero-manage)
 (refer-zero-results)
-
-(defn call
-  "Launch a remote clojure function on hosts
-   The function has to support serialization"
-  [f args hosts]
-  (let [uuid (gen-uuid) zhs (into-zmq-hosts hosts)]
-    (doseq [[hostname address] zhs]
-      (send- address {:request :execute :uuid  uuid :fn f :args args :name (-> f fn-meta :name)}))
-    (if (empty? zhs)
-      (throw (ex-info "no registered hosts found!" {:hosts hosts}))
-      uuid)))
 
 (defn codes [v]
   (match [v]
@@ -39,28 +26,29 @@
 
 (defn collect
   "Collect results from the zmq hosts blocking until all results are back or timeout end"
-  [hs k uuid timeout]
+  [hosts k uuid timeout]
   (try
     (wait-for {:timeout timeout :sleep [100 :ms]}
-              (fn [] (get-results hs uuid)) "Failed to collect all hosts")
+              (fn [] (get-results hosts uuid)) "Failed to collect all hosts")
     (catch Exception e
       (warn "Failed to get results"
-            (merge (ex-data e) {:missing (missing-results hs uuid) :k k :uuid uuid}))))
-  (let [rs (with-codes (get-results hs uuid) uuid)]
+            (merge (ex-data e) {:missing (missing-results hosts uuid) :k k :uuid uuid}))))
+  (let [rs (with-codes (get-results hosts uuid) uuid)]
     (clear-results uuid)
     rs))
 
 (defn run-hosts
-  ([hosts f args]
-   (run-hosts hosts f args [10 :second]))
-  ([hosts f args timeout]
-   (let [uuid (call f args hosts)
-         results (collect hosts (-> f fn-meta :name keyword) uuid timeout)
-         grouped (group-by :code (vals results))]
-     {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)})))
+  ([hs f args]
+   (run-hosts hs f args [10 :second]))
+  ([hs f args timeout]
+    (let [hosts (into-zmq-hosts hs)
+          uuid (call f args hosts)
+          results (collect hosts (-> f fn-meta :name keyword) uuid timeout)
+          grouped (group-by :code (vals results))]
+     {:hosts hs :success (grouped 0) :failure (dissoc grouped 0)})))
 
 (defn refer-zero-pipe []
-  (require '[re-mote.zero.pipeline :as zpipe :refer (call collect)]))
+  (require '[re-mote.zero.pipeline :as zpipe :refer (collect)]))
 
 (comment
   (send- (send-socket @ctx) {:address 1234 :content {:request :execute}}))

@@ -5,7 +5,9 @@
    [re-share.core :refer  (enable-waits stop-waits)]
    [re-mote.zero.management :as mgmt]
    [re-mote.zero.results :as res]
+   [re-mote.zero.events :refer (handle)]
    [re-mote.zero.server :as srv]
+   [re-share.zero.events :as evn]
    [re-mote.zero.send :as snd]
    [re-mote.zero.worker :as wrk])
   (:import
@@ -20,6 +22,7 @@
   (reset! ctx (context))
   (snd/start)
   (srv/start @ctx ".curve/server-private.key")
+  (evn/start @ctx handle)
   (wrk/start @ctx 4)
   (enable-waits))
 
@@ -29,6 +32,7 @@
   (when @ctx
     (wrk/stop)
     (srv/stop @ctx)
+    (evn/stop)
     (future
       (debug "terminating ctx")
       (let [c @ctx]

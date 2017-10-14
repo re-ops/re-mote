@@ -1,5 +1,5 @@
 (ns re-mote.zero.send
-  "Sending back responses to the agents"
+  "Queue for sending back responses to the agents"
   (:require
    [clojure.core.strint :refer  (<<)]
    [taoensso.timbre :refer  (refer-timbre)]
@@ -25,3 +25,4 @@
 
 (defn stop []
   (.clear queue))
+

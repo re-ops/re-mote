@@ -35,18 +35,18 @@
   ([]
    (doseq [[k _] results]
      (dosync
-      (alter (results k) assoc k (ref {})))))
+      (ref-set (results k) {}))))
   ([uuid]
    (dosync
     (alter (bucket uuid) dissoc uuid))))
 
-(defn get-results [{:keys [hosts]} uuid]
+(defn get-results [hosts uuid]
   (let [ks (set (keys (result uuid)))]
     (when (every? ks hosts)
       (debug "got all results for" uuid)
       (result uuid))))
 
-(defn missing-results [{:keys [hosts]} uuid]
+(defn missing-results [hosts uuid]
   (filter (comp not (result uuid)) hosts))
 
 (defn pretty-result

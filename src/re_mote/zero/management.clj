@@ -7,14 +7,17 @@
    [io.aviso.columns :refer  (format-columns write-rows)]
    [taoensso.timbre :refer  (refer-timbre)]
    [clojure.core.match :refer [match]]
-   [taoensso.nippy :as nippy :refer (freeze thaw)]
-   #_[re-mote.zero.frontend :refer [send-]])
+   [taoensso.nippy :as nippy :refer (freeze thaw)])
   (:import
    [org.zeromq ZMQ ZMsg]))
 
 (refer-timbre)
 
 (def zmq-hosts (atom {}))
+
+(defn all-hosts []
+   @zmq-hosts
+  )
 
 (defn fail [request e]
   {:response :fail :on request :cause e})
@@ -25,7 +28,7 @@
 
 (defn register [{:keys [hostname uid] :as address}]
   (debug "register" hostname uid)
-  (swap! zmq-hosts assoc hostname {:address address :counters {:disconnects 0}})
+  (swap! zmq-hosts assoc hostname address)
   (ack address {:request :register}))
 
 (defn unregister [{:keys [hostname uid] :as address}]
@@ -50,16 +53,15 @@
 
 (defn registered-hosts []
   (let [formatter (format-columns [:right 20] "  " [:right 10] "  " :none)]
-    (write-rows *out* formatter [:hostname :uid :disconnects :out]
-      (map (fn [m] (apply merge (vals m))) (vals @zmq-hosts)))))
+    (write-rows *out* formatter [:hostname :uid :out] (vals @zmq-hosts))))
 
 (defn into-zmq-hosts
   "Get ZMQ addresses from Hosts"
   [{:keys [hosts]}]
-  (map :address (select-keys @zmq-hosts hosts)))
+  (select-keys @zmq-hosts hosts))
 
 (defn clear-registered []
   (reset! zmq-hosts {}))
 
 (defn refer-zero-manage []
-  (require '[re-mote.zero.management :as zerom :refer (registered-hosts into-zmq-hosts clear-registered)]))
+  (require '[re-mote.zero.management :as zerom :refer (registered-hosts into-zmq-hosts clear-registered all-hosts)]))

@@ -73,10 +73,10 @@
      [formation "0.2.0"]
 
      ; common utilities and shared functions
-     [re-share "0.2.6"]
+     [re-share "0.3.0"]
      [me.raynes/fs "1.4.6"]
 
-     ]
+    ]
 
   :exclusions [org.clojure/clojure]
 

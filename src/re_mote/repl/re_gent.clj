@@ -54,7 +54,7 @@
 
   (start-agent
     ([this _ home]
-     [this (run-hosts this (start-script (used-port) home "info"))])
+     [this (run-hosts this (start-script (used-port) home "debug"))])
     ([this home]
      (start-agent this nil home))))
 

@@ -1,10 +1,15 @@
 (ns re-mote.zero.functions
   (:require
+   [taoensso.timbre :refer  (refer-timbre)]
    [cheshire.core :refer (parse-string)]
    [re-share.oshi :refer (read-metrics os)]
+   [re-mote.zero.send :refer (send-)]
+   [re-mote.log :refer (gen-uuid)]
    [clojure.java.shell :refer [sh]]
    [serializable.fn :as s]
    [me.raynes.fs :refer (list-dir tmpdir exists? file)]))
+
+(refer-timbre)
 
 (set! *warn-on-reflection* true)
 
@@ -75,14 +80,28 @@
   (s/fn []
     (sh "fail")))
 
+(def ^{:doc "A liveliness ping"} ping
+  (s/fn [] :ok))
+
 (defn refer-zero-fns []
   (require '[re-mote.zero.functions :as fns :refer
-             (pkg-update pkg-upgrade pkg-fix pkg-kill pkg-install fails shell plus-one oshi-os oshi-hardware listdir)]))
+             (pkg-update pkg-upgrade pkg-fix pkg-kill pkg-install fails 
+              shell plus-one oshi-os oshi-hardware listdir call)]))
 
 (defn fn-meta [f]
   (meta
    (second
     (first
      (filter #(and (var? (second %)) (= f (var-get (second %)))) (ns-map 're-mote.zero.functions))))))
+
+(defn call
+  "Launch a remote clojure serializable functions on zeromq hosts"
+  [f args zhs]
+  {:pre [(not (nil? zhs))]}
+  (let [uuid (gen-uuid)]
+    (doseq [[hostname address] zhs]
+      (send- address {:request :execute :uuid  uuid :fn f :args args :name (-> f fn-meta :name)}))
+    uuid
+    ))
 
 (comment)

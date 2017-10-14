@@ -8,7 +8,6 @@
    [clojure.tools.namespace.repl :refer (refresh refresh-all)]
    [re-mote.launch :as launch]
    ; zero
-   [re-mote.zero.pipeline :refer (refer-zero-pipe)]
    [re-mote.zero.management :refer (refer-zero-manage)]
    [re-mote.zero.results :refer (pretty-result)]
    [re-mote.zero.functions :refer (refer-zero-fns)]
@@ -18,7 +17,6 @@
    java.io.File
    re_mote.repl.base.Hosts))
 
-(refer-zero-pipe)
 (refer-zero-manage)
 (refer-facts)
 (refer-logging)
