@@ -162,4 +162,4 @@
 ; sanity testing
 
 (defn failing [hs]
-  (run (tst/ls hs "/") | (pick successful) | (tst/fail) | (pretty)))
+  (run (tst/listdir hs "/") | (pick successful) | (tst/fail) | (pretty)))

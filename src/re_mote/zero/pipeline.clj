@@ -37,6 +37,14 @@
     (clear-results uuid)
     rs))
 
+(defn non-reachable
+  "Adding non reachable hosts"
+  [{:keys [hosts]} up uuid]
+  (into {}
+        (map
+         (fn [h] [h {:code -1 :host h :result {:r :failed} :out "host re-gent not connected" :uuid uuid}])
+         (filter (comp not (partial contains? up)) hosts))))
+
 (defn run-hosts
   ([hs f args]
    (run-hosts hs f args [10 :second]))
@@ -44,7 +52,8 @@
    (let [hosts (into-zmq-hosts hs)
          uuid (call f args hosts)
          results (collect (keys hosts) (-> f fn-meta :name keyword) uuid timeout)
-         grouped (group-by :code (vals results))]
+         down (non-reachable hs hosts uuid)
+         grouped (group-by :code (vals (merge results down)))]
      {:hosts hs :success (grouped 0) :failure (dissoc grouped 0)})))
 
 (defn refer-zero-pipe []
