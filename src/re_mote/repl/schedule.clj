@@ -60,8 +60,8 @@
    (debug "closing channel")
    ((@chs k))
    (debug "clearing chs and status atoms")
-   (swap! chs (fn [curr] (dissoc curr k)))
-   (swap! status (fn [curr] (dissoc curr k)))))
+   (swap! chs dissoc k)
+   (swap! status dissoc k)))
 
 (defn local-str [t]
   (f/unparse (f/formatter-local "dd/MM/YY HH:mm:ss") t))
