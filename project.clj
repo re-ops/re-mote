@@ -11,7 +11,9 @@
      [org.clojure/core.match "0.3.0-alpha4"]
 
      ; persistency
-     [cc.qbits/spandex "0.5.2"]
+     [cc.qbits/spandex "0.5.2" :exclusions [org.clojure/clojure]]
+     [org.apache.httpcomponents/httpclient "4.5.2"]
+
 
      ; pretty output
      [fipp "0.6.10"]
@@ -52,7 +54,7 @@
      [compojure "1.6.0"]
      [org.clojure/clojurescript "1.9.542"]
      [com.taoensso/sente "1.11.0"]
-     [http-kit "2.2.0"]
+     [http-kit "2.2.0" :exclusions [ring/ring-jetty-adapter]]
      [ring "1.6.1"]
      [ring/ring-defaults "0.3.0"]
      [hiccup "1.0.5"]
