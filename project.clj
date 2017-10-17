@@ -8,10 +8,10 @@
      [me.raynes/conch "0.8.0"]
      [org.clojure/core.async "0.3.443"]
      [com.rpl/specter "1.0.3"]
-
-     ; in memory query
      [org.clojure/core.match "0.3.0-alpha4"]
-     [datascript "0.16.2"]
+
+     ; persistency
+     [cc.qbits/spandex "0.5.2"]
 
      ; pretty output
      [fipp "0.6.10"]
