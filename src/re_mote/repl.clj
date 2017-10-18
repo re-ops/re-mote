@@ -7,6 +7,7 @@
    [re-mote.validate :refer (check-entropy check-jce)]
    [clojure.pprint :refer (pprint)]
    [taoensso.timbre :refer (refer-timbre)]
+   [re-mote.persist.es :refer (refer-es-persist)]
    [re-mote.repl.base :refer (refer-base)]
    [re-mote.repl.zfs :refer (refer-zfs)]
    [re-mote.repl.output :refer (refer-out)]
@@ -36,12 +37,16 @@
 (refer-publish)
 (refer-octo)
 (refer-regent)
+(refer-es-persist)
 
 (defn setup []
   (check-entropy 200)
   (check-jce)
   (setup-logging)
   (setup-stats 10 10))
+
+(defn single [h]
+  (Hosts. {:user "upgrade"} [h]))
 
 (def develop (Hosts. {:user "vagrant"} ["re-a" "re-b"]))
 
