@@ -42,7 +42,7 @@
   [{:keys [hosts]} up uuid]
   (into {}
         (map
-         (fn [h] [h {:code -1 :host h :result {:r :failed} :out "host re-gent not connected" :uuid uuid}])
+         (fn [h] [h {:code -1 :host h :result {:r :failed} :error "host re-gent not connected" :uuid uuid}])
          (filter (comp not (partial contains? up)) hosts))))
 
 (defn run-hosts
@@ -54,7 +54,7 @@
          results (collect (keys hosts) (-> f fn-meta :name keyword) uuid timeout)
          down (non-reachable hs hosts uuid)
          grouped (group-by :code (vals (merge results down)))]
-     {:hosts hs :success (grouped 0) :failure (dissoc grouped 0)})))
+     {:hosts (keys hosts) :success (grouped 0) :failure (dissoc grouped 0)})))
 
 (defn refer-zero-pipe []
   (require '[re-mote.zero.pipeline :as zpipe :refer (collect)]))
