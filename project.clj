@@ -71,7 +71,7 @@
      [org.webjars/bootstrap "3.3.5" :exclusions [org.slf4j/slf4j-api]]
 
      ; configuration
-     [clojure-future-spec "1.9.0-alpha15"]
+     [clojure-future-spec "1.9.0-beta2"]
      [formation "0.2.0"]
 
      ; common utilities and shared functions
