@@ -4,6 +4,7 @@
    [re-share.zero.common :refer  (context close!)]
    [re-share.core :refer  (enable-waits stop-waits)]
    [re-mote.zero.management :as mgmt]
+   [re-mote.persist.es :as es]
    [re-mote.zero.results :as res]
    [re-mote.zero.events :refer (handle)]
    [re-mote.zero.server :as srv]
@@ -20,6 +21,7 @@
 
 (defn start []
   (reset! ctx (context))
+  (es/start)
   (snd/start)
   (srv/start @ctx ".curve/server-private.key")
   (evn/start @ctx handle)
@@ -33,6 +35,7 @@
     (wrk/stop)
     (srv/stop @ctx)
     (evn/stop)
+    (es/stop)
     (future
       (debug "terminating ctx")
       (let [c @ctx]

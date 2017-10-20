@@ -1,6 +1,7 @@
 (ns re-mote.persist.es
   "Persisting results into Elasticsearch"
   (:require
+   re-mote.repl.base
    [formation.core :as form]
    [re-mote.log :refer (gen-uuid)]
    [qbits.spandex :as s]
@@ -40,6 +41,9 @@
 
 (comment
   (start)
-  (s/request @c
-             {:url [(es :index) (es :type) (gen-uuid)]
-              :method :post :body {:results "hello!"}}))
+  (try
+    (s/request @c
+               {:url [(es :index) (es :type) (gen-uuid)]
+                :method :post :body {:tag "hello!" :uuid (gen-uuid)}})
+    (catch Exception e
+      (println e))))
