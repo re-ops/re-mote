@@ -1,6 +1,4 @@
 language: clojure
 jdk:
   - oraclejdk8
-before_script:
-  - echo y | sudo lein upgrade
 script: lein travis
