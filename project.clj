@@ -122,7 +122,7 @@
   :aliases {
      "start-repl" ["do" "clean," "cljsbuild" "once," "repl" ":headless"]
      "travis" [
-        "do" "clean," "compile," "cljsbuild" "once," "cljfmt" "check," "eastwood" "{:exclude-namespaces [re-mote.zero.worker re-mote.zero.server re-mote.zero.common]}"
+        "do" "clean," "compile," "cljsbuild" "once," "cljfmt" "check," "eastwood" "{:exclude-namespaces [re-mote.zero.worker re-mote.zero.server re-mote.zero.common re-mote.repl.spec]}"
      ]
      "start" ["do" "clean," "cljsbuild" "once," "run"]
    }
