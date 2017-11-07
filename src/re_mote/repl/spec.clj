@@ -62,3 +62,20 @@
 
 (s/def ::pipeline
   (s/tuple ::hosts-entity ::operation-result))
+
+(comment
+ (def ok
+   [#re_mote.repl.base.Hosts {:auth {:ssh-key "foo" :user "bar"} :hosts ["one" "two"]}
+     {:failure {-1
+        [{:code -1 :error {:out "host re-gent not connected"} :host "one" :result {:r :failed} :uuid "87551290cd984ad9b4acfc9e24c4af80"}]}
+	:hosts '("one" "two")
+	:success '({:code 0
+		     :host "two"
+		     :result {:r {:err "" :exit 0 :out "2.01 1.51 96.48\n"} :t 1.014162418}
+		     :stats {:cpu {:idle 96.48M :sys 1.51M :usr 2.01M}}
+		     :uuid "87551290cd984ad9b4acfc9e24c4af80"}
+		    )}])
+
+   (s/valid? ::pipeline ok)
+   (s/explain ::pipeline ok)
+)

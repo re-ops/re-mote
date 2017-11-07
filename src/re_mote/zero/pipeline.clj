@@ -1,6 +1,8 @@
 (ns re-mote.zero.pipeline
   "Base ns for zeromq pipeline support"
   (:require
+   [re-mote.repl.spec :as re-spec]
+   [clojure.spec.alpha :as spec]
    [clojure.core.match :refer [match]]
    [taoensso.timbre :refer  (refer-timbre)]
    [com.rpl.specter :refer (transform MAP-VALS ALL)]
@@ -37,18 +39,20 @@
     (clear-results uuid)
     rs))
 
+
 (defn non-reachable
   "Adding non reachable hosts"
   [{:keys [hosts]} up uuid]
   (into {}
         (map
-         (fn [h] [h {:code -1 :host h :result {:r :failed} :error "host re-gent not connected" :uuid uuid}])
+         (fn [h] [h {:code -1 :host h :result {:r :failed} :error {:out "host re-gent not connected"} :uuid uuid}])
          (filter (comp not (partial contains? up)) hosts))))
 
 (defn run-hosts
   ([hs f args]
    (run-hosts hs f args [10 :second]))
   ([hs f args timeout]
+   {:post [(spec/valid? ::re-spec/operation-result %)]}
    (let [hosts (into-zmq-hosts hs)
          uuid (call f args hosts)
          results (collect (keys hosts) (-> f fn-meta :name keyword) uuid timeout)
