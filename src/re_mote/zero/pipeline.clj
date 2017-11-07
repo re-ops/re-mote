@@ -39,7 +39,6 @@
     (clear-results uuid)
     rs))
 
-
 (defn non-reachable
   "Adding non reachable hosts"
   [{:keys [hosts]} up uuid]
