@@ -28,8 +28,8 @@
 (s/def ::success
   (s/coll-of
    (s/keys
-    :opt-un [::stats ::uuid ::profile]
-    :req-un [::code ::host ::result])))
+    :opt-un [::stats ::uuid ::profile ::result]
+    :req-un [::code ::host])))
 
 (s/def ::error
   (s/keys :req-un [::out]))
@@ -65,7 +65,7 @@
 
 (comment
   (def ok
-    [#re_mote.repl.base.Hosts {:auth {:ssh-key "foo" :user "bar"} :hosts ["one" "two"]}
+    [{:auth {:ssh-key "foo" :user "bar"} :hosts ["one" "two"]}
      {:failure {-1
                 [{:code -1 :error {:out "host re-gent not connected"} :host "one" :result {:r :failed} :uuid "87551290cd984ad9b4acfc9e24c4af80"}]}
       :hosts '("one" "two")

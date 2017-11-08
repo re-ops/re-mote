@@ -26,19 +26,21 @@
   [(-> s t/seconds t/from-now)])
 
 (defn seconds
-  ([n f] (periodic-seq (t/plus (local-now) (t/seconds f)) (-> n t/seconds)))
-  ([n] (periodic-seq (local-now) (-> n t/seconds))))
+  ([n f]
+   (periodic-seq (t/plus (local-now) (t/seconds f)) (t/seconds n)))
+  ([n]
+   (periodic-seq (local-now) (t/seconds n))))
 
 (defn every-day [hour]
   (let [^DateTime now (local-now) dates (periodic-seq (.. now (withTime hour 0 0 0)) (t/days 1))]
     (if (> (c/to-long (first dates)) (c/to-long now)) dates (rest dates))))
 
 (defn on-weekdays [hour]
-  (->> (every-day hour)
-       (remove (comp #{DateTimeConstants/SATURDAY DateTimeConstants/SUNDAY} #(.getDayOfWeek ^DateTime %)))))
+  (remove (comp #{DateTimeConstants/SATURDAY DateTimeConstants/SUNDAY} #(.getDayOfWeek ^DateTime %))
+          (every-day hour)))
 
 (defn at-day [day hour]
-  (->> (every-day hour) (filter (comp #{day} #(.getDayOfWeek ^DateTime %)))))
+  (filter (comp #{day} #(.getDayOfWeek ^DateTime %)) (every-day hour)))
 
 (defn watch
   "run f using provided period"
@@ -67,7 +69,8 @@
   (f/unparse (f/formatter-local "dd/MM/YY HH:mm:ss") t))
 
 (defn color-host [{:keys [host code] :as m}]
-  (update m :host (fn [_] (if-not (= code 0) (style host :red) (style host :green)))))
+  (update m :host
+          (fn [_] (if-not (zero? code) (style host :red) (style host :green)))))
 
 (defn pretify [{:keys [result] :as m}]
   (select-keys (merge m result) [:host :code :out]))

@@ -1,41 +1,16 @@
 (ns re-mote.repl.base
   (:require
-   [me.raynes.fs :as fs]
    [clojure.java.shell :refer [sh]]
    [clojure.core.strint :refer (<<)]
    [clojure.edn :as edn]
    [clojure.tools.trace :as t]
-   [clojure.core.async :refer (<!! thread thread-call) :as async]
    [clojure.java.io :refer (reader file)]
    [taoensso.timbre :refer (refer-timbre)]
+   [re-mote.ssh.pipeline :refer (run-hosts upload-hosts)]
    [pallet.stevedore.bash]
-   [pallet.stevedore :refer (script)]
-   [re-mote.log :refer (collect-log get-logs gen-uuid)]
-   [re-mote.sshj :refer (execute upload)]))
+   [pallet.stevedore :refer (script)]))
 
 (refer-timbre)
-
-(.bindRoot #'pallet.stevedore/*script-language* :pallet.stevedore.bash/bash)
-
-(defn- execute-uuid [auth script host]
-  (try
-    (let [uuid (gen-uuid)
-          code (execute script (merge {:host host} auth) :out-fn (collect-log uuid))]
-      {:host host :code code :uuid uuid})
-    (catch Throwable e
-      {:host host :code -1 :error (.getMessage e)})))
-
-(defn- map-async
-  "Map functions in seperate theads and merge the results"
-  [f ms]
-  (<!! (async/into [] (async/merge (map #(thread-call (bound-fn []  (f %))) ms)))))
-
-(defn- host-upload [auth src dest h]
-  (try
-    (upload src dest (merge {:host h} auth))
-    {:host h :code 0}
-    (catch Throwable e
-      {:host h :code 1 :error (.getMessage e)})))
 
 (defn sh-hosts
   "Run a local commands against hosts"
@@ -44,17 +19,7 @@
         grouped (group-by :code results)]
     {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
 
-(defn upload-hosts [{:keys [auth hosts]} src dest]
-  (when-not (fs/exists? src)
-    (throw (ex-info (<< "missing source file to upload ~{src}") {:src src})))
-  (let [results (map-async (partial host-upload auth src dest) hosts)
-        grouped (group-by :code results)]
-    {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
-
-(defn run-hosts [{:keys [auth hosts]} script]
-  (let [results (map-async (partial execute-uuid auth script) hosts)
-        grouped (group-by :code results)]
-    {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
+(.bindRoot #'pallet.stevedore/*script-language* :pallet.stevedore.bash/bash)
 
 (defmacro | [source fun & funs]
   (let [f (first fun) args (rest fun)]
@@ -67,9 +32,9 @@
     `(~p ~f ~s)))
 
 (defn safe-output [{:keys [out err exit]}]
-  (when-not (empty? out)
+  (when (seq out)
     (debug out))
-  (when-not (= exit 0)
+  (when (zero? exit)
     (error err exit))
   {:code exit :out out :error err})
 
@@ -171,7 +136,7 @@
 (defn successful
   "Used for picking successful"
   [success _ hs]
-  (filter (into #{} (map :host success)) hs))
+  (filter (set (map :host success)) hs))
 
 (defn into-hosts
   "builds hosts from an edn file"

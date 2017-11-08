@@ -94,7 +94,7 @@
 (defn last-n
   "keep last n items of a sorted map"
   [n m]
-  (let [v (into [] (into (sorted-map) m)) c (count v)]
+  (let [v (vec (into (sorted-map) m)) c (count v)]
     (if (< c n) m (into (sorted-map) (subvec v (- c n) c)))))
 
 (def timeout [5 :second])
@@ -153,7 +153,7 @@
   [k ks {:keys [host stats]}]
   (transform [ALL]
              (fn [[t s]] {:x (to-long t) :y (get-in s ks) :host host})
-             (into [] (get-in @readings [host (first (keys stats)) k]))))
+             (vec (get-in @readings [host (first (keys stats)) k]))))
 
 (defn single-per-host
   "Collect a single nested reading for each host"

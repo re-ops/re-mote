@@ -1,7 +1,7 @@
 (ns re-mote.repl.puppet
   "Remote puppet run of opsk sandboxes"
   (:require
-   [re-mote.repl.base :refer (run-hosts)]
+   [re-mote.ssh.pipeline :refer (run-hosts)]
    [pallet.stevedore :refer (script)])
   (:import [re_mote.repl.base Hosts]))
 

@@ -6,7 +6,7 @@
    [pallet.stevedore :refer (script chained-script)]
    [clojure.core.strint :refer (<<)]
    [re-mote.zero.server :refer (used-port)]
-   [re-mote.repl.base :refer (run-hosts)])
+   [re-mote.ssh.pipeline :refer (run-hosts)])
   (:import [re_mote.repl.base Hosts]))
 
 (defprotocol Regent

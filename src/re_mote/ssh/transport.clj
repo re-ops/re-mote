@@ -1,4 +1,4 @@
-(ns re-mote.sshj
+(ns re-mote.ssh.transport
   (:require
    [me.raynes.conch :as c]
    [clojure.java.io :as io :refer (reader output-stream)]

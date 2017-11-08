@@ -84,6 +84,7 @@
 
   :plugins  [[jonase/eastwood "0.2.4"]
              [lein-tag "0.1.0"]
+             [lein-kibit "0.1.6"]
              [mvxcvi/whidbey "1.3.1"]
              [lein-ancient "0.6.7" :exclusions [org.clojure/clojure]]
              [lein-tar "2.0.0"]

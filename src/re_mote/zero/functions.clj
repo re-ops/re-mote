@@ -74,7 +74,7 @@
     (map str (list-dir d))))
 
 (def ^{:doc "adding one"} plus-one
-  (s/fn [x] (+ 1 x)))
+  (s/fn [x] (inc x)))
 
 (def ^{:doc "always fails"} fails
   (s/fn []

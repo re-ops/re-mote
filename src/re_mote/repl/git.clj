@@ -1,7 +1,7 @@
 (ns re-mote.repl.git
   (:require
    [re-mote.log :refer (get-log)]
-   [re-mote.repl.base :refer (run-hosts)]
+   [re-mote.ssh.pipeline :refer (run-hosts)]
    [pallet.stevedore :refer (script)])
   (:import [re_mote.repl.base Hosts]))
 
