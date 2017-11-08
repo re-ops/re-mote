@@ -17,7 +17,7 @@
 (refer-timbre)
 
 (defn zipped [parent k ks {:keys [result] :as m}]
-  (assoc-in m [parent k] (zipmap ks (split (get-in result [:r :out]) #"\s"))))
+  (assoc-in m [parent k] (zipmap ks (split (result :out) #"\s"))))
 
 (defn zip
   "Collecting output into a hash, must be defined outside protocoal because of var args"

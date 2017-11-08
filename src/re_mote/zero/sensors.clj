@@ -30,8 +30,8 @@
        {:device dev :temp r :limits (into {} limits)})) lines))
 
 (defn assoc-stats [{:keys [host result] :as m}]
-  (let [out (get-in result [:r :out])
-        sections (filter (comp empty? (partial filter empty?)) (partition-by empty? (split out #"\n")))
+  (println result)
+  (let [sections (filter (comp empty? (partial filter empty?)) (partition-by empty? (split (result :out) #"\n")))
         ms (apply merge (mapv (fn [[f & rs]] {(keyword f) (parse-lines rs)}) sections))]
     (assoc-in m [:stats :temperatures] ms)))
 

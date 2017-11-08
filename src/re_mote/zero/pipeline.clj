@@ -18,13 +18,13 @@
 
 (defn codes [v]
   (match [v]
-    [{:r :failed}] -1
-    [{:r {:exit e}}] e
+    [{:result :failed}] -1
+    [{:result {:exit e}}] e
     :else 0))
 
 (defn with-codes
   [m uuid]
-  (transform [ALL] (fn [[h v]] [h {:host h :code (codes v)  :uuid uuid :result v}]) m))
+  (transform [ALL] (fn [[h v]] [h (merge {:host h :code (codes v) :uuid uuid} v)]) m))
 
 (defn collect
   "Collect results from the zmq hosts blocking until all results are back or timeout end"
@@ -44,7 +44,7 @@
   [{:keys [hosts]} up uuid]
   (into {}
         (map
-         (fn [h] [h {:code -1 :host h :result {:r :failed} :error {:out "host re-gent not connected"} :uuid uuid}])
+         (fn [h] [h {:code -1 :host h :error {:out "host re-gent not connected"} :uuid uuid}])
          (filter (comp not (partial contains? up)) hosts))))
 
 (defn run-hosts

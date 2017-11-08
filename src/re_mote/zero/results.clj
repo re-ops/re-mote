@@ -20,11 +20,11 @@
 
 (defn add-result
   ([hostname uuid r]
-   (let [v {:r r} b (bucket uuid)]
+   (let [v {:result r} b (bucket uuid)]
      (dosync
       (alter b assoc-in [uuid hostname] v))))
   ([hostname uuid r t]
-   (let [v {:r r :t t} b (bucket uuid)]
+   (let [v {:result r :profile {:time t}} b (bucket uuid)]
      (dosync
       (alter b assoc-in [uuid hostname] v)))))
 

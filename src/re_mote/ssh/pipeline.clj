@@ -9,12 +9,12 @@
    [clojure.core.async :refer (<!! thread-call) :as async]))
 
 (defn- execute-uuid [auth script host]
-  (try
-    (let [uuid (gen-uuid)
-          code (execute script (merge {:host host} auth) :out-fn (collect-log uuid))]
-      {:host host :code code :uuid uuid})
-    (catch Throwable e
-      {:host host :code -1 :error (.getMessage e)})))
+  (let [uuid (gen-uuid)]
+    (try
+      (let [code (execute script (merge {:host host} auth) :out-fn (collect-log uuid))]
+        {:host host :code code :uuid uuid})
+      (catch Throwable e
+        {:host host :code -1 :error {:out (.getMessage e)} :uuid uuid}))))
 
 (defn- map-async
   "Map functions in seperate theads and merge the results"
@@ -22,11 +22,12 @@
   (<!! (async/into [] (async/merge (map #(thread-call (bound-fn []  (f %))) ms)))))
 
 (defn- host-upload [auth src dest h]
-  (try
-    (upload src dest (merge {:host h} auth))
-    {:host h :code 0}
-    (catch Throwable e
-      {:host h :code 1 :error (.getMessage e)})))
+  (let [uuid (gen-uuid)]
+    (try
+      (upload src dest (merge {:host h} auth))
+      {:host h :code 0 :uuid uuid}
+      (catch Throwable e
+        {:host h :code 1 :error {:out (.getMessage e)} :uuid uuid}))))
 
 (defn upload-hosts [{:keys [auth hosts]} src dest]
   {:post [(spec/valid? ::re-spec/operation-result %)]}
