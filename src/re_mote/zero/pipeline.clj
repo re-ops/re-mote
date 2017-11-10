@@ -1,11 +1,12 @@
 (ns re-mote.zero.pipeline
   "Base ns for zeromq pipeline support"
   (:require
-   [re-mote.repl.spec :as re-spec]
+   [clojure.set :refer (rename-keys)]
+   [re-mote.repl.spec :as re-spec :refer (valid?)]
    [clojure.spec.alpha :as spec]
    [clojure.core.match :refer [match]]
    [taoensso.timbre :refer  (refer-timbre)]
-   [com.rpl.specter :refer (transform MAP-VALS ALL)]
+   [com.rpl.specter :refer (transform MAP-VALS ALL VAL)]
    [re-mote.zero.management :refer (refer-zero-manage)]
    [re-mote.zero.results :refer (refer-zero-results)]
    [re-mote.zero.functions :as fns :refer (fn-meta call)]
@@ -47,17 +48,20 @@
          (fn [h] [h {:code -1 :host h :error {:out "host re-gent not connected"} :uuid uuid}])
          (filter (comp not (partial contains? up)) hosts))))
 
+(defn add-error [errors]
+  (transform [MAP-VALS ALL] (fn [m] (rename-keys m {:result :error})) errors))
+
 (defn run-hosts
   ([hs f args]
    (run-hosts hs f args [10 :second]))
   ([hs f args timeout]
-   {:post [(spec/valid? ::re-spec/operation-result %)]}
+   {:post [(valid? ::re-spec/operation-result %)]}
    (let [hosts (into-zmq-hosts hs)
          uuid (call f args hosts)
          results (collect (keys hosts) (-> f fn-meta :name keyword) uuid timeout)
          down (non-reachable hs hosts uuid)
          grouped (group-by :code (vals (merge results down)))]
-     {:hosts (keys hosts) :success (grouped 0) :failure (dissoc grouped 0)})))
+     {:hosts (keys hosts) :success (grouped 0) :failure (add-error (dissoc grouped 0))})))
 
 (defn refer-zero-pipe []
   (require '[re-mote.zero.pipeline :as zpipe :refer (collect)]))

@@ -1,7 +1,11 @@
 (ns re-mote.repl.spec
   "spec for results and pipelines outputs"
   (:require
+   [puget.printer :as puget]
+   [taoensso.timbre :refer  (refer-timbre)]
    [clojure.spec.alpha :as s]))
+
+(refer-timbre)
 
 (defn length [l]
   (fn [s] (>= (.length s) l)))
@@ -26,27 +30,31 @@
    :req-un [::time]))
 
 (s/def ::success
-  (s/coll-of
-   (s/keys
-    :opt-un [::stats ::uuid ::profile ::result]
-    :req-un [::code ::host])))
+  (s/nilable
+   (s/coll-of
+    (s/keys
+     :opt-un [::stats ::uuid ::profile ::result]
+     :req-un [::code ::host]))))
 
 (s/def ::error
   (s/keys :req-un [::out]))
 
 (s/def ::fails
-  (s/coll-of
-   (s/keys
-    :req-un [::code ::host ::uuid ::error])))
+  (s/nilable
+   (s/coll-of
+    (s/keys
+     :req-un [::code ::host ::uuid ::error]))))
 
 (s/def ::failure
   (s/map-of integer? ::fails))
 
 (s/def ::hosts
-  (s/coll-of string?))
+  (s/nilable
+   (s/coll-of string?)))
 
 (s/def ::operation-result
-  (s/keys :req-un [::success ::failure ::hosts]))
+  (s/keys
+   :req-un [::success ::failure ::hosts ::hosts]))
 
 (s/def ::ssh-key string?)
 
@@ -62,6 +70,13 @@
 
 (s/def ::pipeline
   (s/tuple ::hosts-entity ::operation-result))
+
+(defn valid? [s v]
+  (if-not (s/valid? s v)
+    (let [e (s/explain-data s v)]
+      (info "spec failed:" e)
+      (puget/cprint e))
+    true))
 
 (comment
   (def ok

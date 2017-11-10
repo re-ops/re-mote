@@ -1,6 +1,6 @@
 (ns re-mote.ssh.pipeline
   (:require
-   [re-mote.repl.spec :as re-spec]
+   [re-mote.repl.spec :as re-spec :refer (valid?)]
    [clojure.spec.alpha :as spec]
    [clojure.core.strint :refer (<<)]
    [me.raynes.fs :as fs]
@@ -30,7 +30,7 @@
         {:host h :code 1 :error {:out (.getMessage e)} :uuid uuid}))))
 
 (defn upload-hosts [{:keys [auth hosts]} src dest]
-  {:post [(spec/valid? ::re-spec/operation-result %)]}
+  {:post [(valid? ::re-spec/operation-result %)]}
   (when-not (fs/exists? src)
     (throw (ex-info (<< "missing source file to upload ~{src}") {:src src})))
   (let [results (map-async (partial host-upload auth src dest) hosts)
