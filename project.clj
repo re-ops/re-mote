@@ -42,7 +42,7 @@
      [cheshire "5.8.0"]
 
      ; remote execution
-     [com.hierynomus/sshj "0.21.1" :exclusions [org.slf4j/slf4j-api]]
+     [com.hierynomus/sshj "0.23.0" :exclusions [org.slf4j/slf4j-api]]
      [org.zeromq/jeromq "0.4.2"]
 
      ; run at
