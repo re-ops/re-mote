@@ -1,18 +1,21 @@
 (ns re-mote.ssh.pipeline
   (:require
+   [clojure.string :refer (join)]
    [re-mote.repl.spec :as re-spec :refer (valid?)]
-   [clojure.spec.alpha :as spec]
    [clojure.core.strint :refer (<<)]
    [me.raynes.fs :as fs]
    [re-mote.ssh.transport :refer (execute upload)]
-   [re-mote.log :refer (collect-log get-logs gen-uuid)]
+   [re-mote.log :refer (collect-log get-log gen-uuid)]
    [clojure.core.async :refer (<!! thread-call) :as async]))
 
 (defn- execute-uuid [auth script host]
   (let [uuid (gen-uuid)]
     (try
-      (let [code (execute script (merge {:host host} auth) :out-fn (collect-log uuid))]
-        {:host host :code code :uuid uuid})
+      (let [code (execute script (merge {:host host} auth) :out-fn (collect-log uuid))
+            out (join "\n" (get-log uuid))]
+        (if-not (= code 0)
+          {:host host :code code :uuid uuid :error {:out out}}
+          {:host host :code code :uuid uuid :result {:out out :exit code}}))
       (catch Throwable e
         {:host host :code -1 :error {:out (.getMessage e)} :uuid uuid}))))
 
@@ -38,7 +41,7 @@
     {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
 
 (defn run-hosts [{:keys [auth hosts]} script]
-  {:post [(spec/valid? ::re-spec/operation-result %)]}
+  {:post [(valid? ::re-spec/operation-result %)]}
   (let [results (map-async (partial execute-uuid auth script) hosts)
         grouped (group-by :code results)]
     {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))

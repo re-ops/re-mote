@@ -3,7 +3,6 @@
   (:require
    [clojure.set :refer (rename-keys)]
    [re-mote.repl.spec :as re-spec :refer (valid?)]
-   [clojure.spec.alpha :as spec]
    [clojure.core.match :refer [match]]
    [taoensso.timbre :refer  (refer-timbre)]
    [com.rpl.specter :refer (transform MAP-VALS ALL VAL)]

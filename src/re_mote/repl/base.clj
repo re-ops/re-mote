@@ -34,7 +34,7 @@
 (defn safe-output [{:keys [out err exit]}]
   (when (seq out)
     (debug out))
-  (when (zero? exit)
+  (when-not (zero? exit)
     (error err exit))
   {:code exit :out out :error err})
 

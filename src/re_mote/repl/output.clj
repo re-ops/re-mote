@@ -19,7 +19,7 @@
 
 (defn summarize [s]
   (let [l (.length s)]
-    (if (< l 50) s (.substring s (- l 50) l))))
+    (if (< l 50) s (.substring s (- l 150) l))))
 
 (extend-type Hosts
   Report
@@ -46,8 +46,8 @@
     (doseq [{:keys [host out]} success]
       (println " " (style "✔" :green) host (if out (summarize out) "")))
     (doseq [[c rs] failure]
-      (doseq [{:keys [host error out]} (get-logs rs)]
-        (println " " (style "x" :red) host "-" (if out (str c ",") "") (or error (summarize out)))))
+      (doseq [{:keys [host error]} (get-logs rs)]
+        (println " " (style "x" :red) host "-" (str c) "," (summarize (error :out)))))
     (println "")
     [this m]))
 

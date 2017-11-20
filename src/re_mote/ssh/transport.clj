@@ -25,10 +25,13 @@
 
 (def ^:dynamic timeout (* 1000 60 10))
 
-(defn ssh-strap [{:keys [host ssh-port ssh-key user]}]
+(defn sshj-client []
   (doto (SSHClient.)
     (.addHostKeyVerifier (PromiscuousVerifier.))
-    (.setTimeout timeout)
+    (.setTimeout timeout)))
+
+(defn ssh-strap [{:keys [host ssh-port ssh-key user]}]
+  (doto (sshj-client)
     (.connect host (or ssh-port default-port))
     (.authPublickey user #^"[Ljava.lang.String;" (into-array [(or ssh-key default-key)]))))
 
