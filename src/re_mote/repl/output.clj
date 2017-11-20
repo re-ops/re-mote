@@ -3,10 +3,8 @@
    [re-mote.log :refer (get-logs)]
    [clansi.core :refer (style)]
    [clojure.string :as s]
-   [taoensso.timbre :refer (refer-timbre)])
+   [taoensso.timbre :refer (info)])
   (:import [re_mote.repl.base Hosts]))
-
-(refer-timbre)
 
 (defprotocol Report
   (summary [this target])
