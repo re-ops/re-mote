@@ -147,14 +147,14 @@
 
 (defn #^{:category :re-gent} kill
   "kill re-gent process:
-     (kill sandbox)
+     (kill develop)
   "
   [{:keys [auth] :as hs}]
   (run (kill-agent hs) | (pretty)))
 
 (defn #^{:category :re-gent} launch
   "start re-gent process:
-     (start sandbox)
+     (launch develop)
   "
   [{:keys [auth] :as hs}]
   (let [{:keys [user]} auth home (<< "/home/~{user}")]
