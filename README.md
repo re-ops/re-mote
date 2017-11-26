@@ -4,6 +4,9 @@ A live coding environment for configuration management.
 
 [![Build Status](https://travis-ci.org/re-ops/re-mote.png)](https://travis-ci.org/re-ops/re-mote)
 
+
+[![Re-ops, a Functional Live-Infrastructure as Code](https://img.youtube.com/vi/iopuirQuK-s/0.jpg)](https://www.youtube.com/watch?v=iopuirQuK-s)
+
 ## Motivation
 
 Most (if not all) configuration management tools currently are static in nature, you write you code deploy it and apply (rinse and repeat).
@@ -14,15 +17,16 @@ RE-mote is a re-take on how remote operations would look like when using a live 
 
 It enables remote execution of commands on a group of hosts, the results can be analysed, published and manipulated in pipelines.
 
+
 # Get running
 
 ```clojure
 $ git clone git@github.com:re-ops/re-mote.git
 $ cd re-mote
 $ lein repl
-user=> (go)
+[re-mote]λ: (go)
 nil
-user=> (listing sandbox)
+[re-mote]λ: (listing sandbox)
 
 Run summary:
 
