@@ -131,6 +131,7 @@
 (defn #^{:category :puppet} provision
   "Sync puppet source code into a VM and run"
   [hs {:keys [src]}]
+  {:pre [src]}
   (let [dest (<< "/tmp/~(fs/base-name src)")]
     (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (apply-module dest "") | (pretty))))
 
