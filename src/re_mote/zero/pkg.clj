@@ -1,5 +1,6 @@
 (ns re-mote.zero.pkg
   "Package operations on FreeBSD Pkg and Ubuntu/Debian Apt"
+  (:refer-clojure :exclude  [update])
   (:require
    [taoensso.timbre :refer  (refer-timbre)]
    [re-mote.zero.pipeline :refer (run-hosts)]
