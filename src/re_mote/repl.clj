@@ -45,8 +45,8 @@
   (setup-logging)
   (setup-stats 10 10))
 
-(defn single [h]
-  (Hosts. {:user "upgrade"} [h]))
+(defn single [h & m]
+  (Hosts. (merge {:user "upgrade"} (first m)) [h]))
 
 (def develop (Hosts. {:user "vagrant"} ["re-a" "re-b"]))
 
