@@ -12,7 +12,10 @@
    [re-mote.zero.results :refer (pretty-result)]
    [re-mote.zero.functions :refer (refer-zero-fns)]
    [re-mote.zero.facts :refer (refer-facts)]
-   [re-mote.repl :refer :all])
+   [re-mote.repl :refer :all]
+   ; profiling
+   [clj-async-profiler.core :as prof]
+   )
   (:import
    java.io.File
    re_mote.repl.base.Hosts))
