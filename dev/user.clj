@@ -14,8 +14,7 @@
    [re-mote.zero.facts :refer (refer-facts)]
    [re-mote.repl :refer :all]
    ; profiling
-   [clj-async-profiler.core :as prof]
-   )
+   [clj-async-profiler.core :as prof])
   (:import
    java.io.File
    re_mote.repl.base.Hosts))
