@@ -2,7 +2,6 @@
   "Sensors monitoring"
   (:require
    [clojure.string :refer (split)]
-   [re-mote.log :refer (get-log get-logs)]
    [re-mote.zero.shell :refer (args)]
    [re-mote.zero.functions :refer (shell)]
    [re-mote.zero.pipeline :refer (run-hosts)]
