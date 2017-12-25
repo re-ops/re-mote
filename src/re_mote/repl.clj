@@ -165,8 +165,8 @@
 
 (defn pull
   "update a local git repo"
-   [hs {:keys [repo remote branch]}]
-   (run (git/pull hs repo remote branch) | (pretty)))
+  [hs {:keys [repo remote branch]}]
+  (run (git/pull hs repo remote branch) | (pretty)))
 
 (defn filter-hosts
   [hs f]
