@@ -19,6 +19,7 @@
    [re-mote.repl.re-gent :refer (refer-regent)]
    [re-mote.repl.schedule :refer (watch seconds)]
    [re-mote.zero.facts :refer (refer-facts)]
+   [re-mote.zero.git :refer (refer-git)]
    [re-mote.zero.test :as tst]
    [re-mote.zero.pkg :refer (refer-pkg)]
    [re-mote.log :refer (setup-logging)]
@@ -37,6 +38,7 @@
 (refer-publish)
 (refer-octo)
 (refer-regent)
+(refer-git)
 (refer-es-persist)
 
 (defn setup []
@@ -160,6 +162,11 @@
   [{:keys [auth] :as hs}]
   (let [{:keys [user]} auth home (<< "/home/~{user}")]
     (run (start-agent hs home) | (pretty))))
+
+(defn pull
+  "update a local git repo"
+   [hs {:keys [repo remote branch]}]
+   (run (git/pull hs repo remote branch) | (pretty)))
 
 (defn filter-hosts
   [hs f]
