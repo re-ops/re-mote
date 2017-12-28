@@ -42,8 +42,8 @@
         (throw (ex-info "failed to persist results" res))))))
 
 (defn start []
-  (reset! c 
-    (s/client {:hosts [(@es :server)] :basic-auth {:user "elastic" :password "changeme"}})))
+  (reset! c
+          (s/client {:hosts [(@es :server)] :basic-auth {:user "elastic" :password "changeme"}})))
 
 (defn stop []
   (when @c
@@ -51,7 +51,7 @@
     (reset! c nil)))
 
 (def ^:const types
-  {:stats { :properties {:success {:properties {:date {:type "date"}}}}}})
+  {:stats {:properties {:success {:properties {:date {:type "date"}}}}}})
 
 (defn setup []
   (let [index (@es :index)]
