@@ -51,7 +51,7 @@
     (reset! c nil)))
 
 (def ^:const types
-  {:stats { :properties { :success {:date {:type "date"}}}}})
+  {:stats { :properties {:success {:properties {:date {:type "date"}}}}}})
 
 (defn setup []
   (let [index (@es :index)]
