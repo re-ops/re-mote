@@ -67,6 +67,11 @@
   [hs]
   (run (cpu hs) | (collect) | (publish (stock "Idle CPU" :timeseries :idle)) | (publish (stock "User CPU" :timeseries :usr))))
 
+(defn #^{:category :stats} cpu-persist
+  "CPU usage and idle stats collection and publishing"
+  [hs]
+  (run (cpu hs) | (persist "stats") | (pretty)))
+
 (defn #^{:category :stats} ram-publish
   "RAM free and used percentage collection and publishing"
   [hs]

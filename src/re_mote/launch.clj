@@ -1,5 +1,6 @@
 (ns re-mote.launch
   (:require
+   [re-mote.persist.es :as es]
    [re-mote.zero.cycle :as zero]
    [taoensso.timbre :refer (refer-timbre)]
    [re-mote.publish.server :as web]
@@ -12,15 +13,18 @@
 
 (defn setup []
   (k/create-server-keys ".curve")
+  (es/setup)
   (repl/setup))
 
 (defn start [_]
+  (es/start)
   (web/start)
   (zero/start))
 
 (defn stop [_]
   (sched/halt!)
   (zero/stop)
+  (es/stop)
   (web/stop))
 
 (defn -main [& args])

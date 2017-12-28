@@ -72,6 +72,9 @@
 (defn into-dec [[this readings]]
   [this (transform [:success ALL :stats MAP-VALS MAP-VALS] safe-dec readings)])
 
+(defn date [[this readings]]
+  [this (transform [:success ALL] (fn [m] (assoc m :date (.getMillis (t/now)))) readings)])
+
 (defn avg
   "Windowed average function"
   [ts]
@@ -111,7 +114,7 @@
 
   (cpu
     ([this]
-     (into-dec (zip this (run-hosts this shell (args cpu-script) timeout) :stats :cpu :usr :sys :idle)))
+     (date (into-dec (zip this (run-hosts this shell (args cpu-script) timeout) :stats :cpu :usr :sys :idle))))
     ([this _]
      (cpu this)))
 

@@ -87,7 +87,7 @@
   (merge-config!
    {:output-fn (partial output-fn  {:stacktrace-fonts {}})})
   (merge-config!
-   {:ns-blacklist ["net.schmizz.*"]})
+   {:ns-blacklist ["net.schmizz.*" "org.elasticsearch.indices.*" "org.apache.http.*"]})
   (merge-config! {:appenders {:println (merge {:ns-whitelist ["re-mote.output"]} (println-appender {:stream :auto}))
                               :rolling (rolling-appender {:path "re-mote.log" :pattern :weekly})}})
 
