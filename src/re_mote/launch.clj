@@ -13,8 +13,8 @@
 
 (defn setup []
   (k/create-server-keys ".curve")
-  (es/setup)
-  (repl/setup))
+  (repl/setup)
+  (es/setup))
 
 (defn start [_]
   (es/start)
@@ -24,8 +24,8 @@
 (defn stop [_]
   (sched/halt!)
   (zero/stop)
-  (es/stop)
-  (web/stop))
+  (web/stop)
+  (es/stop))
 
 (defn -main [& args])
 

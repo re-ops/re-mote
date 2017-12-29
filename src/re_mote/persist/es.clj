@@ -32,14 +32,22 @@
   [index mappings]
   (= (:status (s/request @c {:url [index] :method :put :body mappings})) 200))
 
+(defn- delete
+  [index]
+  (= (:status (s/request @c {:url [index] :method :delete})) 200))
+
+(defn put [t m]
+  (let [req {:url [(@es :index) t] :method :post :body m}
+        {:keys [status] :as res} (s/request @c req)]
+    (when-not (#{200 201} status)
+      (throw (ex-info "failed to persist results" res)))))
+
 (extend-type Hosts
   Elasticsearch
-  (persist [this m t]
-    (let [req {:url [(@es :index) t (gen-uuid)] :method :post :body m}
-          {:keys [status] :as res} (s/request @c req)]
-      (if (#{200 201} status)
-        [this m]
-        (throw (ex-info "failed to persist results" res))))))
+  (persist [this {:keys [success failure] :as m} t]
+    (doseq [s success] (put t s))
+    (doseq [fail (flatten (vals failure))] (put "failure" fail))
+    [this m]))
 
 (defn start []
   (reset! c
@@ -51,7 +59,7 @@
     (reset! c nil)))
 
 (def ^:const types
-  {:stats {:properties {:success {:properties {:date {:type "date"}}}}}})
+  {:stats {:properties {:date {:type "date"}}}})
 
 (defn setup []
   (let [index (@es :index)]
@@ -65,9 +73,6 @@
 
 (comment
   (start)
-  (try
-    (s/request @c
-               {:url [(es :index) (es :type) (gen-uuid)]
-                :method :post :body {:tag "hello!" :uuid (gen-uuid)}})
-    (catch Exception e
-      (println e))))
+  (delete (@es :index))
+  (setup))
+

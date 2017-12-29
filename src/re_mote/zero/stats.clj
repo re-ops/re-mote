@@ -5,7 +5,7 @@
    [clojure.tools.trace :as tr]
    [re-mote.zero.pipeline :refer (run-hosts)]
    [taoensso.timbre :refer (refer-timbre)]
-   [com.rpl.specter :as s :refer (transform select MAP-VALS ALL ATOM keypath srange)]
+   [com.rpl.specter :as s :refer (transform select MAP-VALS ALL ATOM keypath)]
    [clj-time.core :as t]
    [clj-time.coerce :refer (to-long)]
    [re-mote.zero.shell :refer (args)]
@@ -108,9 +108,10 @@
     ([this _]
      (net this))
     ([this]
-     (into-dec
-      (zip this (run-hosts this shell (args net-script) timeout)
-           :stats :net :rxpck/s :txpck/s :rxkB/s :txkB/s :rxcmp/s :txcmp/s :rxmcst/s :ifutil))))
+     (date
+      (into-dec
+       (zip this (run-hosts this shell (args net-script) timeout)
+            :stats :net :rxpck/s :txpck/s :rxkB/s :txkB/s :rxcmp/s :txcmp/s :rxmcst/s :ifutil)))))
 
   (cpu
     ([this]
@@ -120,13 +121,13 @@
 
   (free
     ([this]
-     (into-dec (zip this (run-hosts this shell (args free-script) timeout) :stats :free :total :used :free)))
+     (date (into-dec (zip this (run-hosts this shell (args free-script) timeout) :stats :free :total :used :free))))
     ([this _]
      (free this)))
 
   (load-avg
     ([this]
-     (into-dec (zip this (run-hosts this shell (args load-script) timeout) :stats :load :one :five :fifteen)))
+     (date (into-dec (zip this (run-hosts this shell (args load-script) timeout) :stats :load :one :five :fifteen))))
     ([this _]
      (free this)))
 

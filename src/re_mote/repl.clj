@@ -61,39 +61,32 @@
 (defn #^{:category :shell} listing [hs]
   (run (ls hs "/" "-la") | (pretty)))
 
-; PUBLISHING
-(defn #^{:category :stats} cpu-publish
-  "CPU usage and idle stats collection and publishing"
-  [hs]
-  (run (cpu hs) | (collect) | (publish (stock "Idle CPU" :timeseries :idle)) | (publish (stock "User CPU" :timeseries :usr))))
+; persistence
 
 (defn #^{:category :stats} cpu-persist
-  "CPU usage and idle stats collection and publishing"
+  "CPU usage and idle stats collection and persistence"
   [hs]
-  (run (cpu hs) | (persist "stats") | (pretty)))
+  (run (cpu hs) | (persist "stats")))
 
-(defn #^{:category :stats} ram-publish
-  "RAM free and used percentage collection and publishing"
+(defn #^{:category :stats} ram-persist
+  "RAM free and used percentage collection and persistence"
   [hs]
-  (run (free hs) | (collect) | (publish (stock "Free RAM" :timeseries :free)) | (publish (stock "Used RAM" :timeseries :used))))
+  (run (free hs) | (persist "stats")))
 
-(defn #^{:category :stats} net-publish
-  "KB in/out stats collection and publishing"
+(defn #^{:category :stats} net-persist
+  "KB in/out stats collection and persistence"
   [hs]
-  (run (net hs) | (collect) | (publish (stock "KB out" :timeseries :txkB/s)) | (publish (stock "KB in" :timeseries :rxkB/s))))
+  (run (net hs) | (persist "stats")))
 
-(defn #^{:category :stats} temperature-publish
+(defn #^{:category :stats} temperature-persist
   "Collect CPU temperature (using lm-sensors) and publish"
   [hs]
-  (run (temperature hs) | (collect) | (publish (stock "CPU temp" :timeseries :coretemp-isa-0000 0 :temp))))
+  (run (temperature hs) | (persist "stats")))
 
-(defn #^{:category :stats} load-publish
-  "Average load collection and publishing"
+(defn #^{:category :stats} load-persist
+  "Average load collection and persistence"
   [hs]
-  (run (load-avg hs) | (collect) | (publish (stock "Five load" :timeseries :five))))
-
-(defn inlined-stats [hs]
-  (run (free hs) | (collect) | (cpu) | (collect) | (sliding avg :avg) | (publish (stock "User cpu avg" :avg :usr))))
+  (run (load-avg hs) | (persist "stats")))
 
 (defn tofrom
   "Email configuration"
