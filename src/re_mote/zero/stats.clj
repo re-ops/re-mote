@@ -73,7 +73,7 @@
   [this (transform [:success ALL :stats MAP-VALS MAP-VALS] safe-dec readings)])
 
 (defn enrich [t [this readings]]
-   [this (transform [:success ALL] (fn [m] (merge m {:timestamp (.getMillis (t/now)) :type t})) readings)])
+  [this (transform [:success ALL] (fn [m] (merge m {:timestamp (.getMillis (t/now)) :type t})) readings)])
 
 (defn avg
   "Windowed average function"
@@ -109,9 +109,9 @@
      (net this))
     ([this]
      (enrich "net"
-      (into-dec
-       (zip this (run-hosts this shell (args net-script) timeout)
-            :stats :net :rxpck/s :txpck/s :rxkB/s :txkB/s :rxcmp/s :txcmp/s :rxmcst/s :ifutil)))))
+             (into-dec
+              (zip this (run-hosts this shell (args net-script) timeout)
+                   :stats :net :rxpck/s :txpck/s :rxkB/s :txkB/s :rxcmp/s :txcmp/s :rxmcst/s :ifutil)))))
 
   (cpu
     ([this]

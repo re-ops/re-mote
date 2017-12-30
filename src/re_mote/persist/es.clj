@@ -58,12 +58,9 @@
     (reset! c nil)))
 
 (def ^:const types
-  {:stats {
-    :properties {
-        :timestamp { :type "date"}
-        :host {:type "keyword"}
-        :type {:type "keyword"}
-        }}})
+  {:stats {:properties {:timestamp {:type "date"}
+                        :host {:type "keyword"}
+                        :type {:type "keyword"}}}})
 
 (defn setup []
   (let [index (@es :index)]
