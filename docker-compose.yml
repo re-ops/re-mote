@@ -2,6 +2,7 @@ version: '2'
 services:
   elasticsearch:
     image: "docker.elastic.co/elasticsearch/elasticsearch:5.6.3"
+    container_name: elasticsearch
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -14,6 +15,7 @@ services:
 
   kibana:
     image: "docker.elastic.co/kibana/kibana:5.6.3"
+    container_name: kibana
     environment: ['ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}']
     ports:
       - "5607:5601"
@@ -24,5 +26,17 @@ services:
       - XPACK_MONITORING_ENABLED=false
       - XPACK_REPORTING_ENABLED=false
       - XPACK_SECURITY_ENABLED=false
+
+  grafana:
+    image: grafana/grafana:4.2.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    env_file:
+      - 'env.grafana'
+    links:
+      - elasticsearch
+    networks: ['stack']
+
 
 networks: {stack: {}}
