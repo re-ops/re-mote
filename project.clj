@@ -11,7 +11,7 @@
      [org.clojure/core.match "0.3.0-alpha4"]
 
      ; persistency
-     [cc.qbits/spandex "0.5.2" :exclusions [org.clojure/clojure]]
+     [cc.qbits/spandex "0.5.5" :exclusions [org.clojure/clojure]]
      [org.apache.httpcomponents/httpclient "4.5.2"]
 
 
