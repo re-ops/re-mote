@@ -72,8 +72,8 @@
 (defn into-dec [[this readings]]
   [this (transform [:success ALL :stats MAP-VALS MAP-VALS] safe-dec readings)])
 
-(defn date [[this readings]]
-  [this (transform [:success ALL] (fn [m] (assoc m :date (.getMillis (t/now)))) readings)])
+(defn enrich [t [this readings]]
+   [this (transform [:success ALL] (fn [m] (merge m {:timestamp (.getMillis (t/now)) :type t})) readings)])
 
 (defn avg
   "Windowed average function"
@@ -108,26 +108,26 @@
     ([this _]
      (net this))
     ([this]
-     (date
+     (enrich "net"
       (into-dec
        (zip this (run-hosts this shell (args net-script) timeout)
             :stats :net :rxpck/s :txpck/s :rxkB/s :txkB/s :rxcmp/s :txcmp/s :rxmcst/s :ifutil)))))
 
   (cpu
     ([this]
-     (date (into-dec (zip this (run-hosts this shell (args cpu-script) timeout) :stats :cpu :usr :sys :idle))))
+     (enrich "cpu" (into-dec (zip this (run-hosts this shell (args cpu-script) timeout) :stats :cpu :usr :sys :idle))))
     ([this _]
      (cpu this)))
 
   (free
     ([this]
-     (date (into-dec (zip this (run-hosts this shell (args free-script) timeout) :stats :free :total :used :free))))
+     (enrich "free" (into-dec (zip this (run-hosts this shell (args free-script) timeout) :stats :free :total :used :free))))
     ([this _]
      (free this)))
 
   (load-avg
     ([this]
-     (date (into-dec (zip this (run-hosts this shell (args load-script) timeout) :stats :load :one :five :fifteen))))
+     (enrich "load-avg" (into-dec (zip this (run-hosts this shell (args load-script) timeout) :stats :load :one :five :fifteen))))
     ([this _]
      (free this)))
 

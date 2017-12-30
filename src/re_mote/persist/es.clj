@@ -50,8 +50,7 @@
     [this m]))
 
 (defn start []
-  (reset! c
-          (s/client {:hosts [(@es :server)] :basic-auth {:user "elastic" :password "changeme"}})))
+  (reset! c (s/client {:hosts [(@es :server)] :basic-auth {:user "elastic" :password "changeme"}})))
 
 (defn stop []
   (when @c
@@ -59,7 +58,12 @@
     (reset! c nil)))
 
 (def ^:const types
-  {:stats {:properties {:date {:type "date"}}}})
+  {:stats {
+    :properties {
+        :timestamp { :type "date"}
+        :host {:type "keyword"}
+        :type {:type "keyword"}
+        }}})
 
 (defn setup []
   (let [index (@es :index)]

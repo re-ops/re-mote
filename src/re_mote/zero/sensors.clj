@@ -3,7 +3,7 @@
   (:require
    [clojure.string :refer (split)]
    [re-mote.zero.shell :refer (args)]
-   [re-mote.zero.stats :refer (date safe-dec)]
+   [re-mote.zero.stats :refer (enrich safe-dec)]
    [com.rpl.specter :as s :refer (transform select MAP-VALS ALL multi-path)]
    [re-mote.zero.functions :refer (shell)]
    [re-mote.zero.pipeline :refer (run-hosts)]
@@ -47,7 +47,7 @@
   Sensors
   (temperature [this]
     (let [{:keys [success failure] :as res} (run-hosts this shell (args sensors-script) timeout)]
-      (into-dec (date [this (assoc res :success (map assoc-stats success))])))))
+      (into-dec (enrich "temperature" [this (assoc res :success (map assoc-stats success))])))))
 
 (defn refer-sensors []
   (require '[re-mote.zero.sensors :as sensors :refer (temperature)]))
