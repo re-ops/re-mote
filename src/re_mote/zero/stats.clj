@@ -127,7 +127,7 @@
 
   (load-avg
     ([this]
-     (enrich "load-avg" (into-dec (zip this (run-hosts this shell (args load-script) timeout) :stats :load :one :five :fifteen))))
+     (enrich "load" (into-dec (zip this (run-hosts this shell (args load-script) timeout) :stats :load :one :five :fifteen))))
     ([this _]
      (free this)))
 
