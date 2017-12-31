@@ -65,7 +65,7 @@ An operation is a part of a protocol extending Hosts:
 It returns the hosts operated upon and the result, thus enabling pipelines.
 
 
-We can persist results to a dashboard (check http://host:8080):
+We can persist results to Elasticsearch and view them in Kibana/Grafana:
 ```clojure
 (defn #^{:category :stats} cpu-persist
   "CPU usage and idle stats collection and persistence"
