@@ -50,7 +50,7 @@
      [clj-time/clj-time "0.13.0"]
      [im.chit/hara.data.map "2.5.10"]
 
-     ;publishing
+     ; API
      [compojure "1.6.0"]
      [org.clojure/clojurescript "1.9.542"]
      [com.taoensso/sente "1.11.0"]
@@ -58,14 +58,9 @@
      [ring "1.6.1"]
      [ring/ring-defaults "0.3.0"]
      [hiccup "1.0.5"]
-     [com.draines/postal "2.0.2"]
 
-     ; frontend
-     [reagent "0.6.2"]
-     [binaryage/devtools "0.9.4"]
-     [metosin/vega-tools "0.2.0"]
-     [ring-webjars "0.2.0"]
-     [org.clojure/data.json "0.2.6"]
+     ; email
+     [com.draines/postal "2.0.2"]
 
      ; CSS
      [org.webjars/bootstrap "3.3.5" :exclusions [org.slf4j/slf4j-api]]
@@ -79,10 +74,7 @@
      [me.raynes/fs "1.4.6"]
 
      ; profiling
-     [narkisr/clj-async-profiler "0.1.1"]
-
-
-    ]
+     [narkisr/clj-async-profiler "0.1.1"] ]
 
   :exclusions [org.clojure/clojure]
 
@@ -94,29 +86,20 @@
              [lein-ancient "0.6.7" :exclusions [org.clojure/clojure]]
              [lein-tar "2.0.0"]
              [lein-set-version "0.3.0"] [lein-gorilla "0.4.0"]
-             [lein-figwheel "0.5.9"]
-             [lein-cljfmt "0.5.6"]
-             [lein-cljsbuild "1.1.4"]]
+             [lein-cljfmt "0.5.6"]]
 
 
   :profiles {
     :dev {
        :source-paths  ["dev"]
      }
+
+     :test {
+        :jvm-opts ^:replace ["-Ddisable-conf=true"]
+     }
    }
 
   :clean-targets [:target-path "out"]
-
-  :cljsbuild {
-    :builds [
-      {:id :cljs-client
-       :source-paths ["src"]
-       :compiler {
-          :output-to "public/js/main.js" :optimizations :whitespace #_:advanced :pretty-print true
-        }
-       }]
-  }
-
 
   :repositories  {"bintray"  "http://dl.bintray.com/content/narkisr/narkisr-jars"}
 
@@ -127,11 +110,11 @@
    }
 
   :aliases {
-     "start-repl" ["do" "clean," "cljsbuild" "once," "repl" ":headless"]
+     "start-repl" ["do" "clean," "repl" ":headless"]
      "travis" [
-        "do" "clean," "compile," "cljsbuild" "once," "cljfmt" "check," "eastwood" "{:exclude-namespaces [re-mote.zero.worker re-mote.zero.server re-mote.zero.common re-mote.repl.spec]}"
+      "with-profile" "test"  "do" "clean," "compile," "cljfmt" "check," "eastwood" "{:exclude-namespaces [re-mote.zero.worker re-mote.zero.server re-mote.zero.common re-mote.repl.spec]}"
      ]
-     "start" ["do" "clean," "cljsbuild" "once," "run"]
+     "start" ["do" "clean," "run"]
    }
 
   :target-path "target/"
