@@ -17,7 +17,7 @@ Still our live environments change rapidly and having this cycle in place really
 
 RE-mote is a re-take on how remote operations would look like when using a live REPL to drive them.
 
-It enables remote execution of commands on a group of hosts, the results can be analysed, published and manipulated in pipelines.
+It enables remote execution of commands on a group of hosts, the results can be analysed, persisted and manipulated in pipelines.
 
 
 # Get running
@@ -25,6 +25,8 @@ It enables remote execution of commands on a group of hosts, the results can be 
 ```clojure
 $ git clone git@github.com:re-ops/re-mote.git
 $ cd re-mote
+# launch Elasticsearch and Kibana/Grafana
+$ docker-compose up
 $ lein repl
 [re-mote]λ: (go)
 nil
@@ -63,10 +65,12 @@ An operation is a part of a protocol extending Hosts:
 It returns the hosts operated upon and the result, thus enabling pipelines.
 
 
-We can publish results to a dashboard (check http://host:8080):
+We can persist results to a dashboard (check http://host:8080):
 ```clojure
-(defn cpu-publish [hs]
- (run (cpu hs)  | (collect) | (publish (stock "Idle CPU" :timeseries :idle)) | (publish (stock "User CPU" :timeseries :usr))))
+(defn #^{:category :stats} cpu-persist
+  "CPU usage and idle stats collection and persistence"
+  [hs]
+  (run (cpu hs) | (persist "stats")))
 ```
 
 Schedule them:
@@ -74,9 +78,9 @@ Schedule them:
 ```clojure
 ; every 5 seconds, check re-mote.repl.schedule for more options
 (defn stats-jobs [hs]
-  (watch :ram (seconds 5) (fn [] (ram-publish hs)))
-  (watch :net (seconds 5) (fn [] (net-publish hs)))
-  (watch :cpu (seconds 5) (fn [] (cpu-publish hs)))
+  (watch :ram (seconds 5) (fn [] (ram-persist hs)))
+  (watch :net (seconds 5) (fn [] (net-persist hs)))
+  (watch :cpu (seconds 5) (fn [] (cpu-persist hs)))
   )
 ```
 
