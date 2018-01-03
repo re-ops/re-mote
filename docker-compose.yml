@@ -2,11 +2,15 @@ version: '2'
 services:
   elasticsearch:
     image: "docker.elastic.co/elasticsearch/elasticsearch:5.6.3"
-    container_name: elasticsearch
+    container_name: re-mote_elasticsearch
     ports:
       - "9200:9200"
       - "9300:9300"
+    volumes:
+       - data:/usr/share/elasticsearch/data
     environment:
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - cluster.name=re-ops
       - xpack.security.enabled=false
       - xpack.monitoring.enabled=false
       - xpack.watcher.enabled=false
@@ -15,7 +19,7 @@ services:
 
   kibana:
     image: "docker.elastic.co/kibana/kibana:5.6.3"
-    container_name: kibana
+    container_name: re-mote_kibana
     environment: ['ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}']
     ports:
       - "5607:5601"
@@ -29,7 +33,7 @@ services:
 
   grafana:
     image: grafana/grafana:4.2.0
-    container_name: grafana
+    container_name: re-mote/grafana
     ports:
       - "3000:3000"
     env_file:
@@ -38,5 +42,8 @@ services:
       - elasticsearch
     networks: ['stack']
 
+volumes:
+    data:
+      driver: local
 
 networks: {stack: {}}
