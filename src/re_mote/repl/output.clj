@@ -9,11 +9,10 @@
 (defprotocol Report
   (summary [this target])
   (log- [this m])
-  (pretty!
-    [this m])
   (pretty
-    [this]
-    [this m]))
+    [this title]
+    [this m title] 
+    ))
 
 (defn summarize [s]
   (let [l (.length s)]
@@ -32,22 +31,19 @@
         (info  "  " host)))
     [this m])
 
-  (pretty! [this m]
-    (let [[this m] (pretty this m)] this))
+  (pretty [this title]
+    (pretty this {} title))
 
-  (pretty [this]
-    (pretty this {}))
-
-  (pretty [this {:keys [success failure] :as m}]
-    (println "")
-    (println (style "Run summary:" :blue) "\n")
-    (doseq [{:keys [host out]} success]
-      (println " " (style "✔" :green) host (if out (summarize out) "")))
-    (doseq [[c rs] failure]
-      (doseq [{:keys [host error]} (get-logs rs)]
-        (println " " (style "x" :red) host "-" (str c) "," (summarize (error :out)))))
-    (println "")
-    [this m]))
+  (pretty [this {:keys [success failure] :as m} title]
+     (println "")
+     (println (style (str "Running " title " summary:") :blue) "\n")
+     (doseq [{:keys [host out]} success]
+       (println " " (style "✔" :green) host (if out (summarize out) "")))
+     (doseq [[c rs] failure]
+       (doseq [{:keys [host error]} (get-logs rs)]
+         (println " " (style "x" :red) host "-" (str c) "," (summarize (error :out)))))
+     (println "")
+     [this m]))
 
 (defn refer-out []
-  (require '[re-mote.repl.output :as out :refer (log- pretty pretty!)]))
+  (require '[re-mote.repl.output :as out :refer (log- pretty)]))

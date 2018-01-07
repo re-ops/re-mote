@@ -12,7 +12,7 @@
 (refer-out)
 
 (defn scrub [hs pool]
-  (run (exec hs (<< "sudo /sbin/zpool scrub ~{pool}")) | (pretty)))
+  (run (exec hs (<< "sudo /sbin/zpool scrub ~{pool}")) | (pretty "scrub")))
 
 (def errors "'(DEGRADED|FAULTED|OFFLINE|UNAVAIL|REMOVED|FAIL|DESTROYED|corrupt|cannot|unrecover)'")
 
@@ -37,19 +37,19 @@
       ("xargs" "-r" "-n" "1" "zfs" "destroy" "-r")))))
 
 (defn health [hs pool]
-  (run (exec hs (healty pool errors)) | (pretty)))
+  (run (exec hs (healty pool errors)) | (pretty "health")))
 
 (defn capacity [hs maximum]
-  (run (exec hs (cap-with-range maximum)) | (pretty)))
+  (run (exec hs (cap-with-range maximum)) | (pretty "capacity")))
 
 (defn snapshot [hs pool dataset]
   (let [date (f/unparse (f/formatter "dd-MM-YYYY_hh:mm:ss_SS") (local-now))]
-    (run (exec hs (<< "/sbin/zfs snapshot ~{pool}/~{dataset}@~{date}")) | (pretty))))
+    (run (exec hs (<< "/sbin/zfs snapshot ~{pool}/~{dataset}@~{date}")) | (pretty "snapshot"))))
 
 (defn purge
   "clear last n snapshots of a dataset"
   [hs pool dataset n]
-  (run (exec hs (purging pool dataset n)) | (pretty)))
+  (run (exec hs (purging pool dataset n)) | (pretty "purge")))
 
 (defn refer-zfs []
   (require '[re-mote.repl.zfs :as zfs :refer (health snapshot scrub capacity purge)]))
