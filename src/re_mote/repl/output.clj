@@ -11,8 +11,7 @@
   (log- [this m])
   (pretty
     [this title]
-    [this m title] 
-    ))
+    [this m title]))
 
 (defn summarize [s]
   (let [l (.length s)]
@@ -35,15 +34,15 @@
     (pretty this {} title))
 
   (pretty [this {:keys [success failure] :as m} title]
-     (println "")
-     (println (style (str "Running " title " summary:") :blue) "\n")
-     (doseq [{:keys [host out]} success]
-       (println " " (style "✔" :green) host (if out (summarize out) "")))
-     (doseq [[c rs] failure]
-       (doseq [{:keys [host error]} (get-logs rs)]
-         (println " " (style "x" :red) host "-" (str c) "," (summarize (error :out)))))
-     (println "")
-     [this m]))
+    (println "")
+    (println (style (str "Running " title " summary:") :blue) "\n")
+    (doseq [{:keys [host out]} success]
+      (println " " (style "✔" :green) host (if out (summarize out) "")))
+    (doseq [[c rs] failure]
+      (doseq [{:keys [host error]} (get-logs rs)]
+        (println " " (style "x" :red) host "-" (str c) "," (summarize (error :out)))))
+    (println "")
+    [this m]))
 
 (defn refer-out []
   (require '[re-mote.repl.output :as out :refer (log- pretty)]))
