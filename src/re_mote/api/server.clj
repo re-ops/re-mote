@@ -11,18 +11,16 @@
    [taoensso.timbre :refer (refer-timbre)]
    [org.httpkit.server :refer (run-server)]
    [ring.middleware.json :refer [wrap-json-response]]
-   [ring.util.response :refer [response]]
-   ))
+   [ring.util.response :refer [response]]))
 
 (refer-timbre)
 
 (defroutes routes
   (GET "/endpoint/:e" [e]
-     (let [f (resolve (symbol (str "re-mote.api.endpoint/" e)))]
-       (response (if-not f
-          {:error (<< "endpoint ~{e} not found")}
-          {:result (f)}
-       ))))
+    (let [f (resolve (symbol (str "re-mote.api.endpoint/" e)))]
+      (response (if-not f
+                  {:error (<< "endpoint ~{e} not found")}
+                  {:result (f)}))))
 
   (route/not-found "Route not found, try  /endpoint/:e"))
 
