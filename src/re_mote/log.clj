@@ -72,16 +72,6 @@
 (defn gen-uuid []
   (.replace (str (java.util.UUID/randomUUID)) "-" ""))
 
-(def level-color
-  {:info :green :debug :blue :error :red :warn :yellow})
-
-(defn output-fn
-  "Timbre logger format function"
-  ([data] (output-fn nil data))
-  ([opts data] ; For partials
-   (let [{:keys [level ?err #_vargs msg_ ?ns-str ?file hostname_ timestamp_ ?line]} data]
-     (str (style (upper-case (name level)) (level-color level)) " " (force timestamp_) " [" (style ?file :bg-black) "@" ?line "] "  ": " (force msg_)))))
-
 (defn setup-logging
   "Sets up logging configuration:
     - stale logs removale interval
