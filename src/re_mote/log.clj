@@ -8,11 +8,11 @@
    [clansi.core :refer (style)]
    [taoensso.timbre :refer (refer-timbre set-level! merge-config!)]
    [clojure.core.strint :refer (<<)]
-   [chime :refer [chime-ch]]
    [clj-time.core :as t]
    [clj-time.coerce :refer [to-long]]
    [clojure.java.io :refer (reader)]
-   [re-mote.repl.schedule :refer (watch seconds)]))
+   [re-share.log :as log]
+   [re-share.schedule :refer (watch seconds)]))
 
 (refer-timbre)
 
@@ -64,8 +64,10 @@
       (swap! logs (fn [m] (dissoc m uuid))))
     :ok))
 
-(defn run-purge [s]
-  (watch :logs-purge (seconds s) (fn [] (trace "purging logs at" (t/now)) (purge))))
+(defn run-purge
+  "Collected in memory log purge"
+  [s]
+  (watch :collected-logs-purge (seconds s) (fn [] (trace "purging logs at" (t/now)) (purge))))
 
 (defn gen-uuid []
   (.replace (str (java.util.UUID/randomUUID)) "-" ""))
@@ -80,19 +82,6 @@
    (let [{:keys [level ?err #_vargs msg_ ?ns-str ?file hostname_ timestamp_ ?line]} data]
      (str (style (upper-case (name level)) (level-color level)) " " (force timestamp_) " [" (style ?file :bg-black) "@" ?line "] "  ": " (force msg_)))))
 
-(defn- setup
-  "See https://github.com/ptaoussanis/timbre"
-  []
-  ; disable-coloring
-  (merge-config!
-   {:output-fn (partial output-fn  {:stacktrace-fonts {}})})
-  (merge-config!
-   {:ns-blacklist ["net.schmizz.*" "org.elasticsearch.indices.*" "org.apache.http.*"]})
-  (merge-config! {:appenders {:println (merge {:ns-whitelist ["re-mote.output"]} (println-appender {:stream :auto}))
-                              :rolling (rolling-appender {:path "re-mote.log" :pattern :weekly})}})
-
-  (merge-config!
-   {:timestamp-opts {:timezone  (java.util.TimeZone/getDefault)}}))
 
 (defn setup-logging
   "Sets up logging configuration:
@@ -101,20 +90,9 @@
     - log level
   "
   [& {:keys [interval level] :or {interval 10 level :info}}]
-  (setup)
+  (log/setup "re-mote" ["net.schmizz.*" "org.elasticsearch.indices.*" "org.apache.http.*"] ["re-mote.output"])
   (set-level! level)
   (run-purge interval))
-
-(defn debug-on
-  ([] (set-level! :debug))
-  ([n]
-   (merge-config! {:middleware [(level/middleware {n :debug})]})))
-
-(defn debug-off []
-  (set-level! :info))
-
-(defn redirect-output [n]
-  (merge-config! {:appenders {:println (merge {:ns-whitelist n} (println-appender {:stream :auto}))}}))
 
 (defn log-hosts
   "Log a specific host by passing him as an argument
@@ -124,4 +102,4 @@
   ([hs] (swap! hosts conj hs)))
 
 (defn refer-logging []
-  (require '[re-mote.log :as log :refer (debug-on debug-off log-hosts redirect-output)]))
+  (require '[re-mote.log :as log :refer (log-hosts)]))

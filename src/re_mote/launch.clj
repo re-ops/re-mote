@@ -6,7 +6,7 @@
    [re-mote.api.server :as web]
    [re-mote.repl :as repl]
    [re-share.zero.keys :as k]
-   [re-mote.repl.schedule :as sched])
+   [re-share.schedule :as sc])
   (:gen-class true))
 
 (refer-timbre)
@@ -22,7 +22,7 @@
   (zero/start))
 
 (defn stop [_]
-  (sched/halt!)
+  (sc/halt!)
   (zero/stop)
   (web/stop)
   (es/stop))

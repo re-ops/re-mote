@@ -17,7 +17,7 @@
    [re-mote.zero.stats :refer (refer-stats)]
    [re-mote.zero.sensors :refer (refer-sensors)]
    [re-mote.repl.re-gent :refer (refer-regent)]
-   [re-mote.repl.schedule :refer (watch seconds)]
+   [re-share.schedule :refer (watch seconds)]
    [re-mote.zero.facts :refer (refer-facts)]
    [re-mote.zero.git :refer (refer-git)]
    [re-mote.zero.test :as tst]

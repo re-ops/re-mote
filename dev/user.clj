@@ -5,6 +5,7 @@
    [clojure.java.io :as io]
    [clojure.repl :refer :all]
    [re-mote.log :refer (refer-logging)]
+   [re-share.log :refer (refer-share-logging)]
    [clojure.tools.namespace.repl :refer (refresh refresh-all)]
    [re-mote.launch :as launch]
    ; zero
@@ -22,6 +23,7 @@
 (refer-zero-manage)
 (refer-facts)
 (refer-logging)
+(refer-share-logging)
 (refer-zero-fns)
 
 (def system nil)

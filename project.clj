@@ -14,7 +14,6 @@
      [cc.qbits/spandex "0.5.5" :exclusions [org.clojure/clojure]]
      [org.apache.httpcomponents/httpclient "4.5.2"]
 
-
      ; pretty output
      [fipp "0.6.10"]
      [narkisr/clansi "1.2.0"]
@@ -45,8 +44,7 @@
      [com.hierynomus/sshj "0.23.0" :exclusions [org.slf4j/slf4j-api]]
      [org.zeromq/jeromq "0.4.2"]
 
-     ; run at
-     [jarohen/chime "0.2.1" :exclusions [org.clojure/core.async]]
+     ; model
      [clj-time/clj-time "0.13.0"]
      [im.chit/hara.data.map "2.5.10"]
 
@@ -68,7 +66,7 @@
      [formation "0.2.0"]
 
      ; common utilities and shared functions
-     [re-share "0.3.0"]
+     [re-share "0.4.0"]
      [me.raynes/fs "1.4.6"]
 
      ; profiling

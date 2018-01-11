@@ -10,7 +10,7 @@
    [clj-time.coerce :refer (to-long)]
    [re-mote.zero.shell :refer (args)]
    [re-mote.zero.functions :refer (shell)]
-   [re-mote.repl.schedule :refer (watch seconds)]
+   [re-share.schedule :refer (watch seconds)]
    [pallet.stevedore :refer (script do-script)])
   (:import [re_mote.repl.base Hosts]))
 
