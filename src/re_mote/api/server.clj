@@ -1,6 +1,7 @@
-(ns re-mote.publish.server
+(ns re-mote.api.server
   "embedded http server with a websocket for publishing"
   (:require
+   [clojure.core.strint :refer  (<<)]
    [re-share.core :refer (find-port)]
    [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
    [compojure.core :refer (defroutes GET POST)]
@@ -8,26 +9,25 @@
    [hiccup.core :as hiccup]
    [clojure.core.async :as async  :refer (<! <!! >! >!! put! chan go go-loop)]
    [taoensso.timbre :refer (refer-timbre)]
-   [taoensso.sente :as sente]
    [org.httpkit.server :refer (run-server)]
-   [taoensso.sente.server-adapters.http-kit :refer (get-sch-adapter)]))
+   [ring.middleware.json :refer [wrap-json-response]]
+   [ring.util.response :refer [response]]
+   ))
 
 (refer-timbre)
 
-(let [chsk-server (sente/make-channel-socket-server! (get-sch-adapter) {:packer :edn})
-      {:keys [ch-recv send-fn connected-uids ajax-post-fn ajax-get-or-ws-handshake-fn]} chsk-server]
-  (def ring-ajax-post ajax-post-fn)
-  (def ring-ajax-get-or-ws-handshake ajax-get-or-ws-handshake-fn)
-  (def ch-chsk ch-recv)
-  (def chsk-send! send-fn)
-  (def connected-uids connected-uids) ; Watchable, read-only atom
-)
-
 (defroutes routes
-  (route/not-found "<h1>Page not found</h1>"))
+  (GET "/endpoint/:e" [e]
+     (let [f (resolve (symbol (str "re-mote.api.endpoint/" e)))]
+       (response (if-not f
+          {:error (<< "endpoint ~{e} not found")}
+          {:result (f)}
+       ))))
+
+  (route/not-found "Route not found, try  /endpoint/:e"))
 
 (def app
-  (wrap-defaults routes site-defaults))
+  (wrap-defaults (wrap-json-response routes) (assoc-in site-defaults [:security :anti-forgery] false)))
 
 (defn event-msg-handler
   "Wraps `-event-msg-handler` with logging, error catching, etc."

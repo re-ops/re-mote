@@ -52,12 +52,10 @@
 
      ; API
      [compojure "1.6.0"]
-     [org.clojure/clojurescript "1.9.542"]
-     [com.taoensso/sente "1.11.0"]
      [http-kit "2.2.0" :exclusions [ring/ring-jetty-adapter]]
      [ring "1.6.1"]
      [ring/ring-defaults "0.3.0"]
-     [hiccup "1.0.5"]
+     [ring/ring-json  "0.4.0"]
 
      ; email
      [com.draines/postal "2.0.2"]

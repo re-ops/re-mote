@@ -33,7 +33,7 @@ services:
 
   grafana:
     image: grafana/grafana:4.2.0
-    container_name: re-mote/grafana
+    container_name: re-mote_grafana
     ports:
       - "3000:3000"
     env_file:
