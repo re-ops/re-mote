@@ -8,6 +8,7 @@
    [re-share.log :refer (refer-share-logging)]
    [clojure.tools.namespace.repl :refer (refresh refresh-all)]
    [re-mote.launch :as launch]
+   [re-mote.zero.stats :refer (disk-breach)]
    ; zero
    [re-mote.zero.management :refer (refer-zero-manage)]
    [re-mote.zero.results :refer (pretty-result)]

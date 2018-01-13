@@ -20,7 +20,7 @@
 (defn zipped [parent k ks {:keys [result] :as m}]
   (let [lines (split-lines (result :out))
         ms (mapv (fn [line] (zipmap ks (split line #"\s"))) lines)]
-      (assoc-in m [parent k] 
+      (assoc-in m [parent k]
          (if (> (count ms) 1) ms (first ms)))))
 
 (defn zip
@@ -36,6 +36,7 @@
   (free [this] [this m])
   (load-avg [this] [this m])
   (collect [this m])
+  (detect [this m f])
   (sliding [this m f k]))
 
 
@@ -89,6 +90,13 @@
 
 (def timeout [5 :second])
 
+(defn disk-breach [limit]
+  (fn [{:keys [host stats]}]
+    ((comp not empty?)
+      (filter
+        (fn [{:keys [perc]}]
+          (> (safe-dec (subs perc 0 (- (.length perc) 1))) limit)) (stats :du)))))
+
 (extend-type Hosts
   Stats
   (du
@@ -126,6 +134,10 @@
      (enrich "load" (into-dec (zip this (run-hosts this shell (args load-script) timeout) :stats :load :one :five :fifteen))))
     ([this _]
      (free this)))
+
+  (detect [this {:keys [success] :as m} f]
+    (let [detected (mapv :host (filter f success))]
+      [(Hosts. (:auth this) detected) (assoc m :hosts detected)]))
 
   (collect [this {:keys [success] :as m}]
     (doseq [{:keys [host stats]} success]
@@ -172,7 +184,7 @@
     (apply mapcat avg-data-point (select [ATOM MAP-VALS r k] readings))))
 
 (defn refer-stats []
-  (require '[re-mote.zero.stats :as stats :refer (load-avg net cpu free du collect sliding setup-stats)]))
+  (require '[re-mote.zero.stats :as stats :refer (load-avg net cpu free du detect disk-breach collect sliding setup-stats)]))
 
 (comment
   (reset! readings {}))

@@ -63,6 +63,11 @@
 
 ; persistent stats
 
+(defn #^{:category :stats} low-disk
+  "Detect machines with low disk available"
+  [hs f]
+  (run (du hs) | (detect f)))
+
 (defn #^{:category :stats} du-persist
   "Disk usage"
   [hs]
