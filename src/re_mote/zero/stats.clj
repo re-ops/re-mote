@@ -1,23 +1,27 @@
 (ns re-mote.zero.stats
-  "General stats"
+  "General machine stats"
   (:require
-   [clojure.string :refer (split)]
+   [clojure.core.strint :refer (<<)]
+   [clojure.string :refer (split split-lines)]
    [clojure.tools.trace :as tr]
    [re-mote.zero.pipeline :refer (run-hosts)]
    [taoensso.timbre :refer (refer-timbre)]
-   [com.rpl.specter :as s :refer (transform select MAP-VALS ALL ATOM keypath)]
+   [com.rpl.specter :as s :refer (transform select MAP-VALS ALL ATOM keypath multi-path)]
    [clj-time.core :as t]
    [clj-time.coerce :refer (to-long)]
    [re-mote.zero.shell :refer (args)]
+   [re-mote.scripts.stats :refer (net-script cpu-script free-script load-script du-script)]
    [re-mote.zero.functions :refer (shell)]
-   [re-share.schedule :refer (watch seconds)]
-   [pallet.stevedore :refer (script do-script)])
+   [re-share.schedule :refer (watch seconds)])
   (:import [re_mote.repl.base Hosts]))
 
 (refer-timbre)
 
 (defn zipped [parent k ks {:keys [result] :as m}]
-  (assoc-in m [parent k] (zipmap ks (split (result :out) #"\s"))))
+  (let [lines (split-lines (result :out))
+        ms (mapv (fn [line] (zipmap ks (split line #"\s"))) lines)]
+      (assoc-in m [parent k] 
+         (if (> (count ms) 1) ms (first ms)))))
 
 (defn zip
   "Collecting output into a hash, must be defined outside protocoal because of var args"
@@ -26,40 +30,14 @@
     [this (assoc (assoc res :success success') :failure failure)]))
 
 (defprotocol Stats
-  (net [this]
-    [this m])
-  (cpu [this]
-    [this m])
+  (du [this] [this m])
+  (net [this] [this m])
+  (cpu [this] [this m])
   (free [this] [this m])
   (load-avg [this] [this m])
   (collect [this m])
   (sliding [this m f k]))
 
-(defn net-script []
-  (script
-   (set! LC_ALL "en_AU.UTF-8")
-   (set! IFC @(pipe ("ip" "route" "get" "1") ("awk" "'{print $5;exit}'")))
-   (set! R @(("sar" "-n" "DEV" "1" "1")))
-   (if (not (= $? 0)) ("exit" 1))
-   (set! L @(pipe ((println (quoted "${R}"))) ("grep" (quoted "${IFC}"))))
-   (pipe (pipe ((println (quoted "${L}"))) ("awk" "'NR==2 { print substr($0, index($0,$4)) }'")) ("tr" "-s" "' '"))))
-
-(defn cpu-script []
-  (script
-   (set! LC_ALL "en_AU.UTF-8")
-   (set! R @("LC_TIME=possix" "mpstat" "1" "1"))
-   (if (not (= $? 0)) ("exit" 1))
-   (pipe ((println (quoted "${R}"))) ("awk" "'NR==4 { print $3 \" \" $5 \" \" $12 }'"))))
-
-(defn free-script []
-  (script
-   (set! R @("free" "-m"))
-   (if (not (= $? 0)) ("exit" 1))
-   (pipe ((println (quoted "${R}"))) ("awk" "'NR==2 { print $2 \" \" $3 \" \" $4 }'"))))
-
-(defn load-script []
-  (script
-   (pipe ("uptime") ("awk" "-F" "'[, ]*'" "'NR==1 { print $(NF-2) \" \" $(NF-1) \" \" $(NF)}'"))))
 
 (def readings (atom {}))
 
@@ -67,10 +45,19 @@
   (try
     (bigdec v)
     (catch Throwable e
-      (error v e))))
+      (error (<< "failed to convert {v} into big decimal") e))))
 
-(defn into-dec [[this readings]]
-  [this (transform [:success ALL :stats MAP-VALS MAP-VALS] safe-dec readings)])
+(def single-nav
+  [:success ALL :stats MAP-VALS MAP-VALS])
+
+(defn multi-nav [& ks]
+  [:success ALL :stats MAP-VALS ALL (apply multi-path ks)])
+
+(defn into-dec
+  ([v]
+   (into-dec single-nav v))
+  ([nav [this readings]]
+   [this (transform nav safe-dec readings)]))
 
 (defn enrich [t [this readings]]
   [this (transform [:success ALL] (fn [m] (merge m {:timestamp (.getMillis (t/now)) :type t})) readings)])
@@ -104,15 +91,24 @@
 
 (extend-type Hosts
   Stats
+  (du
+    ([this]
+     (enrich "du"
+             (into-dec (multi-nav :blocks :used :available)
+                       (zip this
+                            (run-hosts this shell (args du-script) timeout)
+                            :stats :du :filesystem :type :blocks :used :available :perc :mount))))
+    ([this _]
+     (du this)))
+
   (net
     ([this _]
      (net this))
     ([this]
      (enrich "net"
              (into-dec
-              (zip this (run-hosts this shell (args net-script) timeout)
-                   :stats :net :rxpck/s :txpck/s :rxkB/s :txkB/s :rxcmp/s :txcmp/s :rxmcst/s :ifutil)))))
-
+               (zip this (run-hosts this shell (args net-script) timeout)
+                    :stats :net :rxpck/s :txpck/s :rxkB/s :txkB/s :rxcmp/s :txcmp/s :rxmcst/s :ifutil)))))
   (cpu
     ([this]
      (enrich "cpu" (into-dec (zip this (run-hosts this shell (args cpu-script) timeout) :stats :cpu :usr :sys :idle))))
@@ -176,7 +172,7 @@
     (apply mapcat avg-data-point (select [ATOM MAP-VALS r k] readings))))
 
 (defn refer-stats []
-  (require '[re-mote.zero.stats :as stats :refer (load-avg net cpu free collect sliding avg setup-stats)]))
+  (require '[re-mote.zero.stats :as stats :refer (load-avg net cpu free du collect sliding setup-stats)]))
 
 (comment
   (reset! readings {}))

@@ -103,4 +103,6 @@
       (send- address {:request :execute :uuid  uuid :fn f :args args :name (-> f fn-meta :name)}))
     uuid))
 
-(comment)
+(comment
+  (clojure.pprint/pprint (map :partitions (:disks (oshi-hardware)))) 
+  )

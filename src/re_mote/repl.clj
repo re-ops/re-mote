@@ -61,7 +61,12 @@
 (defn #^{:category :shell} listing [hs]
   (run (ls hs "/" "-la") | (pretty "listing")))
 
-; persistence
+; persistent stats
+
+(defn #^{:category :stats} du-persist
+  "Disk usage"
+  [hs]
+  (run (du hs) | (persist "stats")))
 
 (defn #^{:category :stats} cpu-persist
   "CPU usage and idle stats collection and persistence"
