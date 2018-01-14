@@ -92,10 +92,7 @@
 
 (defn disk-breach [limit]
   (fn [{:keys [host stats]}]
-    ((comp not empty?)
-      (filter
-        (fn [{:keys [perc]}]
-          (> (safe-dec (subs perc 0 (- (.length perc) 1))) limit)) (stats :du)))))
+    [host (filter (fn [{:keys [perc]}] (> (safe-dec (subs perc 0 (- (.length perc) 1))) limit)) (stats :du))]))
 
 (extend-type Hosts
   Stats
@@ -136,8 +133,8 @@
      (free this)))
 
   (detect [this {:keys [success] :as m} f]
-    (let [detected (mapv :host (filter f success))]
-      [(Hosts. (:auth this) detected) (assoc m :hosts detected)]))
+    (let [breaches (filter (fn [[h bs]] (not (empty? bs))) (map f success)) detected (mapv first breaches)]
+      [(Hosts. (:auth this) detected) (merge m {:hosts detected :breaches breaches})]))
 
   (collect [this {:keys [success] :as m}]
     (doseq [{:keys [host stats]} success]
