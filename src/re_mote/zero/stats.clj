@@ -20,8 +20,8 @@
 (defn zipped [parent k ks {:keys [result] :as m}]
   (let [lines (split-lines (result :out))
         ms (mapv (fn [line] (zipmap ks (split line #"\s"))) lines)]
-      (assoc-in m [parent k]
-         (if (> (count ms) 1) ms (first ms)))))
+    (assoc-in m [parent k]
+              (if (> (count ms) 1) ms (first ms)))))
 
 (defn zip
   "Collecting output into a hash, must be defined outside protocoal because of var args"
@@ -38,7 +38,6 @@
   (collect [this m])
   (detect [this m f])
   (sliding [this m f k]))
-
 
 (def readings (atom {}))
 
@@ -112,8 +111,8 @@
     ([this]
      (enrich "net"
              (into-dec
-               (zip this (run-hosts this shell (args net-script) timeout)
-                    :stats :net :rxpck/s :txpck/s :rxkB/s :txkB/s :rxcmp/s :txcmp/s :rxmcst/s :ifutil)))))
+              (zip this (run-hosts this shell (args net-script) timeout)
+                   :stats :net :rxpck/s :txpck/s :rxkB/s :txkB/s :rxcmp/s :txcmp/s :rxmcst/s :ifutil)))))
   (cpu
     ([this]
      (enrich "cpu" (into-dec (zip this (run-hosts this shell (args cpu-script) timeout) :stats :cpu :usr :sys :idle))))

@@ -6,11 +6,8 @@
    [taoensso.timbre :refer (refer-timbre)]
    [re-mote.zero.shell :refer (args)]
    [re-mote.scripts.security :refer (ufw-script)]
-   [re-mote.zero.functions :refer (shell)]
-   )
-  (:import [re_mote.repl.base Hosts])
- )
+   [re-mote.zero.functions :refer (shell)])
+  (:import [re_mote.repl.base Hosts]))
 (defprotocol Security
   (firewall [this] [this m])
-  (ssh-logins [this] [this m])
-  )
+  (ssh-logins [this] [this m]))

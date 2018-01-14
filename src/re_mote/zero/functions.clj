@@ -104,5 +104,4 @@
     uuid))
 
 (comment
-  (clojure.pprint/pprint (map :partitions (:disks (oshi-hardware)))) 
-  )
+  (clojure.pprint/pprint (map :partitions (:disks (oshi-hardware)))))
