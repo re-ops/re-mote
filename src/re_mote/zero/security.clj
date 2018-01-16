@@ -31,7 +31,7 @@
   (rules
     ([this]
      (from-trim
-       (zip this (run-hosts this shell (args ufw-script) timeout) :security :rules :from :action :to)))))
+      (zip this (run-hosts this shell (args ufw-script) timeout) :security :rules :from :action :to)))))
 
 (defn refer-security []
   (require '[re-mote.zero.security :as security :refer (rules)]))
