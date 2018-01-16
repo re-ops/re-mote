@@ -15,6 +15,7 @@
    [re-mote.repl.puppet :refer (refer-puppet)]
    [re-mote.repl.octo :refer (refer-octo)]
    [re-mote.zero.stats :refer (refer-stats)]
+   [re-mote.zero.security :refer (refer-security)]
    [re-mote.zero.sensors :refer (refer-sensors)]
    [re-mote.repl.re-gent :refer (refer-regent)]
    [re-share.schedule :refer (watch seconds)]
@@ -31,6 +32,7 @@
 (refer-base)
 (refer-out)
 (refer-stats)
+(refer-security)
 (refer-sensors)
 (refer-pkg)
 (refer-puppet)
@@ -61,12 +63,19 @@
 (defn #^{:category :shell} listing [hs]
   (run (ls hs "/" "-la") | (pretty "listing")))
 
-; persistent stats
+; alerting
 
-(defn #^{:category :stats} low-disk
+(defn #^{:category :detection} open-ports
+  "Detect open ports or inactive firewall"
+  [hs]
+  (run (rules hs) | (pretty "ports")))
+
+(defn #^{:category :detection} low-disk
   "Detect machines with low disk available"
   [hs f]
   (run (du hs) | (detect f)))
+
+; persistent stats
 
 (defn #^{:category :stats} du-persist
   "Disk usage"

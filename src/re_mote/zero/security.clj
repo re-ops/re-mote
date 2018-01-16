@@ -1,6 +1,7 @@
 (ns re-mote.zero.security
   "Security data collection detection"
   (:require
+   [com.rpl.specter :as s :refer (transform MAP-VALS ALL keypath)]
    [clojure.core.strint :refer (<<)]
    [re-mote.zero.pipeline :refer (run-hosts)]
    [taoensso.timbre :refer (refer-timbre)]
@@ -13,16 +14,24 @@
 (refer-timbre)
 
 (defprotocol Security
-  (ports [this] [this m])
+  (rules [this] [this m])
   (ssh-logins [this] [this m]))
 
 (def timeout [5 :second])
 
+(defn trim-dash [v]
+  (if (.endsWith v "_") (subs v 0 (- (.length v) 1)) v))
+
+(defn from-trim
+  [[this m]]
+  [this (transform [:success ALL :security :rules ALL :from] trim-dash  m)])
+
 (extend-type Hosts
   Security
-  (ports
+  (rules
     ([this]
-     (zip this
-          (run-hosts this shell (args ufw-script) timeout)
-          :security :ports :from :action :to))))
+     (from-trim
+       (zip this (run-hosts this shell (args ufw-script) timeout) :security :rules :from :action :to)))))
 
+(defn refer-security []
+  (require '[re-mote.zero.security :as security :refer (rules)]))
