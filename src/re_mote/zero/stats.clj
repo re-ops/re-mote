@@ -17,16 +17,23 @@
 
 (refer-timbre)
 
-(defn zipped [parent k ks {:keys [result] :as m}]
+(defn space [line]
+  (split line #"\s"))
+
+(defn comma [line]
+  (split line #","))
+
+(defn zipped [parent k ks by {:keys [result] :as m}]
   (let [lines (split-lines (result :out))
-        ms (mapv (fn [line] (zipmap ks (split line #"\s"))) lines)]
+        ms (mapv (fn [line] (zipmap ks (by line))) lines)]
     (assoc-in m [parent k]
               (if (> (count ms) 1) ms (first ms)))))
 
 (defn zip
   "Collecting output into a hash, must be defined outside protocoal because of var args"
   [this {:keys [success failure] :as res} parent k & ks]
-  (let [success' (map (partial zipped parent k ks) success)]
+  (let [by (or (first (filter fn? ks)) space)
+        success' (map (partial zipped parent k (filter keyword? ks) by) success)]
     [this (assoc (assoc res :success success') :failure failure)]))
 
 (defprotocol Stats
