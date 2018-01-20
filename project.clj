@@ -81,7 +81,7 @@
              [mvxcvi/whidbey "1.3.1"]
              [lein-ancient "0.6.7" :exclusions [org.clojure/clojure]]
              [lein-tar "2.0.0"]
-             [lein-set-version "0.3.0"] [lein-gorilla "0.4.0"]
+             [lein-set-version "0.3.0"]
              [lein-cljfmt "0.5.6"]]
 
 
