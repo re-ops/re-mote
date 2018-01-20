@@ -1,6 +1,7 @@
 (ns re-mote.zero.stats
   "General machine stats"
   (:require
+   [re-mote.scripts.stats :refer (net-script cpu-script free-script load-script du-script)]
    [clojure.core.strint :refer (<<)]
    [clojure.string :refer (split split-lines)]
    [clojure.tools.trace :as tr]
@@ -10,7 +11,6 @@
    [clj-time.core :as t]
    [clj-time.coerce :refer (to-long)]
    [re-mote.zero.shell :refer (args)]
-   [re-mote.scripts.stats :refer (net-script cpu-script free-script load-script du-script)]
    [re-mote.zero.functions :refer (shell)]
    [re-share.schedule :refer (watch seconds)])
   (:import [re_mote.repl.base Hosts]))
