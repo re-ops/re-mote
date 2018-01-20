@@ -65,10 +65,10 @@
 
 ; alerting
 
-(defn #^{:category :detection} open-ports
-  "Detect open ports or inactive firewall"
+(defn #^{:category :detection} inactive-firewall
+  "find inactive firewall"
   [hs]
-  (run (rules hs) | (pretty "ports")))
+  (run (rules hs) | (pick (fn [_ failure] (mapv :host (failure 1))))))
 
 (defn #^{:category :detection} low-disk
   "Detect machines with low disk available"
