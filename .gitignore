@@ -16,7 +16,7 @@ supernal.log.*
 supernal.log
 public
 hosts
-scripts
+/scripts
 re-mote.log*
 .curve
 re-mote.rec
