@@ -7,7 +7,7 @@
      [org.clojure/core.incubator "0.1.4"]
      [me.raynes/conch "0.8.0"]
      [org.clojure/core.async "0.3.443"]
-     [com.rpl/specter "1.0.3"]
+     [com.rpl/specter "1.1.0"]
      [org.clojure/core.match "0.3.0-alpha4"]
 
      ; persistency
@@ -15,14 +15,14 @@
      [org.apache.httpcomponents/httpclient "4.5.2"]
 
      ; pretty output
-     [fipp "0.6.10"]
+     [fipp "0.6.12"]
      [narkisr/clansi "1.2.0"]
-     [mvxcvi/puget "1.0.1"]
+     [mvxcvi/puget "1.0.2"]
 
      ; logging
      [com.taoensso/timbre "4.10.0"]
      [timbre-ns-pattern-level "0.1.2"]
-     [com.fzakaria/slf4j-timbre "0.3.7"]
+     [com.fzakaria/slf4j-timbre "0.3.8"]
      [org.clojure/tools.trace "0.7.9"]
 
      ; repl
@@ -45,21 +45,18 @@
      [org.zeromq/jeromq "0.4.2"]
 
      ; model
-     [clj-time/clj-time "0.13.0"]
+     [clj-time/clj-time "0.14.2"]
      [im.chit/hara.data.map "2.5.10"]
 
      ; API
      [compojure "1.6.0"]
      [http-kit "2.2.0" :exclusions [ring/ring-jetty-adapter]]
-     [ring "1.6.1"]
-     [ring/ring-defaults "0.3.0"]
+     [ring "1.6.3"]
+     [ring/ring-defaults "0.3.1"]
      [ring/ring-json  "0.4.0"]
 
      ; email
      [com.draines/postal "2.0.2"]
-
-     ; CSS
-     [org.webjars/bootstrap "3.3.5" :exclusions [org.slf4j/slf4j-api]]
 
      ; configuration
      [formation "0.2.0"]
@@ -73,13 +70,11 @@
 
   :exclusions [org.clojure/clojure]
 
-  :plugins  [[lein-jdk-tools "0.1.1"]
-             [jonase/eastwood "0.2.4"]
+  :plugins  [[jonase/eastwood "0.2.4"]
              [lein-tag "0.1.0"]
              [lein-kibit "0.1.6"]
              [mvxcvi/whidbey "1.3.1"]
-             [lein-ancient "0.6.7" :exclusions [org.clojure/clojure]]
-             [lein-tar "2.0.0"]
+             [lein-ancient "0.6.15" :exclusions [org.clojure/clojure]]
              [lein-set-version "0.3.0"]
              [lein-cljfmt "0.5.6"]]
 
