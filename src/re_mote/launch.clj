@@ -7,7 +7,7 @@
    [re-mote.repl :as repl]
    [re-share.zero.keys :as k]
    [re-share.schedule :as sc])
-  (:gen-class true))
+  )
 
 (refer-timbre)
 
