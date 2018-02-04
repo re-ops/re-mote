@@ -6,6 +6,7 @@
    [clojure.tools.trace :as t]
    [clojure.java.io :refer (reader file)]
    [taoensso.timbre :refer (refer-timbre)]
+   [hara.data.map :refer (dissoc-in)]
    [re-mote.ssh.pipeline :refer (run-hosts upload-hosts)]
    [pallet.stevedore.bash]
    [pallet.stevedore :refer (script)]))
@@ -70,6 +71,9 @@
 
 (defprotocol Select
   (initialize [this])
+  (downgrade
+    [this f]
+    [this m f])
   (pick
     [this f]
     [this m f]))
@@ -129,6 +133,16 @@
         (throw (ex-info "no succesful hosts found" m))
         [(Hosts. auth hs) {}])))
 
+  (downgrade [this f]
+     [this {}])
+
+  (downgrade [this {:keys [failure] :as m} f]
+    (let [failed (map :host (get failure -1))
+          result (f (Hosts. auth failed))
+          m' (clojure.core/update (dissoc-in m [:failure -1]) :success (fn [v] (println (result :success)) (into v (result :success))))] 
+      (clojure.pprint/pprint m')
+     [this m]))
+
   Tracing
   (ping [this target]
     [this (run-hosts this (script ("ping" "-c" 1 ~target)))]))
@@ -145,5 +159,5 @@
     (Hosts. auth hosts)))
 
 (defn refer-base []
-  (require '[re-mote.repl.base :as base :refer (run | initialize pick successful ping ls into-hosts exec scp extract rm nohup mkdir sync-)]))
+  (require '[re-mote.repl.base :as base :refer (run | initialize pick successful ping ls into-hosts exec scp extract rm nohup mkdir sync- downgrade)]))
 

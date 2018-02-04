@@ -22,7 +22,8 @@
    [re-mote.zero.facts :refer (refer-facts)]
    [re-mote.zero.git :refer (refer-git)]
    [re-mote.zero.test :as tst]
-   [re-mote.zero.pkg :refer (refer-pkg)]
+   [re-mote.zero.pkg :refer (refer-zpkg)]
+   [re-mote.repl.pkg :refer (refer-spkg)]
    [re-mote.log :refer (setup-logging)]
    [clojure.java.io :refer (file)])
   (:import [re_mote.repl.base Hosts]))
@@ -34,7 +35,8 @@
 (refer-stats)
 (refer-security)
 (refer-sensors)
-(refer-pkg)
+(refer-zpkg)
+(refer-spkg)
 (refer-puppet)
 (refer-zfs)
 (refer-publish)
@@ -116,22 +118,22 @@
 (defn #^{:category :packaging} update
   "Apt update on hosts"
   [hs]
-  (run (pkg/update hs) | (pretty "update") | (email (tofrom "package update"))))
+  (run (zpkg/update hs) | (downgrade spkg/update) | (pretty "update") | (email (tofrom "package update"))))
 
 (defn #^{:category :packaging} upgrade
   "Apt update and upgrade on hosts, only update successful hosts gets upgraded"
   [hs]
-  (run (pkg/update hs) | (pick successful) | (pkg/upgrade) | (pretty "upgrade") | (email (tofrom "package upgrade"))))
+  (run (zpkg/update hs) | (pick successful) | (zpkg/upgrade) | (pretty "upgrade") | (email (tofrom "package upgrade"))))
 
 (defn #^{:category :packaging} install
   "Install a package on hosts"
   [hs pkg]
-  (run (pkg/install hs pkg) | (pretty "package install")))
+  (run (zpkg/install hs pkg) | (pretty "package install")))
 
 (defn #^{:category :packaging} pakage-fix
   "Fix package provider"
   [hs]
-  (run (pkg/fix hs) | (pkg/kill) | (pretty "package provider fix")))
+  (run (zpkg/fix hs) | (zpkg/kill) | (pretty "package provider fix")))
 
 ; Puppet
 (defn #^{:category :puppet} copy-module
