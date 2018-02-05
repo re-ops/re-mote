@@ -6,8 +6,7 @@
    [re-mote.api.server :as web]
    [re-mote.repl :as repl]
    [re-share.zero.keys :as k]
-   [re-share.schedule :as sc])
-  )
+   [re-share.schedule :as sc]))
 
 (refer-timbre)
 

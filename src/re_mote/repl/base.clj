@@ -102,12 +102,12 @@
         [(Hosts. auth hs) {}])))
 
   (downgrade [this f]
-     [this {}])
+    [this {}])
 
   (downgrade [this {:keys [failure] :as m} f]
     (let [failed (map :host (get failure -1))
           results (f (Hosts. auth failed))]
-     [this (merge-results results m)]))
+      [this (merge-results results m)]))
 
   Shell
   (ls [this target flags]
@@ -148,7 +148,6 @@
   Tracing
   (ping [this target]
     [this (run-hosts this (script ("ping" "-c" 1 ~target)))]))
-
 
 (defn successful
   "Used for picking successful"
