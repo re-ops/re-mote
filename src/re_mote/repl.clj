@@ -169,7 +169,7 @@
 (defn #^{:category :re-gent} kill
   "kill re-gent process:
      (kill develop)"
-  [{:keys [auth] :as hs}]
+  [hs]
   (run (kill-agent hs) | (pretty "kill agent")))
 
 (defn #^{:category :re-gent} launch

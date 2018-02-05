@@ -83,7 +83,32 @@
         dest (<< "~{user}@~{host}:~{target}")]
     (script ("rsync" "--delete" ~opts  ~src  ~dest))))
 
+(defn merge-results [[_ {:keys [success]}] m]
+  (let [m' (dissoc-in m [:failure -1])]
+    (clojure.core/update  m' :success (fn [v] (into success v)))))
+
 (defrecord Hosts [auth hosts]
+  Select
+  (initialize [this]
+    [this hosts])
+
+  (pick [this f]
+    (Hosts. auth (filter f hosts)))
+
+  (pick [this {:keys [failure success] :as m} f]
+    (let [hs (f success failure hosts)]
+      (if (empty? hs)
+        (throw (ex-info "no succesful hosts found" m))
+        [(Hosts. auth hs) {}])))
+
+  (downgrade [this f]
+     [this {}])
+
+  (downgrade [this {:keys [failure] :as m} f]
+    (let [failed (map :host (get failure -1))
+          results (f (Hosts. auth failed))]
+     [this (merge-results results m)]))
+
   Shell
   (ls [this target flags]
     [this (run-hosts this (script ("ls" ~flags ~target)))])
@@ -120,32 +145,10 @@
   (sync- [{:keys [auth hosts] :as this} src target]
     [this (sh-hosts this (fn [host] (safe "bash" "-c" (rsync src target host auth))))])
 
-  Select
-  (initialize [this]
-    [this hosts])
-
-  (pick [this f]
-    (Hosts. auth (filter f hosts)))
-
-  (pick [this {:keys [failure success] :as m} f]
-    (let [hs (f success failure hosts)]
-      (if (empty? hs)
-        (throw (ex-info "no succesful hosts found" m))
-        [(Hosts. auth hs) {}])))
-
-  (downgrade [this f]
-     [this {}])
-
-  (downgrade [this {:keys [failure] :as m} f]
-    (let [failed (map :host (get failure -1))
-          result (f (Hosts. auth failed))
-          m' (clojure.core/update (dissoc-in m [:failure -1]) :success (fn [v] (println (result :success)) (into v (result :success))))] 
-      (clojure.pprint/pprint m')
-     [this m]))
-
   Tracing
   (ping [this target]
     [this (run-hosts this (script ("ping" "-c" 1 ~target)))]))
+
 
 (defn successful
   "Used for picking successful"
