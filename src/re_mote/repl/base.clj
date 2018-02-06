@@ -83,9 +83,11 @@
         dest (<< "~{user}@~{host}:~{target}")]
     (script ("rsync" "--delete" ~opts  ~src  ~dest))))
 
-(defn merge-results [[_ {:keys [success]}] m]
-  (let [m' (dissoc-in m [:failure -1])]
-    (clojure.core/update  m' :success (fn [v] (into success v)))))
+(defn- merge-results [[_ {:keys [success failure] :as res}] m]
+   (-> m
+      (dissoc-in [:failure -1])
+      (clojure.core/update :success (partial into success))
+      (clojure.core/update :failure (partial merge-with conj failure))))
 
 (defrecord Hosts [auth hosts]
   Select
