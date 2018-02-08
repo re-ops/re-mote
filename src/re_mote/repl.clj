@@ -82,32 +82,32 @@
 (defn #^{:category :stats} du-persist
   "Disk usage"
   [hs]
-  (run (du hs) | (persist "stats")))
+  (run (du hs) | (enrich "du") | (persist)))
 
 (defn #^{:category :stats} cpu-persist
   "CPU usage and idle stats collection and persistence"
   [hs]
-  (run (cpu hs) | (persist "stats")))
+  (run (cpu hs) | (enrich "cpu") | (persist)))
 
 (defn #^{:category :stats} ram-persist
   "RAM free and used percentage collection and persistence"
   [hs]
-  (run (free hs) | (persist "stats")))
+  (run (free hs) | (enrich "free") | (persist)))
 
 (defn #^{:category :stats} net-persist
   "KB in/out stats collection and persistence"
   [hs]
-  (run (net hs) | (persist "stats")))
+  (run (net hs) | (enrich "net") | (persist)))
 
 (defn #^{:category :stats} temperature-persist
   "Collect CPU temperature (using lm-sensors) and publish"
   [hs]
-  (run (temperature hs) | (persist "stats")))
+  (run (temperature hs) | (enrich "temperature") | (persist)))
 
 (defn #^{:category :stats} load-persist
   "Average load collection and persistence"
   [hs]
-  (run (load-avg hs) | (persist "stats")))
+  (run (load-avg hs) | (enrich "load") | (persist)))
 
 (defn tofrom
   "Email configuration"
@@ -118,7 +118,7 @@
 (defn #^{:category :packaging} update
   "Apt update on hosts"
   [hs]
-  (run (zpkg/update hs) | (downgrade spkg/update) | (pretty "update") | (email (tofrom "package update"))))
+  (run (zpkg/update hs) | (downgrade spkg/update) | (pretty "update") | (email (tofrom "package update")) | (persist "result") | (null)))
 
 (defn #^{:category :packaging} upgrade
   "Apt update and upgrade on hosts, only update successful hosts gets upgraded"

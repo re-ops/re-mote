@@ -44,6 +44,7 @@
 (defprotocol Shell
   (exec [this script])
   (nohup [this script])
+  (null [this m])
   (rm
     [this target flags]
     [this m target flags])
@@ -130,6 +131,9 @@
   (nohup [this cmd]
     (exec this (<< "nohup sh -c '~{cmd} &' &>/dev/null")))
 
+  (null [this m]
+    [this {}])
+
   Tar
   (extract [this _ archive target]
     [this (run-hosts this (script ("tar" "-xzf" ~archive "-C" ~target)))])
@@ -163,5 +167,5 @@
     (Hosts. auth hosts)))
 
 (defn refer-base []
-  (require '[re-mote.repl.base :as base :refer (run | initialize pick successful ping ls into-hosts exec scp extract rm nohup mkdir sync- downgrade)]))
+  (require '[re-mote.repl.base :as base :refer (run | initialize pick successful ping ls into-hosts exec scp extract rm nohup mkdir sync- downgrade null)]))
 

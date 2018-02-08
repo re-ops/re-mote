@@ -66,15 +66,6 @@
   ([nav [this readings]]
    [this (transform nav safe-dec readings)]))
 
-(defn enrich [t [this readings]]
-  [this (transform [:success ALL] (fn [m] (merge m {:timestamp (.getMillis (t/now)) :type t})) readings)])
-
-(defn avg
-  "Windowed average function"
-  [ts]
-  (let [sum (reduce (fn [a [t m]] (merge-with + a m)) {} ts)]
-    {(-> ts first first) (transform [MAP-VALS] (fn [n] (with-precision 10 (/ n (count ts)))) sum)}))
-
 (defn- window [f ts]
   (apply merge (map f (partition 3 1 ts))))
 
@@ -104,11 +95,10 @@
   Stats
   (du
     ([this]
-     (enrich "du"
-             (into-dec (multi-nav :blocks :used :available)
-                       (zip this
-                            (run-hosts this shell (args du-script) timeout)
-                            :stats :du :filesystem :type :blocks :used :available :perc :mount))))
+     (into-dec (multi-nav :blocks :used :available)
+               (zip this
+                    (run-hosts this shell (args du-script) timeout)
+                    :stats :du :filesystem :type :blocks :used :available :perc :mount)))
     ([this _]
      (du this)))
 
@@ -116,25 +106,24 @@
     ([this _]
      (net this))
     ([this]
-     (enrich "net"
-             (into-dec
-              (zip this (run-hosts this shell (args net-script) timeout)
-                   :stats :net :rxpck/s :txpck/s :rxkB/s :txkB/s :rxcmp/s :txcmp/s :rxmcst/s :ifutil)))))
+     (into-dec
+      (zip this (run-hosts this shell (args net-script) timeout)
+           :stats :net :rxpck/s :txpck/s :rxkB/s :txkB/s :rxcmp/s :txcmp/s :rxmcst/s :ifutil))))
   (cpu
     ([this]
-     (enrich "cpu" (into-dec (zip this (run-hosts this shell (args cpu-script) timeout) :stats :cpu :usr :sys :idle))))
+     (into-dec (zip this (run-hosts this shell (args cpu-script) timeout) :stats :cpu :usr :sys :idle)))
     ([this _]
      (cpu this)))
 
   (free
     ([this]
-     (enrich "free" (into-dec (zip this (run-hosts this shell (args free-script) timeout) :stats :free :total :used :free))))
+     (into-dec (zip this (run-hosts this shell (args free-script) timeout) :stats :free :total :used :free)))
     ([this _]
      (free this)))
 
   (load-avg
     ([this]
-     (enrich "load" (into-dec (zip this (run-hosts this shell (args load-script) timeout) :stats :load :one :five :fifteen))))
+     (into-dec (zip this (run-hosts this shell (args load-script) timeout) :stats :load :one :five :fifteen)))
     ([this _]
      (free this)))
 
