@@ -27,18 +27,18 @@
     `(let [[this# res#] ~source]
        (~f this# res# ~@args))))
 
-(defmacro run> 
+(defmacro run>
   "Run and return last function pipe output"
   [f p s & fns]
   (if-not (empty? fns)
     `(run (~p ~f ~s) ~(first fns) ~(second fns) ~@(rest (rest fns)))
     `(~p ~f ~s)))
 
-(defmacro run 
+(defmacro run
   "Run and nullify output"
   [f p s & fns]
   `(let [[this# m#] (run> ~f ~p ~s ~@fns)]
-      [this# {}]))
+     [this# {}]))
 
 (defn safe-output [{:keys [out err exit]}]
   (when (seq out)
@@ -175,7 +175,6 @@
     (Hosts. auth hosts)))
 
 (defn refer-base []
-  (require '[re-mote.repl.base :as base :refer (
-      run> run | initialize pick successful ping ls into-hosts 
-      exec scp extract rm nohup mkdir sync- downgrade null)]))
+  (require '[re-mote.repl.base :as base :refer (run> run | initialize pick successful ping ls into-hosts
+                                                     exec scp extract rm nohup mkdir sync- downgrade null)]))
 
