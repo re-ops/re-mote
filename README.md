@@ -25,8 +25,6 @@ It enables remote execution of commands on a group of hosts, the results can be 
 ```clojure
 $ git clone git@github.com:re-ops/re-mote.git
 $ cd re-mote
-# launch Elasticsearch and Kibana/Grafana
-$ docker-compose up
 $ lein repl
 [re-mote]λ: (go)
 nil
@@ -95,12 +93,20 @@ user=> (refresh)
 user=> (go)
 ```
 
-# Prerequisite
+# Prerequisites
 
 * JDK 8 with JCE enabled (On Ubuntu oracle-java8-unlimited-jce-policy using PPA).
 * lein (see https://leiningen.org/).
 * rng-tools for increased entropy under Linux (Ubuntu).
 * A solid understanding of Clojure :)
+
+Optionally: 
+
+* Elasticsearch 5.6.x for persisting results and metrics
+* Grafana for viewing metrics
+* Kibana for viewing results and failures
+
+Check [re-dock](https://github.com/re-ops/re-dock) for a quick docker setup
 
 # Copyright and license
 
