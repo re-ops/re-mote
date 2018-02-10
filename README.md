@@ -38,6 +38,14 @@ Run summary:
 
 ```
 
+# Configure
+
+The configuration file is pretty much self explanatory:
+
+```bash
+$ cp config/re-mote.edn ~/.re-mote.edn
+```
+
 Now we can start and play (see src/re_mote/repl.clj),  we define the hosts we work with (using key authentication):
 
 ```clojure
@@ -106,7 +114,7 @@ Optionally:
 * Grafana for viewing metrics
 * Kibana for viewing results and failures
 
-Check [re-dock](https://github.com/re-ops/re-dock) for a quick docker setup
+Check [re-dock](https://github.com/re-ops/re-dock) for a quick docker setup of the above.
 
 # Copyright and license
 
