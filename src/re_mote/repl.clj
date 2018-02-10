@@ -118,7 +118,7 @@
 (defn #^{:category :packaging} update
   "Apt update on hosts"
   [hs]
-  (run (zpkg/update hs) | (downgrade spkg/update) | (pretty "update") | (email (tofrom "package update")) | (persist "result") | (null)))
+  (run (zpkg/update hs) | (downgrade spkg/update) | (pretty "update") | (email (tofrom "package update")) | (persist "result")))
 
 (defn #^{:category :packaging} upgrade
   "Apt update and upgrade on hosts, only update successful hosts gets upgraded"
