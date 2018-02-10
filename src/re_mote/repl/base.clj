@@ -31,7 +31,7 @@
   "Run and return last function pipe output"
   [f p s & fns]
   (if-not (empty? fns)
-    `(run (~p ~f ~s) ~(first fns) ~(second fns) ~@(rest (rest fns)))
+    `(run> (~p ~f ~s) ~(first fns) ~(second fns) ~@(rest (rest fns)))
     `(~p ~f ~s)))
 
 (defmacro run
