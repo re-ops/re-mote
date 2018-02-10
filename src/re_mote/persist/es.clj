@@ -63,7 +63,9 @@
 (extend-type Hosts
   Persistence
   (enrich [this m t]
-    [this (transform [:failure MAP-VALS ALL] (stamp (str t ".fail")) (transform [:success ALL] (stamp t) m))])
+    (let [success-stamp (transform [:success ALL] (stamp t) m)
+          failure-stamp (transform [:failure MAP-VALS ALL] (stamp (str t ".fail")) success-stamp)]
+      [this failure-stamp]))
   Elasticsearch
   (persist
     ([this {:keys [success failure] :as m} t]
