@@ -70,7 +70,7 @@ We can persist results to Elasticsearch and view them in Kibana/Grafana:
 (defn #^{:category :stats} cpu-persist
   "CPU usage and idle stats collection and persistence"
   [hs]
-  (run (cpu hs) | (persist "stats")))
+  (run (cpu hs) | (enrich "cpu") | (persist)))
 ```
 
 Schedule them:
