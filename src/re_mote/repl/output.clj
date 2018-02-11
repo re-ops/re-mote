@@ -15,7 +15,7 @@
 
 (defn summarize [s]
   (let [l (.length s)]
-    (if (< l 50) s (.substring s (- l 150) l))))
+    (if (< l 150) s (.substring s (- l 150) l))))
 
 (extend-type Hosts
   Report
