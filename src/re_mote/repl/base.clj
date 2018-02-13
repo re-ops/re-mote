@@ -82,7 +82,8 @@
   (initialize [this])
   (downgrade
     [this f]
-    [this m f])
+    [this m f]
+    [this m f args])
   (pick
     [this f]
     [this m f]))
@@ -116,8 +117,11 @@
     [this {}])
 
   (downgrade [this {:keys [failure] :as m} f]
+    (downgrade this m f nil))
+
+  (downgrade [this {:keys [failure] :as m} f args]
     (let [failed (map :host (get failure -1))
-          results (f (Hosts. auth failed))]
+          results (apply f (Hosts. auth failed) args)]
       [this (merge-results results m)]))
 
   Shell
