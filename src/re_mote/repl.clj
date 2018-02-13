@@ -70,12 +70,12 @@
 (defn #^{:category :detection} inactive-firewall
   "find inactive firewall"
   [hs]
-  (run (rules hs) | (pick (fn [_ failure] (mapv :host (failure 1))))))
+  (run> (rules hs) | (pick (fn [_ failure] (mapv :host (failure 1))))))
 
 (defn #^{:category :detection} low-disk
   "Detect machines with low disk available"
   [hs f]
-  (run (du hs) | (detect f)))
+  (run> (du hs) | (detect f)))
 
 ; persistent stats
 
@@ -128,7 +128,7 @@
 (defn #^{:category :packaging} install
   "Install a package on hosts"
   [hs pkg]
-  (run (zpkg/install hs pkg) | (pretty "package install")))
+  (run (zpkg/install hs pkg) | (downgrade spkg/install [pkg]) | (pretty "package install")))
 
 (defn #^{:category :packaging} pakage-fix
   "Fix package provider"
