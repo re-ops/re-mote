@@ -70,7 +70,7 @@
 (defn #^{:category :detection} inactive-firewall
   "find inactive firewall"
   [hs]
-  (run> (rules hs) | (pick (fn [_ failure] (mapv :host (failure 1))))))
+  (run> (rules hs) | (pick (fn [success failure hosts] (mapv :host (failure 1))))))
 
 (defn #^{:category :detection} low-disk
   "Detect machines with low disk available"
