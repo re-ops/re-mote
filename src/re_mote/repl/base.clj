@@ -120,9 +120,10 @@
     (downgrade this m f nil))
 
   (downgrade [this {:keys [failure] :as m} f args]
-    (let [failed (map :host (get failure -1))
-          results (apply f (Hosts. auth failed) args)]
-      [this (merge-results results m)]))
+    (let [failed (map :host (get failure -1))]
+      (if-not (empty? failed)
+        [this (merge-results (apply f (Hosts. auth failed) args) m)]
+        [this m])))
 
   Shell
   (ls [this target flags]
