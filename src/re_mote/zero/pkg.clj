@@ -36,9 +36,9 @@
      [this (run-hosts this pkg-update [] [2 :minute])]))
 
   (upgrade
+    ([this _]
+     (upgrade this))
     ([this]
-     (upgrade this {}))
-    ([this m]
      [this (run-hosts this pkg-upgrade [] [5 :minute])]))
 
   (install
