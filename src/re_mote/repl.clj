@@ -16,14 +16,15 @@
    [re-mote.repl.octo :refer (refer-octo)]
    [re-mote.zero.stats :refer (refer-stats)]
    [re-mote.zero.security :refer (refer-security)]
-   [re-mote.zero.sensors :refer (refer-sensors)]
+   [re-mote.repl.sensors :refer (refer-sensors)]
+   [re-mote.zero.sensors :refer (refer-zero-sensors)]
    [re-mote.repl.re-gent :refer (refer-regent)]
    [re-share.schedule :refer (watch seconds)]
    [re-mote.zero.facts :refer (refer-facts)]
    [re-mote.zero.git :refer (refer-git)]
    [re-mote.zero.test :as tst]
-   [re-mote.zero.pkg :refer (refer-zpkg)]
-   [re-mote.repl.pkg :refer (refer-spkg)]
+   [re-mote.zero.pkg :refer (refer-zero-pkg)]
+   [re-mote.repl.pkg :refer (refer-pkg)]
    [re-mote.log :refer (setup-logging)]
    [clojure.java.io :refer (file)])
   (:import [re_mote.repl.base Hosts]))
@@ -35,8 +36,9 @@
 (refer-stats)
 (refer-security)
 (refer-sensors)
-(refer-zpkg)
-(refer-spkg)
+(refer-zero-sensors)
+(refer-pkg)
+(refer-zero-pkg)
 (refer-puppet)
 (refer-zfs)
 (refer-publish)
@@ -102,7 +104,7 @@
 (defn #^{:category :stats} temperature-persist
   "Collect CPU temperature (using lm-sensors) and publish"
   [hs]
-  (run (temperature hs) | (enrich "temperature") | (persist)))
+  (run (zsens/temperature hs) | (enrich "temperature") |  (persist)))
 
 (defn #^{:category :stats} load-persist
   "Average load collection and persistence"
@@ -119,12 +121,12 @@
 (defn update-
   "update with downgrading"
   [hs]
-  (run> (zpkg/update hs) | (downgrade spkg/update) | (pretty "update")))
+  (run> (zpkg/update hs) | (downgrade pkg/update) | (pretty "update")))
 
 (defn upgrade-
   "upgrade with downgrading"
   [hs m]
-  (run> (zpkg/upgrade hs) | (downgrade spkg/upgrade)))
+  (run> (zpkg/upgrade hs) | (downgrade pkg/upgrade)))
 
 (defn #^{:category :packaging} update
   "Apt update on hosts"
@@ -139,7 +141,7 @@
 (defn #^{:category :packaging} install
   "Install a package on hosts"
   [hs pkg]
-  (run (zpkg/install hs pkg) | (downgrade spkg/install [pkg]) | (pretty "package install")))
+  (run (zpkg/install hs pkg) | (downgrade pkg/install [pkg]) | (pretty "package install")))
 
 (defn #^{:category :packaging} pakage-fix
   "Fix package provider"
