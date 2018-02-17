@@ -115,15 +115,26 @@
   {:to "narkisr@gmail.com" :from "gookup@gmail.com" :subject (<< "Running ~{desc} results")})
 
 ; Packaging
+
+(defn update-
+  "update with downgrading"
+  [hs]
+  (run> (zpkg/update hs) | (downgrade spkg/update) | (pretty "update")))
+
+(defn upgrade-
+  "upgrade with downgrading"
+  [hs m]
+  (run> (zpkg/upgrade hs) | (downgrade spkg/upgrade)))
+
 (defn #^{:category :packaging} update
   "Apt update on hosts"
   [hs]
-  (run (zpkg/update hs) | (downgrade spkg/update) | (pretty "update") | (email (tofrom "package update")) | (persist "result")))
+  (run (update- hs) | (email (tofrom "package update")) | (persist "result")))
 
 (defn #^{:category :packaging} upgrade
   "Apt update and upgrade on hosts, only update successful hosts gets upgraded"
   [hs]
-  (run (zpkg/update hs) | (pick successful) | (zpkg/upgrade) | (pretty "upgrade") | (email (tofrom "package upgrade"))))
+  (run (update- hs) | (pick successful) | (upgrade-) | (pretty "upgrade") | (email (tofrom "package upgrade")) | (persist "result")))
 
 (defn #^{:category :packaging} install
   "Install a package on hosts"
