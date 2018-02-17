@@ -1,5 +1,5 @@
 (ns re-mote.zero.sensors
-  "Sensors monitoring"
+  "Sensors monitoring using agent"
   (:require
    [clojure.string :refer (split)]
    [re-mote.zero.shell :refer (args)]
@@ -7,17 +7,8 @@
    [com.rpl.specter :as s :refer (transform select MAP-VALS ALL multi-path)]
    [re-mote.zero.functions :refer (shell)]
    [re-mote.zero.pipeline :refer (run-hosts)]
-   [pallet.stevedore :refer (script)])
+   [re-mote.scripts.sensors :refer (temp-script)])
   (:import [re_mote.repl.base Hosts]))
-
-(defn sensors-script []
-  (script
-   ("cat" "/proc/cpuinfo" | "grep" "hypervisor")
-   (if (= "$?" 0)
-     (do
-       (println "'cannot measure temp in a VM'")
-       ("exit" 1))
-     (pipe ("sensors -A") ("awk" "'{$1=$1};1'")))))
 
 (defn parse-lines [lines]
   (mapv
@@ -46,8 +37,8 @@
 (extend-type Hosts
   Sensors
   (temperature [this]
-    (let [{:keys [success failure] :as res} (run-hosts this shell (args sensors-script) timeout)]
+    (let [{:keys [success failure] :as res} (run-hosts this shell (args temp-script) timeout)]
       (into-dec [this (assoc res :success (map assoc-stats success))]))))
 
-(defn refer-sensors []
-  (require '[re-mote.zero.sensors :as sensors :refer (temperature)]))
+(defn refer-zero-sensors []
+  (require '[re-mote.zero.sensors :as zsens]))
