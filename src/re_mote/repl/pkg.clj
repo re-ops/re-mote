@@ -8,7 +8,7 @@
    [pallet.stevedore :refer (script)])
   (:import [re_mote.repl.base Hosts]))
 
-(defprotocol Apt
+(defprotocol Pkg
   (update
     [this]
     [this m])
@@ -26,7 +26,7 @@
     [this m pkg]))
 
 (extend-type Hosts
-  Apt
+  Pkg
   (update [this _]
     (update this))
 
@@ -49,5 +49,5 @@
     ([this _ pkg] (install this pkg))
     ([this pkg] [this (run-hosts this (script ("sudo" "apt" "install" ~pkg "-y")))])))
 
-(defn refer-spkg []
-  (require '[re-mote.repl.pkg :as spkg]))
+(defn refer-pkg []
+  (require '[re-mote.repl.pkg :as pkg]))

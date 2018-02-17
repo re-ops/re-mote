@@ -59,6 +59,6 @@
     ([this m]
      ([this (run-hosts this pkg-kill [] [1 :minute])]))))
 
-(defn refer-zpkg []
+(defn refer-zero-pkg []
   (require '[re-mote.zero.pkg :as zpkg]))
 
