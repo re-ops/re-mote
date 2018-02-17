@@ -34,6 +34,9 @@
     [this (run-hosts this (script ("sudo" "apt" "update")))])
 
   (upgrade [this _]
+    (upgrade this))
+
+  (upgrade [this]
     [this (run-hosts this (script ("sudo" "apt" "upgrade" "-y")))])
 
   (unlock [this _]
