@@ -1,24 +1,10 @@
 # Intro
 
-re-mote is a REPL driven environment for performing remote operations using SSH and [re-gent](https://github.com/re-ops/re-gent).
+Re-mote is a REPL driven environment for performing remote operations using SSH and [Re-gent](https://github.com/re-ops/re-gent).
 
-It is a part of the [re-ops](https://github.com/re-ops) project that offers a live coding environment for configuration management.
+It is a part of the [re-ops](https://re-ops.github.io/re-ops/) project that offers a live coding environment for configuration management.
 
 [![Build Status](https://travis-ci.org/re-ops/re-mote.png)](https://travis-ci.org/re-ops/re-mote)
-
-
-[![Re-ops, a Functional Live-Infrastructure as Code](https://img.youtube.com/vi/iopuirQuK-s/0.jpg)](https://www.youtube.com/watch?v=iopuirQuK-s)
-
-## Motivation
-
-Most (if not all) configuration management tools currently are static in nature, you write you code deploy it and apply (rinse and repeat).
-
-Still our live environments change rapidly and having this cycle in place really slows our reaction time down.
-
-RE-mote is a re-take on how remote operations would look like when using a live REPL to drive them.
-
-It enables remote execution of commands on a group of hosts, the results can be analysed, persisted and manipulated in pipelines.
-
 
 # Get running
 
