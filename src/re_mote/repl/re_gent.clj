@@ -56,7 +56,7 @@
     ([this home]
      (start-agent this nil home))
     ([this _ home]
-     [this (run-hosts this (start-script (used-port) home "debug"))])))
+     [this (run-hosts this (start-script (used-port) home "info"))])))
 
 (defn refer-regent []
   (require '[re-mote.repl.re-gent :as re-gent :refer (start-agent kill-agent build)]))

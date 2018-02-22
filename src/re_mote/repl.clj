@@ -183,7 +183,7 @@
   [{:keys [auth] :as hs} bin]
   (let [{:keys [user]} auth home (<< "/home/~{user}") dest (<< "~{home}/.curve")]
     (run (mkdir hs dest "-p") | (scp ".curve/server-public.key" dest) | (pretty "curve copy"))
-    (run (kill-agent hs) | (pretty "kill agnet"))
+    (run (kill-agent hs) | (pretty "kill agent"))
     (run (scp hs bin home) | (pick successful) | (start-agent home) | (pretty "scp"))))
 
 (defn #^{:category :re-gent} kill
