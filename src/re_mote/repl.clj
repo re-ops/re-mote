@@ -67,12 +67,19 @@
 (defn #^{:category :shell} listing [hs]
   (run (ls hs "/" "-la") | (pretty "listing")))
 
-; alerting
+; security
 
-(defn #^{:category :detection} inactive-firewall
+(defn #^{:category :security} nmap-scan
+  "scan for suspicious ports in our network"
+  [hs flags network]
+  (run (scan hs flags network) | (enrich "nmap-scan") | (persist)))
+
+(defn #^{:category :security} inactive-firewall
   "find inactive firewall"
   [hs]
   (run> (rules hs) | (pick (fn [success failure hosts] (mapv :host (failure 1))))))
+
+; alerting
 
 (defn #^{:category :detection} low-disk
   "Detect machines with low disk available"

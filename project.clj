@@ -63,6 +63,7 @@
 
      ; common utilities and shared functions
      [re-share "0.5.3"]
+     [re-scan "0.1.0"]
      [me.raynes/fs "1.4.6"]
 
      ; profiling
