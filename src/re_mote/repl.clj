@@ -170,7 +170,7 @@
     (run (apply-module this (<< "/tmp/~{extracted}") args) | (pretty "run module") | (rm (<< "/tmp/~{extracted}") "-rf"))))
 
 (defn #^{:category :puppet} provision
-  "Sync puppet source code into a VM and run"
+  "Sync puppet source code into the remote machine and run"
   [hs {:keys [src]}]
   {:pre [src]}
   (let [dest (<< "/tmp/~(fs/base-name src)")]
