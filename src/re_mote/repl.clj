@@ -91,32 +91,32 @@
 (defn #^{:category :stats} du-persist
   "Disk usage"
   [hs]
-  (run (du hs) | (enrich "du") | (persist)))
+  (run> (du hs) | (enrich "du") | (persist)))
 
 (defn #^{:category :stats} cpu-persist
   "CPU usage and idle stats collection and persistence"
   [hs]
-  (run (cpu hs) | (enrich "cpu") | (persist)))
+  (run> (cpu hs) | (enrich "cpu") | (persist)))
 
 (defn #^{:category :stats} ram-persist
   "RAM free and used percentage collection and persistence"
   [hs]
-  (run (free hs) | (enrich "free") | (persist)))
+  (run> (free hs) | (enrich "free") | (persist)))
 
 (defn #^{:category :stats} net-persist
   "KB in/out stats collection and persistence"
   [hs]
-  (run (net hs) | (enrich "net") | (persist)))
+  (run> (net hs) | (enrich "net") | (persist)))
 
 (defn #^{:category :stats} temperature-persist
   "Collect CPU temperature (using lm-sensors) and publish"
   [hs]
-  (run (zsens/temperature hs) | (enrich "temperature") |  (persist)))
+  (run> (zsens/temperature hs) | (enrich "temperature") |  (persist)))
 
 (defn #^{:category :stats} load-persist
   "Average load collection and persistence"
   [hs]
-  (run (load-avg hs) | (enrich "load") | (persist)))
+  (run> (load-avg hs) | (enrich "load") | (persist)))
 
 (defn tofrom
   "Email configuration"
