@@ -38,7 +38,7 @@
   [index mappings]
   (= (:status (s/request @c {:url [index] :method :put :body mappings})) 200))
 
-(defn- delete
+(defn delete
   [index]
   (= (:status (s/request @c {:url [index] :method :delete})) 200))
 
