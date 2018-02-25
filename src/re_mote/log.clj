@@ -79,7 +79,7 @@
     - log level
   "
   [& {:keys [interval level] :or {interval 10 level :info}}]
-  (log/setup "re-mote" ["net.schmizz.*" "org.elasticsearch.indices.*" "org.apache.http.*"] ["re-mote.output"])
+  (log/setup "re-mote" ["net.schmizz.*" "org.elasticsearch.*" "org.apache.http.*"] ["re-mote.output"])
   (set-level! level)
   (run-purge interval))
 
