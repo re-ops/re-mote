@@ -40,7 +40,8 @@
       (println " " (style "✔" :green) host (if out (summarize out) "")))
     (doseq [[c rs] failure]
       (doseq [{:keys [host error]} (get-logs rs)]
-        (println " " (style "x" :red) host "-" (str c) "," (summarize (error :out)))))
+        (let [{:keys [err out]} error s (if (empty? out) err out)]
+          (println " " (style "x" :red) host "-" (str c) "," (summarize s)))))
     (println "")
     [this m]))
 
