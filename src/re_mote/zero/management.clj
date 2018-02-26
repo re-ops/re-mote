@@ -43,7 +43,7 @@
       [{:request :register}] (register address)
       [{:request :unregister}] (unregister address)
       [{:reply :execute :result r :time t :name name :uuid id}] (add-result hostname id r t)
-      [{:reply :execute :result :failed :name name :uuid id}] (add-result hostname id :failed)
+      [{:reply :execute :result :failed :name name :uuid id :error {:result r}}] (add-result hostname id r)
       :else (fail request "no handling clause found for request"))
     (catch Exception e
       (fail request e)
