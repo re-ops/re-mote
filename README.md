@@ -11,7 +11,7 @@ It is a part of the [Re-ops](https://re-ops.github.io/re-ops/) project that offe
 ```clojure
 $ git clone git@github.com:re-ops/re-mote.git
 $ cd re-mote
-$ lein repl
+$ lein repl # or lein trampoline run -m rebel-readline.main
 [re-mote]λ: (go)
 nil
 [re-mote]λ: (listing sandbox)
