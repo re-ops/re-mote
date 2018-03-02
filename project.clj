@@ -29,6 +29,7 @@
      [com.palletops/stevedore "0.8.0-beta.7"]
      [io.aviso/pretty "0.1.34"]
      [im.chit/lucid.package "1.3.13"]
+     [com.bhauman/rebel-readline "0.1.1"]
 
      ; git repl
      [im.chit/lucid.git "1.3.13"]
