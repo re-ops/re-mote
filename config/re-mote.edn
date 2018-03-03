@@ -7,8 +7,11 @@
   }
 
  :es {
-    :server "http://127.0.0.1:9200"
+    :host "localhost"
+    :port 9200
     :index "re-mote"
+    :user "elastic"
+    :pass "changeme"
   }
 
 }

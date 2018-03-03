@@ -1,4 +1,4 @@
-(defproject re-mote "0.8.2"
+(defproject re-mote "0.8.3"
   :description "A live remote operations environment"
   :url "https://github.com/re-ops/re-mote"
   :license  {:name "Apache License, Version 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
@@ -63,7 +63,7 @@
      [formation "0.2.0"]
 
      ; common utilities and shared functions
-     [re-share "0.5.4"]
+     [re-share "0.6.1"]
      [re-scan "0.1.0"]
      [me.raynes/fs "1.4.6"]
 
@@ -102,7 +102,7 @@
    }
 
   :aliases {
-     "start-repl" ["do" "clean," "repl" ":headless"]
+     "rebel" ["trampoline" "run" "-m" "rebel-readline.main"]
      "travis" [
       "with-profile" "test"  "do" "clean," "compile," "cljfmt" "check," "eastwood" "{:exclude-namespaces [re-mote.zero.worker re-mote.zero.server re-mote.zero.common re-mote.repl.spec]}"
      ]
