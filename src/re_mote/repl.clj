@@ -138,12 +138,12 @@
 (defn #^{:category :packaging} update
   "Apt update on hosts"
   [hs]
-  (run (update- hs) | (email (tofrom "package update")) | (persist "result")))
+  (run (update- hs) | (email (tofrom "package update")) | (enrich "update") | (persist "result")))
 
 (defn #^{:category :packaging} upgrade
   "Apt update and upgrade on hosts, only update successful hosts gets upgraded"
   [hs]
-  (run (update- hs) | (pick successful) | (upgrade-) | (pretty "upgrade") | (email (tofrom "package upgrade")) | (persist "result")))
+  (run (update- hs) | (pick successful) | (upgrade-) | (pretty "upgrade") | (email (tofrom "package upgrade")) | (enrich "upgrade") | (persist "result")))
 
 (defn #^{:category :packaging} install
   "Install a package on hosts"
