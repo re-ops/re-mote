@@ -56,14 +56,6 @@
 (defn single [h & m]
   (Hosts. (merge {:user "upgrade"} (first m)) [h]))
 
-(def develop (Hosts. {:user "vagrant"} ["re-a" "re-b"]))
-
-(def localhost (Hosts. {:user "upgrade"} ["rosetta"]))
-
-(def methone (Hosts. {:user "upgrade"} ["methone"]))
-
-(def bsd (Hosts. {:user "upgrade"} ["re-e"]))
-
 (defn #^{:category :shell} listing [hs]
   (run (ls hs "/" "-la") | (pretty "listing")))
 
