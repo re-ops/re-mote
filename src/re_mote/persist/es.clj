@@ -15,6 +15,8 @@
 (refer-timbre)
 
 (defprotocol Persistence
+  (split [this m f])
+  (mult [this] [this m])
   (enrich [this m t]))
 
 (defprotocol Elasticsearch
@@ -33,12 +35,28 @@
   (fn [m]
     (merge m {:timestamp (.getMillis (t/now)) :type t})))
 
+(defn by-hosts
+  "split results by host"
+  [{:keys [result] :as m}]
+  (mapv (fn [[host r]] (assoc m :host host :result r)) result))
+
+(defn nested
+  "split nested"
+  [{:keys [result] :as m}]
+  (mapv (fn [r] (assoc m :result r)) result))
+
 (extend-type Hosts
   Persistence
   (enrich [this m t]
     (let [success-stamp (transform [:success ALL] (stamp t) m)
           failure-stamp (transform [:failure MAP-VALS ALL] (stamp (str t ".fail")) success-stamp)]
       [this failure-stamp]))
+
+  (split [this {:keys [success] :as m} f]
+    (let [splited (into [] (flatten (map f success)))
+          hosts (map :host splited)]
+      [this (assoc m :success splited :hosts hosts)]))
+
   Elasticsearch
   (persist
     ([this {:keys [success failure] :as m} t]
@@ -67,4 +85,4 @@
     (create-index (index) {:mappings types})))
 
 (defn refer-es-persist []
-  (require '[re-mote.persist.es :as es :refer (persist enrich)]))
+  (require '[re-mote.persist.es :as es :refer (persist enrich split by-hosts nested)]))

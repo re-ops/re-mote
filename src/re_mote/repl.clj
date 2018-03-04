@@ -64,7 +64,7 @@
 (defn #^{:category :security} nmap-scan
   "scan for suspicious ports in our network"
   [hs flags network]
-  (run (scan hs flags network) | (enrich "nmap-scan") | (persist)))
+  (run> (scan hs flags network) | (enrich "nmap-scan") | (split by-hosts) | (split nested) | (persist)))
 
 (defn #^{:category :security} inactive-firewall
   "find inactive firewall"

@@ -4,4 +4,4 @@
    [re-mote.repl :refer :all]))
 
 (defn bsd-cpu []
-  (cpu-persist bsd))
+  #_(cpu-persist bsd))
