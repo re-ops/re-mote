@@ -54,7 +54,7 @@
 
   (split [this {:keys [success] :as m} f]
     (let [splited (into [] (flatten (map f success)))
-          hosts (map :host splited)]
+          hosts (distinct (map :host splited))]
       [this (assoc m :success splited :hosts hosts)]))
 
   Elasticsearch
