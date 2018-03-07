@@ -68,7 +68,9 @@
      [me.raynes/fs "1.4.6"]
 
      ; profiling
-     [narkisr/clj-async-profiler "0.1.1"] ]
+     [narkisr/clj-async-profiler "0.1.1"]
+
+     ]
 
   :exclusions [org.clojure/clojure]
 
@@ -76,6 +78,7 @@
              [lein-tag "0.1.0"]
              [lein-kibit "0.1.6"]
              [mvxcvi/whidbey "1.3.1"]
+             [lein-codox "0.10.3"]
              [lein-ancient "0.6.15" :exclusions [org.clojure/clojure]]
              [lein-set-version "0.3.0"]
              [lein-cljfmt "0.5.6"]]
@@ -89,6 +92,15 @@
      :test {
         :jvm-opts ^:replace ["-Ddisable-conf=true"]
      }
+     :codox
+             {:dependencies [[org.clojure/tools.reader "1.1.0"]
+                             [codox-theme-rdash "0.1.2"]]
+              :plugins [[lein-codox "0.10.3"]]
+              :codox {:project {:name "re-mote"}
+                      :themes [:rdash]
+                      :source-paths ["src"]
+                      :source-uri "https://github.com/re-ops/re-mote/blob/master/{filepath}#L{line}"
+                      :namespaces [re-mote.repl]}}
    }
 
   :clean-targets [:target-path "out"]
@@ -109,8 +121,13 @@
      "start" ["do" "clean," "run"]
    }
 
+
+  :codox {:metadata {:doc/format :markdown} :themes [:rdash]}
+
   :target-path "target/"
+
   :signing {:gpg-key "narkisr@gmail.com"}
+
   :whidbey {
     :width 180
     :map-delimiter ""
