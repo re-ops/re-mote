@@ -26,7 +26,7 @@
   (query
     [this q]))
 
-(def es (atom (:es (form/config "re-mote" (fn [_] nil)))))
+(def es (atom (:elasticsearch (form/config "re-mote" (fn [_] nil)))))
 
 (defn index []
   (@es :index))
