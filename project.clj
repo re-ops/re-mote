@@ -69,6 +69,7 @@
 
      ; profiling
      [narkisr/clj-async-profiler "0.1.1"]
+     [com.clojure-goes-fast/clj-memory-meter "0.1.0"]
 
      ]
 
