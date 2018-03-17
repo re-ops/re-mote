@@ -166,7 +166,7 @@
   [hs {:keys [src]}]
   {:pre [src]}
   (let [dest (<< "/tmp/~(fs/base-name src)")]
-    (run (rm hs dest "-rf") | (sync- src "/tmp") | (pick successful) | (apply-module dest "") | (pretty "provision"))))
+    (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (apply-module dest "") | (pretty "provision"))))
 
 ; re-gent
 (defn #^{:category :re-gent} deploy
