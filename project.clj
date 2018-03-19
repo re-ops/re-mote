@@ -101,7 +101,7 @@
                       :themes [:rdash]
                       :source-paths ["src"]
                       :source-uri "https://github.com/re-ops/re-mote/blob/master/{filepath}#L{line}"
-                      :namespaces [re-mote.repl]}}
+              }}
    }
 
   :clean-targets [:target-path "out"]
@@ -120,6 +120,9 @@
       "with-profile" "test"  "do" "clean," "compile," "cljfmt" "check," "eastwood" "{:exclude-namespaces [re-mote.zero.worker re-mote.zero.server re-mote.zero.common re-mote.repl.spec]}"
      ]
      "start" ["do" "clean," "run"]
+     "docs" [
+         "with-profile" "codox" "do" "codox"
+     ]
    }
 
 
