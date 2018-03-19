@@ -1,5 +1,6 @@
 (ns re-mote.repl
-  "Repl utilities for re-mote"
+  "The main API for using Re-mote, it includes a list of high level workflows,
+   each composed from a series of operations and pipelines."
   (:refer-clojure :exclude  [update])
   (:require
    [me.raynes.fs :as fs]
@@ -53,21 +54,34 @@
   (setup-logging)
   (setup-stats 10 10))
 
-(defn single [h & m]
-  (Hosts. (merge {:user "upgrade"} (first m)) [h]))
+(defn single
+  "Access a single host:
+    (single \"foo\")
+    (single \"foo\" {:ssh-key \"/home/bar/.ssh/rsa_key\") ; optional map
+  "
+  [h & m]
+  (Hosts. (merge {:user "re-ops"} (first m)) [h]))
 
-(defn #^{:category :shell} listing [hs]
+(defn #^{:category :shell} listing
+  "Run a folder listing on remote hosts:
+    (listing hs)
+  "
+  [hs]
   (run (ls hs "/" "-la") | (pretty "listing")))
 
 ; security
 
 (defn #^{:category :security} nmap-scan
-  "scan for suspicious ports in our network"
+  "Run an nmap scan from the provided hosts:
+    (nmap-scan scan-node  \"-T5\" \"192.168.1.0/24\")
+  "
   [hs flags network]
   (run> (scan hs flags network) | (enrich "nmap-scan") | (split by-hosts) | (split nested) | (persist)))
 
 (defn #^{:category :security} inactive-firewall
-  "find inactive firewall"
+  "Find hosts with inactive firewall instances:
+     (inactive-firewall hs)
+  "
   [hs]
   (run> (rules hs) | (pick (fn [success failure hosts] (mapv :host (failure 1))))))
 
