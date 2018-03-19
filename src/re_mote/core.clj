@@ -1,2 +1,0 @@
-(ns re-mote.core)
-
