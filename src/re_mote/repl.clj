@@ -228,5 +228,5 @@
 (defn #^{:category :shell} listing
   "List directories under / on the remote hosts:
      (listing hs)"
-   [hs]
+  [hs]
   (run (ls hs "/" "-la") | (pretty "listing")))
