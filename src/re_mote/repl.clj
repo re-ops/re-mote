@@ -1,5 +1,7 @@
 (ns re-mote.repl
-  "Repl utilities for re-mote"
+  "Main remote workflow functions of Re-mote, it includes functions for performing a range of operations from updating packages to running an Nmap scan and collecting metrics.
+   For more info check https://re-ops.github.io/re-ops/
+  "
   (:refer-clojure :exclude  [update])
   (:require
    [me.raynes.fs :as fs]
@@ -47,122 +49,135 @@
 (refer-git)
 (refer-es-persist)
 
-(defn setup []
+(defn setup
+  "Setup Re-mote environment as a part of the Reload workflow"
+  []
   (check-entropy 200)
   (check-jce)
   (setup-logging)
   (setup-stats 10 10))
 
-(defn single [h & m]
-  (Hosts. (merge {:user "upgrade"} (first m)) [h]))
-
-(defn #^{:category :shell} listing [hs]
-  (run (ls hs "/" "-la") | (pretty "listing")))
+(defn single
+  "Create a single hosts instance"
+  [h & m]
+  (Hosts. (merge {:user "re-ops"} (first m)) [h]))
 
 ; security
 
 (defn #^{:category :security} nmap-scan
-  "scan for suspicious ports in our network"
+  "Run an Nmap scan from the provided hosts:
+     (nmap-scan hs \"-T5\" \"192.168.1.0/24\")"
   [hs flags network]
   (run> (scan hs flags network) | (enrich "nmap-scan") | (split by-hosts) | (split nested) | (persist)))
 
 (defn #^{:category :security} inactive-firewall
-  "find inactive firewall"
+  "Find hosts with inactive firewall:
+     (inactive-firewall hs)"
   [hs]
   (run> (rules hs) | (pick (fn [success failure hosts] (mapv :host (failure 1))))))
 
 ; alerting
 
 (defn #^{:category :detection} low-disk
-  "Detect machines with low disk available"
+  "Detect machines with low available disk space:
+     (low-disk (fn [p] TODO))"
   [hs f]
   (run> (du hs) | (detect f)))
 
 ; persistent stats
 
 (defn #^{:category :stats} du-persist
-  "Disk usage"
+  "Collect disk usage with persist (metrics collection):
+     (du-persist hs)"
   [hs]
   (run> (du hs) | (enrich "du") | (persist)))
 
 (defn #^{:category :stats} cpu-persist
-  "CPU usage and idle stats collection and persistence"
+  "Collect CPU and idle usage with persistence (metrics collection):
+     (cpu-persist hs)
+  "
   [hs]
   (run> (cpu hs) | (enrich "cpu") | (persist)))
 
 (defn #^{:category :stats} ram-persist
-  "RAM free and used percentage collection and persistence"
+  "Collect free and used RAM usage with persistence (metrics collection):
+     (ram-persist hs)
+  "
   [hs]
   (run> (free hs) | (enrich "free") | (persist)))
 
 (defn #^{:category :stats} net-persist
-  "KB in/out stats collection and persistence"
+  "Collect networking in/out kbps and persist (metric collection):
+     (net-persist hs)
+  "
   [hs]
   (run> (net hs) | (enrich "net") | (persist)))
 
 (defn #^{:category :stats} temperature-persist
-  "Collect CPU temperature (using lm-sensors) and publish"
+  "Collect CPU temperature (using lm-sensors) and persist (metric collection):
+     (temperature-persist hs)
+   "
   [hs]
   (run> (zsens/temperature hs) | (enrich "temperature") |  (persist)))
 
 (defn #^{:category :stats} load-persist
-  "Average load collection and persistence"
+  "Read average load and persist is (metrics collection):
+     (load-persist hs)
+   "
   [hs]
   (run> (load-avg hs) | (enrich "load") | (persist)))
 
 (defn tofrom
-  "Email configuration"
+  "Email configuration used to send emails"
   [desc]
   {:to "narkisr@gmail.com" :from "gookup@gmail.com" :subject (<< "Running ~{desc} results")})
 
 ; Packaging
 
-(defn update-
-  "update with downgrading"
+(defn- update-
+  "Update with downgrading"
   [hs]
   (run> (zpkg/update hs) | (downgrade pkg/update) | (pretty "update")))
 
-(defn upgrade-
-  "upgrade with downgrading"
+(defn- upgrade-
+  "Run upgrade with downgrading (private)"
   [hs m]
   (run> (zpkg/upgrade hs) | (downgrade pkg/upgrade)))
 
 (defn #^{:category :packaging} update
-  "Apt update on hosts"
+  "Update the package repository of the hosts:
+     (update hs)
+  "
   [hs]
   (run (update- hs) | (email (tofrom "package update")) | (enrich "update") | (persist "result")))
 
 (defn #^{:category :packaging} upgrade
-  "Apt update and upgrade on hosts, only update successful hosts gets upgraded"
+  "Run package update followed by an upgrade on hosts that were updated successfully:
+     (upgrade hs)
+    "
   [hs]
   (run (update- hs) | (pick successful) | (upgrade-) | (pretty "upgrade") | (email (tofrom "package upgrade")) | (enrich "upgrade") | (persist "result")))
 
 (defn #^{:category :packaging} install
-  "Install a package on hosts"
+  "Install a package on hosts:
+     (install hs \"openjdk8-jre\")
+  "
   [hs pkg]
   (run (zpkg/install hs pkg) | (downgrade pkg/install [pkg]) | (pretty "package install")))
 
 (defn #^{:category :packaging} pakage-fix
-  "Fix package provider"
+  "Attempt to fix a broken package provider (like apt) by applying common known fixes.
+     (package-fix hs)
+   "
   [hs]
   (run (zpkg/fix hs) | (zpkg/kill) | (pretty "package provider fix")))
 
 ; Puppet
-(defn #^{:category :puppet} copy-module
-  "Copy an opskeleton tar file"
-  [hs pkg]
-  (let [name (.getName (file pkg))]
-    (run (scp hs pkg "/tmp") | (pretty "scp") | (pick successful)
-         | (extract (<< "/tmp/~{name}") "/tmp") | (rm (<< "/tmp/~{name}") "-rf"))))
-
-(defn #^{:category :puppet} run-module
-  "Run an opskeleton sandbox"
-  [hs pkg args]
-  (let [[this _] (copy-module hs pkg)  extracted (.replace (.getName (file pkg)) ".tar.gz" "")]
-    (run (apply-module this (<< "/tmp/~{extracted}") args) | (pretty "run module") | (rm (<< "/tmp/~{extracted}") "-rf"))))
 
 (defn #^{:category :puppet} provision
-  "Sync puppet source code into the remote machine and run"
+  "Sync Puppet source code into the remote machine and apply it:
+     (provision hs {:src \"base-sandbox\"})
+  "
   [hs {:keys [src]}]
   {:pre [src]}
   (let [dest (<< "/tmp/~(fs/base-name src)")]
@@ -170,8 +185,8 @@
 
 ; re-gent
 (defn #^{:category :re-gent} deploy
-  "deploy re-gent and setup .curve remotely:
-     (deploy sandbox \"path/to/re-gent\")"
+  "Deploy re-gent and setup .curve remotely:
+     (deploy hs \"re-gent/target/re-gent\")"
   [{:keys [auth] :as hs} bin]
   (let [{:keys [user]} auth home (<< "/home/~{user}") dest (<< "~{home}/.curve")]
     (run (mkdir hs dest "-p") | (scp ".curve/server-public.key" dest) | (pretty "curve copy"))
@@ -179,29 +194,40 @@
     (run (scp hs bin home) | (pick successful) | (start-agent home) | (pretty "scp"))))
 
 (defn #^{:category :re-gent} kill
-  "kill re-gent process:
-     (kill develop)"
+  "Kill a re-gent process on all of the hosts:
+     (kill hs)"
   [hs]
   (run (kill-agent hs) | (pretty "kill agent")))
 
 (defn #^{:category :re-gent} launch
-  "start re-gent process:
-     (launch develop)
-  "
+  "Start a re-gent process on hosts:
+     (launch hs)"
   [{:keys [auth] :as hs}]
   (let [{:keys [user]} auth home (<< "/home/~{user}")]
     (run (start-agent hs home) | (pretty "launch agent"))))
 
 (defn pull
-  "update a local git repo"
+  "Pull latest git repository changes:
+     (pull hs {:repo \"re-core\" :branch \"master\" :remote \"git://github.com/re-ops/re-mote.git\"})"
   [hs {:keys [repo remote branch]}]
   (run (git/pull hs repo remote branch) | (pretty "git pull")))
 
 (defn filter-hosts
+  "Filter a sub group out of the provided hosts, the filtering function gets OS information:
+     (filter-hosts hs (fn [os] TODO ))"
   [hs f]
   (run (os-info hs) | (pick (partial results-filter f)) | (pretty "filter hosts")))
 
 ; sanity testing
 
-(defn failing [hs]
+(defn failing
+  "A workflow that always fail:
+     (failing hs)"
+  [hs]
   (run (tst/listdir hs "/") | (pick successful) | (tst/fail) | (pretty "failing")))
+
+(defn #^{:category :shell} listing
+  "List directories under / on the remote hosts:
+     (listing hs)"
+   [hs]
+  (run (ls hs "/" "-la") | (pretty "listing")))
