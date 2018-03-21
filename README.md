@@ -14,28 +14,15 @@ $ cd re-mote
 $ lein repl # or lein trampoline run -m rebel-readline.main
 [re-mote]λ: (go)
 nil
-[re-mote]λ: (listing sandbox)
+[re-mote]λ: (def hs (Hosts. {:ssh-user "re-ops" ["foo" "bar"]}))
+[re-mote]λ: (listing hs)
 
-Run summary:
+Run listing summary:
 
-   ✔ 192.168.2.28
-   ✔ 192.168.2.27
-   ✔ 192.168.2.26
+   ✔ 192.168.1.28
+   ✔ 192.168.1.27
+   ✔ 192.168.1.26
 
-```
-
-# Configure
-
-The configuration file is pretty much self explanatory:
-
-```bash
-$ cp config/re-mote.edn ~/.re-mote.edn
-```
-
-Now we can start and play (see src/re_mote/repl.clj),  we define the hosts we work with (using key authentication):
-
-```clojure
-(def sandbox (Hosts. {:user "vagrant"} ["192.168.2.28" "192.168.2.26" "192.168.2.27"]))
 ```
 
 We define pipelines (plain functions), the results of operations are threaded through:
@@ -76,7 +63,7 @@ Schedule them:
   )
 ```
 
-The expected workflow is to re-eval functions on the go, stop restart and refresh can be used for bigger changes:
+The [Reloaded](https://re-ops.github.io/re-docs/usage/#reloaded) workflow is used to re-eval functions on the go, stop restart and refresh can be used for bigger changes:
 
 ```clojure
 ; we want to stop all components
@@ -87,20 +74,7 @@ user=> (refresh)
 user=> (go)
 ```
 
-# Prerequisites
-
-* JDK 8 with JCE enabled (On Ubuntu oracle-java8-unlimited-jce-policy using PPA).
-* lein (see https://leiningen.org/).
-* rng-tools for increased entropy under Linux (Ubuntu).
-* A solid understanding of Clojure :)
-
-Optionally: 
-
-* Elasticsearch 5.6.x for persisting results and metrics
-* Grafana for viewing metrics
-* Kibana for viewing results and failures
-
-Check [re-dock](https://github.com/re-ops/re-dock) for a quick docker setup of the above.
+Follow the official [docs](https://re-ops.github.io/re-docs/) for more information on how to [install](https://re-ops.github.io/re-docs/setup/re-mote.html#intro) and [use](https://re-ops.github.io/re-docs/usage/#re-mote).
 
 # Copyright and license
 
