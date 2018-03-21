@@ -1,6 +1,7 @@
 (ns re-mote.repl.puppet
   "Remote puppet run of opsk sandboxes"
   (:require
+   [clojure.string :refer (join)]
    [re-mote.ssh.pipeline :refer (run-hosts)]
    [pallet.stevedore :refer (script)])
   (:import [re_mote.repl.base Hosts]))
@@ -21,7 +22,7 @@
     ([this path args]
      (apply-module this nil path args))
     ([this _ path args]
-     [this (run-hosts this (puppet-script path args))])))
+     [this (run-hosts this (puppet-script path (join " " args)))])))
 
 (defn refer-puppet []
   (require '[re-mote.repl.puppet :as puppet :refer (apply-module)]))

@@ -177,10 +177,10 @@
   "Sync Puppet source code into the remote machine and apply it:
      (provision hs {:src \"base-sandbox\"})
   "
-  [hs {:keys [src]}]
+  [hs {:keys [src args]}]
   {:pre [src]}
   (let [dest (<< "/tmp/~(fs/base-name src)")]
-    (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (apply-module dest "") | (pretty "provision"))))
+    (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (apply-module dest (or args "")) | (pretty "provision"))))
 
 ; re-gent
 (defn #^{:category :re-gent} deploy
