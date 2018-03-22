@@ -15,6 +15,7 @@
    [re-mote.repl.publish :refer (refer-publish)]
    [re-mote.repl.puppet :refer (refer-puppet)]
    [re-mote.repl.octo :refer (refer-octo)]
+   [re-mote.repl.restic :refer (refer-restic)]
    [re-mote.zero.stats :refer (refer-stats)]
    [re-mote.zero.security :refer (refer-security)]
    [re-mote.repl.sensors :refer (refer-sensors)]
@@ -44,6 +45,7 @@
 (refer-zfs)
 (refer-publish)
 (refer-octo)
+(refer-restic)
 (refer-regent)
 (refer-git)
 (refer-es-persist)
