@@ -16,10 +16,10 @@
   [{:keys [src dest pass id key type] :as b}]
   (let [target (<< "~{type}:~{dest}")]
     (script
-      ("export" (set! RESTIC_PASSWORD ~(escape pass)))
-      ("export" (set! B2_ACCOUNT_KEY ~(escape key)))
-      ("export" (set! B2_ACCOUNT_ID ~(escape id)))
-      ("/usr/bin/restic" "backup" ~src "-r" ~target))))
+     ("export" (set! RESTIC_PASSWORD ~(escape pass)))
+     ("export" (set! B2_ACCOUNT_KEY ~(escape key)))
+     ("export" (set! B2_ACCOUNT_ID ~(escape id)))
+     ("/usr/bin/restic" "backup" ~src "-r" ~target))))
 
 (defprotocol Restic
   (backup
@@ -28,12 +28,12 @@
 
 (extend-type Hosts
   Restic
-   (backup 
-     ([this b]
-       (backup this {} b))
-     ([this m b]
-       (println (restic-script b))
-       [this (run-hosts this (restic-script b))])))
+  (backup
+    ([this b]
+     (backup this {} b))
+    ([this m b]
+     (println (restic-script b))
+     [this (run-hosts this (restic-script b))])))
 
 (defn refer-restic []
   (require '[re-mote.repl.restic :as rst :refer (backup)]))
