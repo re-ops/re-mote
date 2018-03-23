@@ -47,7 +47,7 @@
   Restic
   (check
     ([this b]
-     (backup this {} b))
+     (check this {} b))
     ([this m b]
      [this (run-hosts this (check-script b))]))
   (backup
