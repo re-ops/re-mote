@@ -32,7 +32,6 @@
     ([this b]
      (backup this {} b))
     ([this m b]
-     (println (restic-script b))
      [this (run-hosts this (restic-script b))])))
 
 (defn refer-restic []
