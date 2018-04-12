@@ -10,6 +10,7 @@
    [taoensso.timbre :refer (refer-timbre)]
    [re-mote.repl.base :refer (refer-base)]
    [re-mote.persist.es :refer (refer-es-persist)]
+   [re-mote.repl.desktop :refer (refer-desktop)]
    [re-mote.repl.zfs :refer (refer-zfs)]
    [re-mote.repl.output :refer (refer-out)]
    [re-mote.repl.publish :refer (refer-publish)]
@@ -49,6 +50,7 @@
 (refer-regent)
 (refer-git)
 (refer-es-persist)
+(refer-desktop)
 
 (defn setup
   "Setup Re-mote environment as a part of the Reload workflow"
@@ -232,3 +234,9 @@
      (listing hs)"
   [hs]
   (run (ls hs "/" "-la") | (pretty "listing")))
+
+; desktop
+
+(defn browse-to
+  [hs url]
+  (run (browser hs url) | (pretty "opened browser")))
