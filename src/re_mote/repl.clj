@@ -222,7 +222,6 @@
   (run (os-info hs) | (pick (partial results-filter f)) | (pretty "filter hosts")))
 
 ; sanity testing
-
 (defn failing
   "A workflow that always fail:
      (failing hs)"
@@ -236,7 +235,13 @@
   (run (ls hs "/" "-la") | (pretty "listing")))
 
 ; desktop
-
 (defn browse-to
+  "Open a browser url"
   [hs url]
-  (run (browser hs url) | (pretty "opened browser")))
+  (run (browse hs url) | (pretty "opened browser")))
+
+(defn open-file
+  "Open a file using a remote browser"
+  [hs src]
+  (let [dest (<< "/tmp/~(fs/base-name src)")]
+    (run (scp hs src dest) | (browse dest) | (pretty "file opened"))))

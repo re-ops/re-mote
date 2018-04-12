@@ -9,7 +9,9 @@
   (:import [re_mote.repl.base Hosts]))
 
 (defprotocol Desktop
-  (browser [this url]))
+  (browse
+    [this url]
+    [this m url]))
 
 (defn firefox-script
   "Launch Firefox"
@@ -20,8 +22,11 @@
 
 (extend-type Hosts
   Desktop
-  (browser [this url]
-    [this (run-hosts this (firefox-script url))]))
+  (browse
+    ([this url]
+     (browse this nil url))
+    ([this _ url]
+     [this (run-hosts this (firefox-script url))])))
 
 (defn refer-desktop []
-  (require '[re-mote.repl.desktop :as dsk :refer (browser)]))
+  (require '[re-mote.repl.desktop :as dsk :refer (browse)]))
