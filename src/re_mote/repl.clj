@@ -234,9 +234,15 @@
   [hs]
   (run (ls hs "/" "-la") | (pretty "listing")))
 
+; basic tasks
+(defn copy-file
+  "Copy a local file to hosts"
+  [hs src dest]
+  (run (scp hs src dest) | (pretty "file opened")))
+
 ; desktop
 (defn browse-to
-  "Open a browser url"
+  "Open a url in a remote browser"
   [hs url]
   (run (browse hs url) | (pretty "opened browser")))
 
