@@ -4,6 +4,8 @@ Re-mote is a REPL driven environment for performing remote operations using SSH 
 
 It is a part of the [Re-ops](https://re-ops.github.io/re-ops/) project that offers a live coding environment for configuration management.
 
+Follow the official [docs](https://re-ops.github.io/re-docs/) for more information on how to [install](https://re-ops.github.io/re-docs/setup/re-mote.html#intro) and [use](https://re-ops.github.io/re-docs/usage/#re-mote).
+
 [![Build Status](https://travis-ci.org/re-ops/re-mote.png)](https://travis-ci.org/re-ops/re-mote)
 
 # Basic Usage
@@ -59,8 +61,6 @@ user=> (refresh)
 ; back into action again, no restart!
 user=> (go)
 ```
-
-Follow the official [docs](https://re-ops.github.io/re-docs/) for more information on how to [install](https://re-ops.github.io/re-docs/setup/re-mote.html#intro) and [use](https://re-ops.github.io/re-docs/usage/#re-mote).
 
 # Copyright and license
 
