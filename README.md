@@ -6,14 +6,6 @@ It is a part of the [Re-ops](https://re-ops.github.io/re-ops/) project that offe
 
 [![Build Status](https://travis-ci.org/re-ops/re-mote.png)](https://travis-ci.org/re-ops/re-mote)
 
-# Setup
-
-```clojure
-$ git clone git@github.com:re-ops/re-mote.git
-$ cd re-mote
-$ lein repl
-```
-
 # Basic Usage
 
 ![re-mote-gif](https://re-ops.github.io/re-one/gifs/re-mote.gif)
