@@ -6,24 +6,19 @@ It is a part of the [Re-ops](https://re-ops.github.io/re-ops/) project that offe
 
 [![Build Status](https://travis-ci.org/re-ops/re-mote.png)](https://travis-ci.org/re-ops/re-mote)
 
-# Get running
+# Setup
 
 ```clojure
 $ git clone git@github.com:re-ops/re-mote.git
 $ cd re-mote
-$ lein repl # or lein trampoline run -m rebel-readline.main
-[re-mote]λ: (go)
-nil
-[re-mote]λ: (def hs (Hosts. {:ssh-user "re-ops" ["foo" "bar"]}))
-[re-mote]λ: (listing hs)
-
-Run listing summary:
-
-   ✔ 192.168.1.28
-   ✔ 192.168.1.27
-   ✔ 192.168.1.26
-
+$ lein repl
 ```
+
+# Basic Usage
+
+![re-mote-gif](https://re-ops.github.io/re-one/gifs/re-mote.gif)
+
+# Overview
 
 We define pipelines (plain functions), the results of operations are threaded through:
 ```clojure
@@ -42,7 +37,6 @@ An operation is a part of a protocol extending Hosts:
 ```
 
 It returns the hosts operated upon and the result, thus enabling pipelines.
-
 
 We can persist results to Elasticsearch and view them in Kibana/Grafana:
 ```clojure
