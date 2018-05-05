@@ -2,15 +2,12 @@
   "Stats metadata etc.."
   (:require
    [com.rpl.specter :refer (transform ALL)]
-   [clojure.tools.trace :as t]
-   [re-mote.zero.functions :as fns :refer (fn-meta)]
    [taoensso.timbre :refer  (refer-timbre)]
    [re-mote.zero.pipeline :refer (run-hosts)]
-   [re-mote.zero.functions :refer (refer-zero-fns)])
+   [re-mote.zero.functions :refer (hardware operating-system)])
   (:import [re_mote.repl.base Hosts]))
 
 (refer-timbre)
-(refer-zero-fns)
 
 (defprotocol Facts
   (os-info [this])
@@ -19,9 +16,9 @@
 (extend-type Hosts
   Facts
   (os-info [this]
-    [this (run-hosts this oshi-os [])])
+    [this (run-hosts this operating-system [])])
   (hardware-info [this]
-    [this (run-hosts this oshi-hardware [])]))
+    [this (run-hosts this hardware [])]))
 
 (defn results-filter [f success fail hs]
   (let [results (apply merge (transform [ALL] (fn [{:keys [host] :as m}] {host m}) success))]

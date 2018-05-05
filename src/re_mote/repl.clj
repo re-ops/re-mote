@@ -24,6 +24,7 @@
    [re-mote.repl.re-gent :refer (refer-regent)]
    [re-share.schedule :refer (watch seconds)]
    [re-mote.zero.facts :refer (refer-facts)]
+   [re-mote.zero.process :refer (refer-process)]
    [re-mote.zero.git :refer (refer-git)]
    [re-mote.zero.test :as tst]
    [re-mote.zero.pkg :refer (refer-zero-pkg)]
@@ -34,6 +35,7 @@
 
 (refer-timbre)
 (refer-facts)
+(refer-process)
 (refer-base)
 (refer-out)
 (refer-stats)
@@ -136,7 +138,6 @@
   {:to "narkisr@gmail.com" :from "gookup@gmail.com" :subject (<< "Running ~{desc} results")})
 
 ; Packaging
-
 (defn- update-
   "Update with downgrading"
   [hs]
@@ -176,7 +177,6 @@
   (run (zpkg/fix hs) | (zpkg/kill) | (pretty "package provider fix")))
 
 ; Puppet
-
 (defn #^{:category :puppet} provision
   "Sync Puppet source code into the remote machine and apply it:
      (provision hs {:src \"base-sandbox\"})
@@ -186,7 +186,7 @@
   (let [dest (<< "/tmp/~(fs/base-name src)")]
     (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (apply-module dest (or args "")) | (pretty "provision"))))
 
-; re-gent
+; Re-gent
 (defn #^{:category :re-gent} deploy
   "Deploy re-gent and setup .curve remotely:
      (deploy hs \"re-gent/target/re-gent\")"
@@ -204,7 +204,8 @@
 
 (defn #^{:category :re-gent} launch
   "Start a re-gent process on hosts:
-     (launch hs)"
+     (launch hs)
+  "
   [{:keys [auth] :as hs}]
   (let [{:keys [user]} auth home (<< "/home/~{user}")]
     (run (start-agent hs home) | (pretty "launch agent"))))
@@ -236,12 +237,25 @@
 
 ; desktop
 (defn browse-to
-  "Open a browser url"
+  "Open a browser url:
+    (browse-to hs \"github.com\") 
+  "
   [hs url]
   (run (browse hs url) | (pretty "opened browser")))
 
 (defn open-file
-  "Open a file using a remote browser"
+  "Open a file using a remote browser:
+     (open-file hs \"/home/foo/bar.pdf\")
+   "
   [hs src]
   (let [dest (<< "/tmp/~(fs/base-name src)")]
     (run (scp hs src dest) | (browse dest) | (pretty "file opened"))))
+
+; process management
+
+(defn process-matching
+  "Find processes matching target name:
+    (process-matching hs \"ssh\"); find all ssh processes  
+  "
+  [hs target]
+  (run> (processes hs target) | (pretty "process-matching")))
