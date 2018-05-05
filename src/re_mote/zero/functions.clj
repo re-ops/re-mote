@@ -2,7 +2,7 @@
   (:require
    [taoensso.timbre :refer  (refer-timbre)]
    [cheshire.core :refer (parse-string)]
-   [re-share.oshi :refer (read-metrics os)]
+   [re-share.oshi :refer (read-metrics os get-processes)]
    [re-scan.core :refer [open-ports nmap]]
    [re-mote.zero.send :refer (send-)]
    [re-mote.log :refer (gen-uuid)]
@@ -49,11 +49,24 @@
       (throw (ex-info "not supported" {:os (os)})))))
 
 ; OSHI
-(def ^{:doc "Getting all OS information using oshi"} oshi-os
+(def ^{:doc "Get all processes"} all-processes
+  (s/fn []
+    (get-processes)))
+
+(def ^{:doc "Filter process by name"} named
+  (fn [target]
+    (s/fn [proc] (= (proc :name) target))))
+
+(def ^{:doc "Get processes by fn"} processes-by
+  (s/fn [f]
+    (let [f' (eval f)]
+      (filter f' (get-processes)))))
+
+(def ^{:doc "Getting all OS information using oshi"} operating-system
   (s/fn []
     (get-in (read-metrics) [:operatingSystem])))
 
-(def ^{:doc "Getting all Hardware information using oshi"} oshi-hardware
+(def ^{:doc "Getting all Hardware information using oshi"} hardware
   (s/fn []
     (get-in (read-metrics) [:hardware])))
 
@@ -84,13 +97,16 @@
 (def ^{:doc "A liveliness ping"} ping
   (s/fn [] :ok))
 
+; Security
 (def ^{:doc "Nmap scan"} run-scan
   (s/fn [path flags network]
     (apply merge (open-ports (nmap path flags network)))))
 
 (defn refer-zero-fns []
-  (require '[re-mote.zero.functions :as fns :refer (pkg-update pkg-upgrade pkg-fix pkg-kill pkg-install fails
-                                                               run-scan shell plus-one oshi-os oshi-hardware listdir call)]))
+  (require '[re-mote.zero.functions :as fns :refer
+             (pkg-update pkg-upgrade pkg-fix pkg-kill pkg-install fails
+                         run-scan shell plus-one operating-system hardware listdir call
+                         all-processes processes-by named)]))
 
 (defn fn-meta [f]
   (meta
@@ -108,4 +124,4 @@
     uuid))
 
 (comment
-  (clojure.pprint/pprint (map :partitions (:disks (oshi-hardware)))))
+  (processes-named "ssh"))
