@@ -22,8 +22,14 @@
 
 (s/def ::time number?)
 
-(s/def ::result
+(s/def ::shell-output
   (s/keys :opt-un [::out ::exit ::err]))
+
+(s/def ::fn-output
+  (s/* map?))
+
+(s/def ::result
+  (s/or :shell ::shell-output :fn ::fn-output))
 
 (s/def ::profile
   (s/keys
