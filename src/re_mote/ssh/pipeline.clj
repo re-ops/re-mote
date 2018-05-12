@@ -1,7 +1,7 @@
 (ns re-mote.ssh.pipeline
   (:require
    [clojure.string :refer (join)]
-   [re-mote.repl.spec :as re-spec :refer (valid?)]
+   [re-mote.spec :as re-spec :refer (valid?)]
    [clojure.core.strint :refer (<<)]
    [me.raynes.fs :as fs]
    [re-mote.ssh.transport :refer (execute upload)]
@@ -19,7 +19,7 @@
       (catch Throwable e
         {:host host :code -1 :error {:out (.getMessage e)} :uuid uuid}))))
 
-(defn- map-async
+(defn map-async
   "Map functions in seperate theads and merge the results"
   [f ms]
   (<!! (async/into [] (async/merge (map #(thread-call (bound-fn []  (f %))) ms)))))
