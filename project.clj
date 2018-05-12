@@ -118,7 +118,7 @@
   :aliases {
      "rebel" ["trampoline" "run" "-m" "rebel-readline.main"]
      "travis" [
-      "with-profile" "test"  "do" "clean," "compile," "cljfmt" "check," "eastwood" "{:exclude-namespaces [re-mote.zero.worker re-mote.zero.server re-mote.zero.common re-mote.repl.spec]}"
+      "with-profile" "test"  "do" "clean," "compile," "cljfmt" "check," "eastwood" "{:exclude-namespaces [re-mote.zero.worker re-mote.zero.server re-mote.zero.common re-mote.spec]}"
      ]
      "start" ["do" "clean," "run"]
      "docs" [
