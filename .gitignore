@@ -22,3 +22,5 @@ re-mote.log*
 re-mote.rec
 re-mote.gif
 tty.gif
+.ruby-gemset
+.ruby-version
