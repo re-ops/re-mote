@@ -15,6 +15,7 @@
    [re-mote.repl.output :refer (refer-out)]
    [re-mote.repl.publish :refer (refer-publish)]
    [re-mote.repl.puppet :refer (refer-puppet)]
+   [re-mote.repl.spec :refer (refer-spec)]
    [re-mote.repl.octo :refer (refer-octo)]
    [re-mote.repl.restic :refer (refer-restic)]
    [re-mote.zero.stats :refer (refer-stats)]
@@ -45,6 +46,7 @@
 (refer-pkg)
 (refer-zero-pkg)
 (refer-puppet)
+(refer-spec)
 (refer-zfs)
 (refer-publish)
 (refer-octo)
@@ -186,6 +188,15 @@
   (let [dest (<< "/tmp/~(fs/base-name src)")]
     (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (apply-module dest (or args "")) | (pretty "provision"))))
 
+(defn #^{:category :serverspec} spec
+  "Run spec test against hosts
+     (spec hs {:src \"base-sandbox\" :type \"minimal\"})
+  "
+  [hs src target]
+  {:pre [src]}
+  (run (spc/spec hs src target) |  (pretty "spec")))
+
+; re-gent
 ; Re-gent
 (defn #^{:category :re-gent} deploy
   "Deploy re-gent and setup .curve remotely:
