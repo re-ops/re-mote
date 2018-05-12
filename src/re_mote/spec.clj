@@ -1,4 +1,4 @@
-(ns re-mote.repl.spec
+(ns re-mote.spec
   "spec for results and pipelines outputs"
   (:require
    [puget.printer :as puget]
