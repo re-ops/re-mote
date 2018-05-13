@@ -19,9 +19,9 @@
 
 (defn serverspec [src target host]
   (try
-    (let [{:keys [exit out]} (run-spec src target host)]
+    (let [{:keys [exit out err]} (run-spec src target host)]
       (if-not (= exit 0)
-        {:host host :code exit :error {:out out}}
+        {:host host :code exit :error {:out (if-not (empty? out) out err)}}
         {:host host :code exit :result {:out out :exit exit}}))
     (catch Throwable e
       {:host host :code -1 :error {:out (.getMessage e)}})))
