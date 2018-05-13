@@ -1,5 +1,5 @@
 (ns re-mote.api.server
-  "embedded http server with a websocket for publishing"
+  "Endpoint api server"
   (:require
    [clojure.core.strint :refer  (<<)]
    [re-share.core :refer (find-port)]
