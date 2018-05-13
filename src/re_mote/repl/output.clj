@@ -14,8 +14,12 @@
     [this m title]))
 
 (defn summarize [s]
-  (let [l (.length s)]
-    (if (< l 150) s (.substring s (- l 150) l))))
+  (if s
+    (let [l (.length s)]
+      (if (< l 150)
+        s
+        (.substring s (- l 150) l)))
+    ""))
 
 (extend-type Hosts
   Report
@@ -36,12 +40,14 @@
   (pretty [this {:keys [success failure] :as m} title]
     (println "")
     (println (style (str "Running " title " summary:") :blue) "\n")
-    (doseq [{:keys [host out]} success]
-      (println " " (style "✔" :green) host (if out (summarize out) "")))
-    (doseq [[c rs] failure]
-      (doseq [{:keys [host error]} (get-logs rs)]
-        (let [{:keys [err out]} error s (if (empty? out) err out)]
-          (println " " (style "x" :red) host "-" (str c) "," (summarize s)))))
+    (when success
+      (doseq [{:keys [host out]} success]
+        (println " " (style "✔" :green) host (if out (summarize out) ""))))
+    (when failure
+      (doseq [[c rs] failure]
+        (doseq [{:keys [host error]} (get-logs rs)]
+          (let [{:keys [err out]} error s (if (empty? out) err out)]
+            (println " " (style "x" :red) host "-" (str c) "," (summarize s))))))
     (println "")
     [this m]))
 
