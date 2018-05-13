@@ -190,7 +190,7 @@
 
 (defn #^{:category :serverspec} spec
   "Run spec test against hosts
-     (spec hs {:src \"base-sandbox\" :type \"minimal\"})
+     (spec hs \"/home/foo/base-sandbox\" \"minimal\")
   "
   [hs src target]
   {:pre [src]}
