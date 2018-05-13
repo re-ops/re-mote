@@ -51,8 +51,9 @@
   (doall
    (map
     (fn [{:keys [uuid] :as m}]
-      (if-not uuid m
-              (dissoc (assoc m :out (join "\n" (get-log uuid))) :uuid))) hosts)))
+      (if-not uuid
+        m
+        (dissoc (assoc m :out (join "\n" (get-log uuid))) :uuid))) hosts)))
 
 (defn purge
   "Clearing dead non collected logs"
