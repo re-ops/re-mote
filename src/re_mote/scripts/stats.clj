@@ -23,7 +23,7 @@
   (script
    (set! R @("free" "-m"))
    (if (not (= $? 0)) ("exit" 1))
-   (pipe ((println (quoted "${R}"))) ("awk" "'NR==2 { print $2 \" \" $3 \" \" $4 }'"))))
+   (pipe ((println (quoted "${R}"))) ("awk" "'NR==2 { print $2 \" \" $3 \" \" $4  \" \" $5  \" \" $6 \" \" $7}'"))))
 
 (defn load-script []
   (script

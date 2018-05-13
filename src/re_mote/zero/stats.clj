@@ -117,7 +117,7 @@
 
   (free
     ([this]
-     (into-dec (zip this (run-hosts this shell (args free-script) timeout) :stats :free :total :used :free)))
+     (into-dec (zip this (run-hosts this shell (args free-script) timeout) :stats :free :total :used :free :shared :buff-cache :available)))
     ([this _]
      (free this)))
 
