@@ -15,6 +15,7 @@
    [re-mote.repl.output :refer (refer-out)]
    [re-mote.repl.publish :refer (refer-publish)]
    [re-mote.repl.puppet :refer (refer-puppet)]
+   [re-mote.repl.re-conf :refer (refer-reconf)]
    [re-mote.repl.spec :refer (refer-spec)]
    [re-mote.repl.octo :refer (refer-octo)]
    [re-mote.repl.restic :refer (refer-restic)]
@@ -45,6 +46,7 @@
 (refer-zero-sensors)
 (refer-pkg)
 (refer-zero-pkg)
+(refer-reconf)
 (refer-puppet)
 (refer-spec)
 (refer-zfs)
@@ -178,8 +180,17 @@
   [hs]
   (run (zpkg/fix hs) | (zpkg/kill) | (pretty "package provider fix")))
 
-; Puppet
-(defn #^{:category :puppet} provision
+; Reconf
+(defn #^{:category :reconf} provision
+  "Sync Reconf source code into the remote machine and apply it:
+     (provision hs {:src \"base-sandbox\"})
+  "
+  [hs {:keys [src args]}]
+  {:pre [src]}
+  (let [dest (<< "/tmp/~(fs/base-name src)")]
+    (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (apply-recipes dest (or args "")) | (pretty "provision"))))
+
+(defn #^{:category :puppet} puppet-run
   "Sync Puppet source code into the remote machine and apply it:
      (provision hs {:src \"base-sandbox\"})
   "
@@ -196,7 +207,6 @@
   {:pre [src]}
   (run (spc/spec hs src target) |  (pretty "spec")))
 
-; re-gent
 ; Re-gent
 (defn #^{:category :re-gent} deploy
   "Deploy re-gent and setup .curve remotely:
