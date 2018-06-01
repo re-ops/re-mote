@@ -2,6 +2,8 @@
   "Package automation"
   (:refer-clojure :exclude  [update])
   (:require
+   [re-mote.repl.base :refer (run> nohup |)]
+   [re-mote.repl.output :refer (pretty)]
    [clojure.string :refer (split join)]
    [re-mote.log :refer (get-log)]
    [re-mote.ssh.pipeline :refer (run-hosts)]
@@ -46,8 +48,15 @@
     [this (run-hosts this (script ("sudo" "killall" "apt")))])
 
   (install
-    ([this _ pkg] (install this pkg))
-    ([this pkg] [this (run-hosts this (script ("sudo" "apt" "install" ~pkg "-y")))])))
+    ([this _ pkg]
+     (install this pkg))
+    ([this pkg]
+     [this (run-hosts this (script ("sudo" "apt" "install" ~pkg "-y")))])))
+
+(defn update-mirror
+  "Update apt mirror"
+  [hs]
+  (run> (nohup hs "sudo /usr/bin/apt-mirror") | (pretty "apt-mirror updated")))
 
 (defn refer-pkg []
   (require '[re-mote.repl.pkg :as pkg]))
