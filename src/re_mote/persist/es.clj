@@ -3,6 +3,7 @@
   (:require
    re-mote.repl.base
    [formation.core :as form]
+   [re-share.es.common :refer (index get-es!)]
    [clj-time.core :as t]
    [re-mote.log :refer (gen-uuid)]
    [qbits.spandex :as s]
@@ -25,11 +26,6 @@
     [this m t])
   (query
     [this q]))
-
-(def es (atom (:elasticsearch (form/config "re-mote" (fn [_] nil)))))
-
-(defn index []
-  (@es :index))
 
 (defn stamp [t]
   (fn [m]
@@ -69,7 +65,7 @@
      (persist this m "result"))))
 
 (defn start []
-  (node/connect @es))
+  (node/connect (get-es!)))
 
 (defn stop []
   (node/stop))
