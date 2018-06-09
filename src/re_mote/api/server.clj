@@ -1,6 +1,7 @@
 (ns re-mote.api.server
   "Endpoint api server"
   (:require
+   [re-share.components.core :refer  (Lifecyle)]
    [clojure.core.strint :refer  (<<)]
    [re-share.core :refer (find-port)]
    [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
@@ -42,9 +43,17 @@
 (defn start-server [port]
   (reset! server (run-server #'app {:port port})))
 
-(defn stop  []
-  (stop-server))
+(defrecord Web []
+  Lifecyle
+  (setup [this])
+  (start [this]
+    (let [p (find-port 8080 9090)]
+      (start-server p)))
+  (stop [this]
+    (stop-server)))
 
-(defn start []
-  (let [p (find-port 8080 9090)]
-    (start-server p)))
+(defn instance
+  "Create web component"
+  []
+  (Web.))
+

@@ -32,7 +32,7 @@
 (defn init
   "Constructs the current development system."
   []
-  (alter-var-root #'system (constantly (launch/setup))))
+  (alter-var-root #'system launch/setup))
 
 (defn start
   "Starts the current development system."

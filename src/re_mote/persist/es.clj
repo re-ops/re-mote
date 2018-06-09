@@ -64,21 +64,9 @@
     ([this m]
      (persist this m "result"))))
 
-(defn start []
-  (node/connect (get-es!)))
-
-(defn stop []
-  (node/stop))
-
 (def ^:const types {:result {:properties {:timestamp {:type "date"}
                                           :host {:type "keyword"}
                                           :type {:type "keyword"}}}})
-
-(defn setup []
-  (start)
-  (when-not (exists? (index))
-    (info "Creating index" (index))
-    (create-index (index) {:mappings types})))
 
 (defn refer-es-persist []
   (require '[re-mote.persist.es :as es :refer (persist enrich split by-hosts nested)]))

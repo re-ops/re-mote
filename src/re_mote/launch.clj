@@ -1,9 +1,10 @@
 (ns re-mote.launch
   (:require
-   [re-mote.persist.es :as es]
    [re-mote.zero.cycle :as zero]
    [taoensso.timbre :refer (refer-timbre)]
    [re-mote.api.server :as web]
+   [re-share.components.core :refer (start-all stop-all setup-all)]
+   [re-share.components.elastic :as es]
    [re-mote.repl :as repl]
    [re-share.config :as conf]
    [re-share.zero.keys :as k]
@@ -11,23 +12,25 @@
 
 (refer-timbre)
 
-(defn setup []
+(defn build-components [] {:es (es/instance) :zero (zero/instance)
+                           :web (web/instance)})
+
+(defn setup [components]
   (k/create-server-keys ".curve")
-  (conf/load :re-mote (fn [_] {}))
+  (conf/load (fn [_] {}))
   (repl/setup)
-  (es/setup))
+  (setup-all components)
+  components)
 
-(defn start [_]
-  (conf/load :re-mote (fn [_] {}))
-  (es/start)
-  (web/start)
-  (zero/start))
+(defn start [components]
+  (conf/load (fn [_] {}))
+  (start-all components)
+  components)
 
-(defn stop [_]
+(defn stop [components]
   (sc/halt!)
-  (zero/stop)
-  (web/stop)
-  (es/stop))
+  (stop-all components)
+  components)
 
 (defn -main [& args])
 
