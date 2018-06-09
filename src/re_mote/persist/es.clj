@@ -57,9 +57,9 @@
   (persist
     ([this {:keys [success failure] :as m} t]
      (doseq [s success]
-       (create (index) t s))
+       (create (index :re-mote) t s))
      (doseq [fail (flatten (vals failure))]
-       (create (index) t fail))
+       (create (index :re-mote) t fail))
      [this m])
     ([this m]
      (persist this m "result"))))
