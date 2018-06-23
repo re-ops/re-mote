@@ -33,8 +33,12 @@
         (when-let [reply (:reply (process m content))]
           (send- socket address reply))
         true))
+    (catch org.zeromq.ZMQException e
+      (when (= (.getErrorCode e) 156384765)
+        (throw e)))
     (catch Exception e
-      (error-m e))))
+      (error-m e)
+      )))
 
 (defn handle-sends [socket]
   (when-let [[address content] (take-)]
