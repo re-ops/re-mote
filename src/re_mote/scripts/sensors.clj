@@ -32,7 +32,9 @@
 
 (defn sensors []
   (script
-   (pipe ("sensors -A") ("awk" "'{$1=$1};1'"))))
+   (pipe
+    (pipe ("sensors -A") ("grep" "coretemp" "-A" "1000"))
+    ("awk" "'{$1=$1};1'"))))
 
 (defn temp-script []
   (do-script
