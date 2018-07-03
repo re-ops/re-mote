@@ -68,6 +68,9 @@
   (scp
     [this src dest]
     [this m src dest])
+  (sync-2
+    [this src dest]
+    [this m src dest])
   (sync-
     [this src dest]
     [this m src dest]))
@@ -164,7 +167,11 @@
   (sync- [{:keys [auth hosts] :as this} src target]
     [this (sh-hosts this (fn [host] (safe "bash" "-c" (rsync src target host auth))))])
 
-  Tracing
+  (sync-2 [this _ src target]
+    (sync-2 this src target))
+
+  (sync-2 [{:keys [auth hosts] :as this} src target]
+    [this (run-hosts this (script ("rsync" "--delete" "-a" ~src ~target)))]) Tracing
   (ping [this target]
     [this (run-hosts this (script ("ping" "-c" 1 ~target)))]))
 
@@ -181,5 +188,5 @@
 
 (defn refer-base []
   (require '[re-mote.repl.base :as base :refer (run> run | initialize pick successful ping ls into-hosts
-                                                     exec scp extract rm nohup mkdir sync- downgrade null)]))
+                                                     exec scp extract rm nohup mkdir sync- sync-2 downgrade null)]))
 
