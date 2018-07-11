@@ -12,8 +12,6 @@
 
 (refer-timbre)
 
-(set! *warn-on-reflection* true)
-
 ; Package manager
 (def ^{:doc "update package manager"} pkg-update
   (s/fn []
