@@ -31,7 +31,7 @@
        (pipe
         (pipe
          (pipe ("ps" "ux") ("grep" "'[r]e-gent'")) ("awk" "'{print $2}'"))
-        ("xargs" "kill" "-9"))))))
+        ("xargs" "-r" "kill" "-9"))))))
 
 (defn start-script [port home level]
   (let [bin (<< "~{home}/re-gent") cmd (<< "\"~{bin} ${IP} ~{port} ~{level} &\"")]
