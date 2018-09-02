@@ -63,7 +63,7 @@
      [formation "0.2.0"]
 
      ; common utilities and shared functions
-     [re-share "0.6.10"]
+     [re-share "0.7.0"]
      [re-scan "0.1.0"]
      [me.raynes/fs "1.4.6"]
 
@@ -107,7 +107,7 @@
 
   :clean-targets [:target-path "out"]
 
-  :repositories  {"bintray"  "http://dl.bintray.com/content/narkisr/narkisr-jars"}
+  :repositories  {"bintray"  "https://dl.bintray.com/content/narkisr/narkisr-jars"}
 
   :repl-options {
     :init-ns user
