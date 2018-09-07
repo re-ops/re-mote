@@ -9,7 +9,7 @@
    [qbits.spandex :as s]
    [com.rpl.specter :refer (transform ALL MAP-VALS multi-path)]
    [re-share.es.node :as node]
-   [re-share.es.common :refer (create create-index exists?)]
+   [re-share.es.common :refer (create)]
    [taoensso.timbre :refer (refer-timbre)])
   (:import [re_mote.repl.base Hosts]))
 
@@ -62,11 +62,9 @@
        (create (index :re-mote) t fail))
      [this m])
     ([this m]
-     (persist this m "result"))))
+     (persist this m :result))))
 
-(def ^:const types {:result {:properties {:timestamp {:type "date"}
-                                          :host {:type "keyword"}
-                                          :type {:type "keyword"}}}})
+(def ^:const types {:result {:properties {:timestamp {:type "date"} :host {:type "keyword"} :type {:type "keyword"}}}})
 
 (defn refer-es-persist []
   (require '[re-mote.persist.es :as es :refer (persist enrich split by-hosts nested)]))
