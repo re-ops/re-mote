@@ -1,5 +1,6 @@
 (ns re-mote.repl.publish
   (:require
+   [re-share.config :as conf]
    [clojure.java.io :refer (file)]
    [clojure.core.strint :refer (<<)]
    [com.rpl.specter :as s :refer (transform select MAP-VALS ALL ATOM keypath srange)]
@@ -9,7 +10,6 @@
    [re-mote.zero.stats :refer (single-per-host avg-all readings)]
    [re-mote.log :refer (gen-uuid get-logs)]
    [postal.core :as p :refer (send-message)]
-   [formation.core :as form]
    [re-mote.repl.base :refer (refer-base)])
   (:import [re_mote.repl.base Hosts]))
 
@@ -17,9 +17,6 @@
 
 (defprotocol Publishing
   (email [this m e]))
-
-(def smtp
-  (memoize (fn [] (:smtp (form/config "re-mote" (fn [_] nil))))))
 
 (defn save-fails [{:keys [failure]}]
   (let [stdout (<< "/tmp/~(gen-uuid).out.txt") stderr (<< "/tmp/~(gen-uuid).err.txt")]
@@ -34,9 +31,9 @@
   (email [this m e]
     (let [body {:type "text/html" :content (template m)}
           attachment (fn [f] {:type :attachment :content (file f)})
-          files (map attachment (filter (fn [f] (.exists (file f))) (save-fails m)))]
-      (send-message (smtp)
-                    (merge e {:body (into [:alternative body] files)})))
+          files (map attachment (filter (fn [f] (.exists (file f))) (save-fails m)))
+          m (merge e {:body (into [:alternative body] files)})]
+      (send-message (conf/get! :re-mote :smtp) m))
     [this m]))
 
 (defn refer-publish []
