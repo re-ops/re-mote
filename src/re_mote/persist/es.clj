@@ -2,7 +2,6 @@
   "Persisting results into Elasticsearch"
   (:require
    re-mote.repl.base
-   [formation.core :as form]
    [re-share.es.common :refer (index get-es!)]
    [clj-time.core :as t]
    [re-mote.log :refer (gen-uuid)]
