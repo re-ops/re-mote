@@ -2,13 +2,12 @@
   "Persisting results into Elasticsearch"
   (:require
    re-mote.repl.base
-   [re-share.es.common :refer (index get-es!)]
    [clj-time.core :as t]
    [re-mote.log :refer (gen-uuid)]
    [qbits.spandex :as s]
    [com.rpl.specter :refer (transform ALL MAP-VALS multi-path)]
    [re-share.es.node :as node]
-   [re-share.es.common :refer (create)]
+   [re-share.es.common :refer (create create-index exists? index get-es!)]
    [taoensso.timbre :refer (refer-timbre)])
   (:import [re_mote.repl.base Hosts]))
 
