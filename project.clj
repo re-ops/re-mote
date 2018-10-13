@@ -63,7 +63,7 @@
      [formation "0.2.0"]
 
      ; common utilities and shared functions
-     [re-share "0.8.0"]
+     [re-share "0.8.2"]
      [re-scan "0.1.0"]
      [me.raynes/fs "1.4.6"]
 
