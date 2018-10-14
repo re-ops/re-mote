@@ -62,13 +62,9 @@
     ([this m]
      (persist this m :result))))
 
-(def ^:const types {
-      :result {
-         :properties {
-            :timestamp {:type "date" :format "epoch_millis"}
-            :host {:type "keyword"}
-            :type {:type "keyword"}
-      }}})
+(def ^:const types {:result {:properties {:timestamp {:type "date" :format "epoch_millis"}
+                                          :host {:type "keyword"}
+                                          :type {:type "keyword"}}}})
 
 (defn refer-es-persist []
   (require '[re-mote.persist.es :as es :refer (persist enrich split by-hosts nested)]))
