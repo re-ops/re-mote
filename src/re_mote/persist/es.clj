@@ -6,8 +6,8 @@
    [re-mote.log :refer (gen-uuid)]
    [qbits.spandex :as s]
    [com.rpl.specter :refer (transform ALL MAP-VALS multi-path)]
-   [re-share.es.node :as node]
-   [re-share.es.common :refer (create index get-es!)]
+   [re-share.es.common :refer (index)]
+   [zenati.core :refer (create)]
    [taoensso.timbre :refer (refer-timbre)])
   (:import [re_mote.repl.base Hosts]))
 
