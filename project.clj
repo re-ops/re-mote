@@ -1,4 +1,4 @@
-(defproject re-mote "0.8.8"
+(defproject re-mote "0.8.9"
   :description "A live remote operations environment"
   :url "https://github.com/re-ops/re-mote"
   :license  {:name "Apache License, Version 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
