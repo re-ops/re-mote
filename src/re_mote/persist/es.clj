@@ -7,7 +7,7 @@
    [qbits.spandex :as s]
    [com.rpl.specter :refer (transform ALL MAP-VALS multi-path)]
    [re-share.es.common :refer (index)]
-   [zenati.core :refer (create)]
+   [zentai.core :refer (create)]
    [taoensso.timbre :refer (refer-timbre)])
   (:import [re_mote.repl.base Hosts]))
 
