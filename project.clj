@@ -63,15 +63,13 @@
      [formation "0.2.0"]
 
      ; common utilities and shared functions
-     [re-share "0.9.5"]
+     [re-share "0.9.9"]
      [re-scan "0.1.0"]
      [me.raynes/fs "1.4.6"]
 
      ; profiling
      [narkisr/clj-async-profiler "0.1.1"]
-     [com.clojure-goes-fast/clj-memory-meter "0.1.0"]
-
-     ]
+     [com.clojure-goes-fast/clj-memory-meter "0.1.0"]]
 
   :exclusions [org.clojure/clojure]
 

@@ -6,8 +6,8 @@
    [re-mote.log :refer (gen-uuid)]
    [qbits.spandex :as s]
    [com.rpl.specter :refer (transform ALL MAP-VALS multi-path)]
-   [re-share.es.common :refer (index)]
-   [zentai.core :refer (create)]
+   [re-share.es.common :refer (day-index)]
+   [rubber.core :refer (create)]
    [taoensso.timbre :refer (refer-timbre)])
   (:import [re_mote.repl.base Hosts]))
 
@@ -55,9 +55,9 @@
   (persist
     ([this {:keys [success failure] :as m} t]
      (doseq [s success]
-       (create (index :re-mote :result) t s))
+       (create (day-index :re-mote :result) t s))
      (doseq [fail (flatten (vals failure))]
-       (create (index :re-mote :result) t fail))
+       (create (day-index :re-mote :result) t fail))
      [this m])
     ([this m]
      (persist this m :result))))
