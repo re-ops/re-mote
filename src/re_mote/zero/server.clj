@@ -37,7 +37,7 @@
 
 (defn start [ctx private]
   (future
-    (let [port (find-port 9000 9010)
+    (let [port 9000
           backend (backend-socket ctx)
           frontend (router-socket ctx private port)
           control (control-sub-socket ctx)]
