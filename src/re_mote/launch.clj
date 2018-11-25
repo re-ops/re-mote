@@ -13,7 +13,7 @@
 
 (refer-timbre)
 
-(defn build-components [] {:es (es/instance types :re-mote) :zero (zero/instance) :web (web/instance)})
+(defn build-components [] {:es (es/instance types :re-mote true) :zero (zero/instance) :web (web/instance)})
 
 (defn setup []
   (let [components (build-components)]
