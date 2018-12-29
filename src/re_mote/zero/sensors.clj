@@ -10,16 +10,18 @@
    [re-mote.scripts.sensors :refer (temp-script)])
   (:import [re_mote.repl.base Hosts]))
 
+(defn parse-line
+  [line]
+  (let [[f s] (split line #"\(")
+        corentemp #"(.*)\:\s*\+(\d*\.\d*)"
+        [dev r] (rest (re-find corentemp  f))
+        limitntemp #"(\w*)\s*\=\s*\+(\d*\.\d*)"
+        keywordize (fn [[k v]] [(keyword k) v])
+        limits (mapv (fn [l] (keywordize (rest (re-find limitntemp l)))) (split s #"\,"))]
+    {:device dev :temp r :limits (into {} limits)}))
+
 (defn parse-lines [lines]
-  (mapv
-   (fn [line]
-     (let [[f s] (split line #"\(")
-           corentemp #"(.*)\:\s*\+(\d*\.\d*)"
-           [dev r] (rest (re-find corentemp  f))
-           limitntemp #"(\w*)\s*\=\s*\+(\d*\.\d*)"
-           keywordize (fn [[k v]] [(keyword k) v])
-           limits (mapv (fn [l] (keywordize (rest (re-find limitntemp l)))) (split s #"\,"))]
-       {:device dev :temp r :limits (into {} limits)})) lines))
+  (mapv parse-line (filter (fn [line] (.contains line "Core")) lines)))
 
 (defn assoc-stats [{:keys [host result] :as m}]
   (let [sections (filter (comp empty? (partial filter empty?)) (partition-by empty? (split (result :out) #"\n")))
