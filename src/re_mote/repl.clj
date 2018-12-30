@@ -77,7 +77,13 @@
   "Scan for open ports and persist into ES:
      (ports-persist hs \"192.168.1.0/24\")"
   [hs network]
-  (run> (open-ports hs "-T5" network) | (enrich "nmap-scan") | (split by-hosts) | (split nested) | (persist)))
+  (run (open-ports hs "-T5" network) | (enrich "nmap-scan") | (split by-hosts) | (split nested) | (persist)))
+
+(defn #^{:category :security} port-scan
+  "Scan for running open ports on the network:
+     (port-scan hs \"192.168.1.0/24\")"
+  [hs network]
+  (run> (open-ports hs "-T5" network) | (pretty "ports scan")))
 
 (defn #^{:category :security} host-scan
   "Scan for running hosts on the network:
@@ -221,7 +227,7 @@
   (let [{:keys [user]} auth home (<< "/home/~{user}") dest (<< "~{home}/.curve")]
     (run (mkdir hs dest "-p") | (scp ".curve/server-public.key" dest) | (pretty "curve copy"))
     (run (kill-agent hs) | (pretty "kill agent"))
-    (run (scp hs bin home) | (pick successful) | (start-agent home) | (pretty "scp"))))
+    (run> (scp hs bin home) | (pick successful) | (start-agent home) | (pretty "scp"))))
 
 (defn #^{:category :re-gent} kill
   "Kill a re-gent process on all of the hosts:
@@ -248,6 +254,12 @@
      (filter-hosts hs (fn [os] TODO ))"
   [hs f]
   (run (os-info hs) | (pick (partial results-filter f)) | (pretty "filter hosts")))
+
+(defn host-info
+  "Hosts information using oshi:
+    (host-info hs)"
+  [hs]
+  (run> (os-info hs) | (pretty "filter hosts")))
 
 ; sanity testing
 (defn failing
