@@ -1,4 +1,4 @@
-(defproject re-mote "0.9.4"
+(defproject re-mote "0.9.5"
   :description "A live remote operations environment"
   :url "https://github.com/re-ops/re-mote"
   :license  {:name "Apache License, Version 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
@@ -64,7 +64,7 @@
 
      ; common utilities and shared functions
      [re-share "0.9.11"]
-     [re-scan "0.1.0"]
+     [re-scan "0.2.1"]
      [me.raynes/fs "1.4.6"]
 
      ; profiling

@@ -73,11 +73,17 @@
 
 ; security
 
-(defn #^{:category :security} nmap-scan
-  "Run an Nmap scan from the provided hosts:
-     (nmap-scan hs \"-T5\" \"192.168.1.0/24\")"
-  [hs flags network]
-  (run> (scan hs flags network) | (enrich "nmap-scan") | (split by-hosts) | (split nested) | (persist)))
+(defn #^{:category :security} ports-persist
+  "Scan for open ports and persist into ES:
+     (ports-persist hs \"192.168.1.0/24\")"
+  [hs network]
+  (run> (open-ports hs "-T5" network) | (enrich "nmap-scan") | (split by-hosts) | (split nested) | (persist)))
+
+(defn #^{:category :security} host-scan
+  "Scan for running hosts on the network:
+     (host-scan hs \"192.168.1.0/24\")"
+  [hs network]
+  (run> (security/hosts hs "-sP" network) | (pretty "hosts scan")))
 
 (defn #^{:category :security} inactive-firewall
   "Find hosts with inactive firewall:

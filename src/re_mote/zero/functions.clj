@@ -3,7 +3,7 @@
    [taoensso.timbre :refer  (refer-timbre)]
    [cheshire.core :refer (parse-string)]
    [re-share.oshi :refer (read-metrics os get-processes)]
-   [re-scan.core :refer [open-ports nmap]]
+   [re-scan.core :refer [into-ports into-hosts nmap]]
    [re-mote.zero.send :refer (send-)]
    [re-mote.log :refer (gen-uuid)]
    [clojure.java.shell :refer [sh]]
@@ -96,14 +96,18 @@
   (s/fn [] :ok))
 
 ; Security
-(def ^{:doc "Nmap scan"} run-scan
+(def ^{:doc "Open ports nmap scan"} scan-ports
   (s/fn [path flags network]
-    (apply merge (open-ports (nmap path flags network)))))
+    (apply merge (into-ports (nmap path flags network)))))
+
+(def ^{:doc "Host addresses nmap scan"} scan-hosts
+  (s/fn [path flags network]
+    (into-hosts (nmap path flags network))))
 
 (defn refer-zero-fns []
   (require '[re-mote.zero.functions :as fns :refer
              (pkg-update pkg-upgrade pkg-fix pkg-kill pkg-install fails
-                         run-scan shell plus-one operating-system hardware listdir call
+                         scan-hosts scan-ports shell plus-one operating-system hardware listdir call
                          all-processes processes-by named)]))
 
 (defn fn-meta [f]
