@@ -92,4 +92,4 @@
   ([hs] (swap! hosts conj hs)))
 
 (defn refer-logging []
-  (require '[re-mote.log :as log :refer (log-hosts)]))
+  (require '[re-mote.log :as log :refer (log-hosts setup-logging)]))

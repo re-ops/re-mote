@@ -1,5 +1,8 @@
 (ns user
   (:require
+   ; setup
+   [re-share.zero.keys :as k]
+   [re-share.config :as conf]
    [lucid.git :refer [git]]
    [lucid.package :as lp]
    [clojure.java.io :as io]
@@ -9,16 +12,19 @@
    [re-share.es.common :refer :all]
    [rubber.core :refer :all :exclude (call)]
    [clojure.tools.namespace.repl :refer (refresh refresh-all)]
-   [re-mote.launch :as launch]
    [re-mote.zero.stats :refer (disk-breach)]
+   ; components
+   [mount.core :as mount]
+   [re-mote.zero.cycle :refer (zero)]
+   [re-mote.persist.es :refer (elastic)]
+   [re-mote.api.server :refer (web)]
+   [re-share.schedule :as sc]
    ; zero
    [re-mote.zero.management :refer (refer-zero-manage)]
    [re-mote.zero.results :refer (pretty-result)]
    [re-mote.zero.functions :refer (refer-zero-fns)]
    [re-mote.zero.facts :refer (refer-facts)]
-   [re-mote.repl :refer :all]
-   ; profiling
-   [clj-async-profiler.core :as prof])
+   [re-mote.repl :refer :all])
   (:import
    java.io.File
    re_mote.repl.base.Hosts))
@@ -31,20 +37,15 @@
 
 (def system nil)
 
-(defn init
-  "Constructs the current development system."
-  []
-  (alter-var-root #'system (constantly (launch/setup))))
+(defn start []
+  (setup-logging)
+  (k/create-server-keys ".curve")
+  (conf/load (fn [_] {}))
+  (mount/start #'elastic #'zero))
 
-(defn start
-  "Starts the current development system."
-  []
-  (alter-var-root #'system launch/start))
-
-(defn stop
-  "Shuts down and destroys the current development system."
-  []
-  (alter-var-root #'system launch/stop))
+(defn stop []
+  (sc/halt!)
+  (mount/stop))
 
 (declare go)
 
@@ -59,7 +60,6 @@
 (defn go
   "Initializes the current development system and starts it running."
   []
-  (init)
   (start)
   (doseq [f (filter (fn [^File v] (and (.isFile v) (.endsWith (.getName v) ".clj"))) (file-seq (io/file "scripts")))]
     (load-file (.getPath f))))

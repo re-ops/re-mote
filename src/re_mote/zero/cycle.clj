@@ -10,7 +10,7 @@
    [re-share.zero.events :as evn]
    [re-mote.zero.send :as snd]
    [re-mote.zero.worker :as wrk]
-   [re-share.components.core :refer  (Lifecyle)])
+   [mount.core :as mount :refer (defstate)])
   (:import
    org.zeromq.ZMQ
    org.zeromq.ZMQ$Context))
@@ -19,35 +19,30 @@
 
 (def ctx (atom nil))
 
-(defrecord Zero []
-  Lifecyle
-  (setup [this])
+(defn start []
+  (reset! ctx (context))
+  (snd/start)
+  (srv/start @ctx ".curve/server-private.key")
+  (evn/start @ctx handle)
+  (wrk/start @ctx 4)
+  (enable-waits))
 
-  (start [this]
-    (reset! ctx (context))
-    (snd/start)
-    (srv/start @ctx ".curve/server-private.key")
-    (evn/start @ctx handle)
-    (wrk/start @ctx 4)
-    (enable-waits))
+(defn stop []
+  (stop-waits)
+  (snd/stop)
+  (when @ctx
+    (wrk/stop)
+    (srv/stop @ctx)
+    (evn/stop)
+    (future
+      (debug "terminating ctx")
+      (let [c @ctx]
+        (reset! ctx nil)
+        (.term c)))
+    (info "terminated ctx"))
+  (res/clear-results)
+  (mgmt/clear-registered))
 
-  (stop [this]
-    (stop-waits)
-    (snd/stop)
-    (when @ctx
-      (wrk/stop)
-      (srv/stop @ctx)
-      (evn/stop)
-      (future
-        (debug "terminating ctx")
-        (let [c @ctx]
-          (reset! ctx nil)
-          (.term c)))
-      (info "terminated ctx"))
-    (res/clear-results)
-    (mgmt/clear-registered)))
-
-(defn instance
-  "Create Zeromq server component"
-  []
-  (Zero.))
+(defstate zero
+  :start (start)
+  :stop (stop))

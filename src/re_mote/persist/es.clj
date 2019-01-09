@@ -6,12 +6,18 @@
    [re-mote.log :refer (gen-uuid)]
    [qbits.spandex :as s]
    [com.rpl.specter :refer (transform ALL MAP-VALS multi-path)]
-   [re-share.es.common :refer (day-index)]
+   [re-share.es.common :refer (day-index get-es!)]
    [rubber.core :refer (create)]
+   [rubber.node :as node]
+   [mount.core :as mount :refer (defstate)]
    [taoensso.timbre :refer (refer-timbre)])
   (:import [re_mote.repl.base Hosts]))
 
 (refer-timbre)
+
+(defstate elastic
+  :start (node/connect (get-es!))
+  :stop (node/stop))
 
 (defprotocol Persistence
   (split [this m f])

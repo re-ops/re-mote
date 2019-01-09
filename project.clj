@@ -67,9 +67,12 @@
      [re-scan "0.2.1"]
      [me.raynes/fs "1.4.6"]
 
-     ; profiling
-     [narkisr/clj-async-profiler "0.1.1"]
-     [com.clojure-goes-fast/clj-memory-meter "0.1.0"]]
+     ; wiring
+     [mount "0.1.13"]
+
+     ; monitoring
+     [riemann-clojure-client "0.5.0"]
+     ]
 
   :exclusions [org.clojure/clojure]
 

@@ -1,6 +1,7 @@
 (ns re-mote.zero.stats
   "General machine stats"
   (:require
+   [re-mote.repl.base]
    [re-mote.scripts.stats :refer (net-script cpu-script free-script load-script du-script)]
    [clojure.core.strint :refer (<<)]
    [clojure.string :refer (split split-lines)]
@@ -13,7 +14,7 @@
    [re-mote.zero.shell :refer (args)]
    [re-mote.zero.functions :refer (shell)]
    [re-share.schedule :refer (watch seconds)])
-  (:import [re_mote.repl.base Hosts]))
+  (:import re_mote.repl.base.Hosts))
 
 (refer-timbre)
 
