@@ -34,8 +34,7 @@
           m (merge e {:body (into [:alternative body] files)})]
       (send-message (conf/get! :re-mote :smtp) m)))
   (riemann [this {:keys [success failure]}]
-    (doseq [e success]
-      ())))
+    (println success)))
 
 (defn refer-publish []
   (require '[re-mote.repl.publish :as pub :refer (email riemann)]))
