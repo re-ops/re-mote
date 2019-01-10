@@ -7,17 +7,16 @@
      [org.clojure/core.incubator "0.1.4"]
      [me.raynes/conch "0.8.0"]
      [org.clojure/core.async "0.3.443"]
-     [com.rpl/specter "1.1.0"]
+     [com.rpl/specter "1.1.2"]
      [org.clojure/core.match "0.3.0-alpha4"]
 
      ; persistency
-     [cc.qbits/spandex "0.5.5" :exclusions [org.clojure/clojure]]
      [org.apache.httpcomponents/httpclient "4.5.2"]
 
      ; pretty output
-     [fipp "0.6.12"]
+     [fipp "0.6.14"]
      [narkisr/clansi "1.2.0"]
-     [mvxcvi/puget "1.0.2"]
+     [mvxcvi/puget "1.1.0"]
 
      ; logging
      [com.taoensso/timbre "4.10.0"]
@@ -27,7 +26,7 @@
 
      ; repl
      [com.palletops/stevedore "0.8.0-beta.7"]
-     [io.aviso/pretty "0.1.34"]
+     [io.aviso/pretty "0.1.36"]
      [im.chit/lucid.package "1.3.13"]
      [com.bhauman/rebel-readline "0.1.1"]
 
@@ -37,38 +36,38 @@
 
      ; serialization
      [serializable-fn "1.1.4"]
-     [org.clojure/data.codec "0.1.0"]
-     [com.taoensso/nippy "2.13.0"]
-     [cheshire "5.8.0"]
+     [org.clojure/data.codec "0.1.1"]
+     [com.taoensso/nippy "2.14.0"]
+     [cheshire "5.8.1"]
 
      ; remote execution
-     [com.hierynomus/sshj "0.23.0" :exclusions [org.slf4j/slf4j-api]]
-     [org.zeromq/jeromq "0.4.2"]
+     [com.hierynomus/sshj "0.26.0" :exclusions [org.slf4j/slf4j-api]]
+     [org.zeromq/jeromq "0.4.3"]
 
      ; model
-     [clj-time/clj-time "0.14.2"]
+     [clj-time/clj-time "0.15.1"]
      [im.chit/hara.data.map "2.5.10"]
 
      ; API
-     [compojure "1.6.0"]
-     [http-kit "2.2.0" :exclusions [ring/ring-jetty-adapter]]
-     [ring "1.6.3"]
-     [ring/ring-defaults "0.3.1"]
+     [compojure "1.6.1"]
+     [http-kit "2.3.0" :exclusions [ring/ring-jetty-adapter]]
+     [ring "1.7.1"]
+     [ring/ring-defaults "0.3.2"]
      [ring/ring-json  "0.4.0"]
 
      ; email
-     [com.draines/postal "2.0.2"]
+     [com.draines/postal "2.0.3"]
 
      ; configuration
      [formation "0.2.0"]
 
      ; common utilities and shared functions
-     [re-share "0.9.11"]
+     [re-share "0.9.12"]
      [re-scan "0.2.1"]
      [me.raynes/fs "1.4.6"]
 
      ; wiring
-     [mount "0.1.13"]
+     [mount "0.1.15"]
 
      ; monitoring
      [riemann-clojure-client "0.5.0"]
@@ -76,7 +75,7 @@
 
   :exclusions [org.clojure/clojure]
 
-  :plugins  [[jonase/eastwood "0.2.7"]
+  :plugins  [[jonase/eastwood "0.3.3"]
              [lein-tag "0.1.0"]
              [lein-kibit "0.1.6"]
              [mvxcvi/whidbey "1.3.1"]
@@ -95,7 +94,7 @@
         :jvm-opts ^:replace ["-Ddisable-conf=true"]
      }
      :codox {
-       :dependencies [[org.clojure/tools.reader "1.1.0"]
+       :dependencies [[org.clojure/tools.reader "1.3.2"]
                       [codox-theme-rdash "0.1.2"]]
        :plugins [[lein-codox "0.10.3"]]
        :codox {:project {:name "re-mote"}
@@ -117,11 +116,9 @@
    }
 
   :aliases {
-     "rebel" ["trampoline" "run" "-m" "rebel-readline.main"]
      "travis" [
-      "with-profile" "test"  "do" "clean," "compile," "cljfmt" "check," "eastwood" "{:exclude-namespaces [re-mote.zero.worker re-mote.zero.server re-mote.zero.common re-mote.spec]}"
+      "with-profile" "test"  "do" "clean," "compile," "cljfmt" "check," "eastwood" "{:exclude-namespaces [re-mote.zero.worker re-mote.zero.server re-mote.zero.common re-mote.spec] :exclude-linters [:redefd-vars]}"
      ]
-     "start" ["do" "clean," "run"]
      "docs" [
          "with-profile" "codox" "do" "codox"
      ]
