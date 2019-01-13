@@ -16,8 +16,7 @@
    ; components
    [mount.core :as mount]
    [re-mote.zero.cycle :refer (zero)]
-   [re-mote.persist.es :refer (elastic)]
-   [re-mote.api.server :refer (web)]
+   [re-mote.persist.es :as es :refer (elastic)]
    [re-share.schedule :as sc]
    ; zero
    [re-mote.zero.management :refer (refer-zero-manage)]
@@ -41,7 +40,8 @@
   (setup-logging)
   (k/create-server-keys ".curve")
   (conf/load (fn [_] {}))
-  (mount/start #'elastic #'zero))
+  (mount/start #'elastic #'zero)
+  (es/initialize))
 
 (defn stop []
   (sc/halt!)

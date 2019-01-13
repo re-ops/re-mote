@@ -6,7 +6,7 @@
    [re-mote.log :refer (gen-uuid)]
    [qbits.spandex :as s]
    [com.rpl.specter :refer (transform ALL MAP-VALS multi-path)]
-   [re-share.es.common :refer (day-index get-es!)]
+   [re-share.es.common :as es :refer (day-index get-es!)]
    [rubber.core :refer (create)]
    [rubber.node :as node]
    [mount.core :as mount :refer (defstate)]
@@ -71,6 +71,11 @@
 (def ^:const types {:result {:properties {:timestamp {:type "date" :format "epoch_millis"}
                                           :host {:type "keyword"}
                                           :type {:type "keyword"}}}})
+
+(defn initialize
+  "setup Elasticsearch types and mappings for re-mote"
+  []
+  (es/initialize :re-mote types true))
 
 (defn refer-es-persist []
   (require '[re-mote.persist.es :as es :refer (persist enrich split by-hosts nested)]))
