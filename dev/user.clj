@@ -34,8 +34,6 @@
 (refer-share-logging)
 (refer-zero-fns)
 
-(def system nil)
-
 (defn start []
   (setup-logging)
   (k/create-server-keys ".curve")
@@ -58,7 +56,6 @@
   ctx)
 
 (defn go
-  "Initializes the current development system and starts it running."
   []
   (start)
   (doseq [f (filter (fn [^File v] (and (.isFile v) (.endsWith (.getName v) ".clj"))) (file-seq (io/file "scripts")))]
