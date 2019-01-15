@@ -7,7 +7,6 @@
    [clojure.repl :refer :all]
    [re-mote.log :refer (refer-logging)]
    [re-share.log :refer (refer-share-logging)]
-   [re-share.es.common :refer :all]
    [rubber.core :refer :all :exclude (call)]
    [clojure.tools.namespace.repl :refer (refresh refresh-all)]
    [re-mote.zero.stats :refer (disk-breach)]
