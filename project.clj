@@ -1,9 +1,9 @@
-(defproject re-mote "0.10.0"
+(defproject re-mote "0.10.1"
   :description "A live remote operations environment"
   :url "https://github.com/re-ops/re-mote"
   :license  {:name "Apache License, Version 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
   :dependencies [
-     [org.clojure/clojure "1.9.0"]
+     [org.clojure/clojure "1.10.0"]
      [org.clojure/core.incubator "0.1.4"]
      [me.raynes/conch "0.8.0"]
      [org.clojure/core.async "0.3.443"]
@@ -27,12 +27,7 @@
      ; repl
      [com.palletops/stevedore "0.8.0-beta.7"]
      [io.aviso/pretty "0.1.36"]
-     [im.chit/lucid.package "1.3.13"]
      [com.bhauman/rebel-readline "0.1.1"]
-
-     ; git repl
-     [im.chit/lucid.git "1.3.13"]
-     [org.eclipse.jgit "4.8.0.201706111038-r"]
 
      ; serialization
      [serializable-fn "1.1.4"]

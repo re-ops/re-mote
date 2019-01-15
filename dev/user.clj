@@ -3,8 +3,6 @@
    ; setup
    [re-share.zero.keys :as k]
    [re-share.config :as conf]
-   [lucid.git :refer [git]]
-   [lucid.package :as lp]
    [clojure.java.io :as io]
    [clojure.repl :refer :all]
    [re-mote.log :refer (refer-logging)]
