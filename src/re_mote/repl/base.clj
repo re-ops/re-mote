@@ -8,6 +8,7 @@
    [taoensso.timbre :refer (refer-timbre)]
    [hara.data.map :refer (dissoc-in)]
    [re-mote.ssh.pipeline :refer (run-hosts upload-hosts)]
+   [re-mote.spec :refer (pipeline!)]
    [pallet.stevedore.bash]
    [pallet.stevedore :refer (script)]))
 
@@ -24,8 +25,8 @@
 
 (defmacro | [source fun & funs]
   (let [f (first fun) args (rest fun)]
-    `(let [[this# res#] ~source]
-       (~f this# res# ~@args))))
+    `(let [[this# res#] (re-mote.spec/pipeline! ~source)]
+       (re-mote.spec/pipeline! (~f this# res# ~@args)))))
 
 (defmacro run>
   "Run and return last function pipe output"

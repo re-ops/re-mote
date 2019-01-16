@@ -1,6 +1,7 @@
 (ns re-mote.spec
   "spec for results and pipelines outputs"
   (:require
+   [clojure.core.strint :refer (<<)]
    [puget.printer :as puget]
    [taoensso.timbre :refer  (refer-timbre)]
    [clojure.spec.alpha :as s]))
@@ -83,6 +84,14 @@
       (info "spec failed:" e)
       (puget/cprint e))
     true))
+
+(defn pipeline!
+  "assert pipeline function output"
+  [v]
+  (if-not (s/valid? ::pipeline v)
+    (let [exp (s/explain-data ::pipeline v)]
+      (throw (ex-info (<< "function output is not valid ~{exp}") {:explain exp})))
+    v))
 
 (comment
   (def ok

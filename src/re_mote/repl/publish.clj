@@ -31,8 +31,8 @@
     (let [body {:type "text/html" :content (template m)}
           attachment (fn [f] {:type :attachment :content (file f)})
           files (map attachment (filter (fn [f] (.exists (file f))) (save-fails m)))
-          m (merge e {:body (into [:alternative body] files)})]
-      (send-message (conf/get! :re-mote :smtp) m)
+          message (merge e {:body (into [:alternative body] files)})]
+      (send-message (conf/get! :re-mote :smtp) message)
       [this m]))
   (riemann [this {:keys [success failure] :as m}]
     [this m]))
