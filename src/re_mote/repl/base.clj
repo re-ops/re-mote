@@ -115,7 +115,7 @@
     (let [hs (f success failure hosts)]
       (if (empty? hs)
         (throw (ex-info "no succesful hosts found" m))
-        [(Hosts. auth hs) {}])))
+        [(Hosts. auth hs) m])))
 
   (downgrade [this f]
     [this {}])
