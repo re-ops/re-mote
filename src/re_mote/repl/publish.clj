@@ -32,9 +32,10 @@
           attachment (fn [f] {:type :attachment :content (file f)})
           files (map attachment (filter (fn [f] (.exists (file f))) (save-fails m)))
           m (merge e {:body (into [:alternative body] files)})]
-      (send-message (conf/get! :re-mote :smtp) m)))
-  (riemann [this {:keys [success failure]}]
-    (println success)))
+      (send-message (conf/get! :re-mote :smtp) m)
+      [this m]))
+  (riemann [this {:keys [success failure] :as m}]
+    [this m]))
 
 (defn refer-publish []
   (require '[re-mote.repl.publish :as pub :refer (email riemann)]))
