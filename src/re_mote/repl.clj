@@ -73,25 +73,25 @@
 
 ; security
 
-(defn #^{:category :security} ports-persist
+(defn ^{:category :security} ports-persist
   "Scan for open ports and persist into ES:
      (ports-persist hs \"192.168.1.0/24\")"
   [hs network]
   (run (open-ports hs "-T5" network) | (enrich "nmap-scan") | (split by-hosts) | (split nested) | (persist)))
 
-(defn #^{:category :security} port-scan
+(defn ^{:category :security} port-scan
   "Scan for running open ports on the network:
      (port-scan hs \"192.168.1.0/24\")"
   [hs network]
   (run> (open-ports hs "-T5" network) | (pretty "ports scan")))
 
-(defn #^{:category :security} host-scan
+(defn ^{:category :security} host-scan
   "Scan for running hosts on the network:
      (host-scan hs \"192.168.1.0/24\")"
   [hs network]
   (run> (security/hosts hs "-sP" network) | (pretty "hosts scan")))
 
-(defn #^{:category :security} inactive-firewall
+(defn ^{:category :security} inactive-firewall
   "Find hosts with inactive firewall:
      (inactive-firewall hs)"
   [hs]
@@ -99,7 +99,7 @@
 
 ; alerting
 
-(defn #^{:category :detection} low-disk
+(defn ^{:category :detection} low-disk
   "Detect machines with low available disk space:
      (low-disk (fn [p] TODO))"
   [hs f]
@@ -107,41 +107,41 @@
 
 ; persistent stats
 
-(defn #^{:category :stats} du-persist
+(defn ^{:category :stats} du-persist
   "Collect disk usage with persist (metrics collection):
      (du-persist hs)"
   [hs]
   (run> (du hs) | (enrich "du") | (persist)))
 
-(defn #^{:category :stats} cpu-persist
+(defn ^{:category :stats} cpu-persist
   "Collect CPU and idle usage with persistence (metrics collection):
      (cpu-persist hs)
   "
   [hs]
-  (run> (cpu hs) | (enrich "cpu") | (persist)))
+  (run> (cpu hs) | (enrich "cpu") | (persist) | (riemann)))
 
-(defn #^{:category :stats} ram-persist
+(defn ^{:category :stats} ram-persist
   "Collect free and used RAM usage with persistence (metrics collection):
      (ram-persist hs)
   "
   [hs]
   (run> (free hs) | (enrich "free") | (persist)))
 
-(defn #^{:category :stats} net-persist
+(defn ^{:category :stats} net-persist
   "Collect networking in/out kbps and persist (metric collection):
      (net-persist hs)
   "
   [hs]
   (run> (net hs) | (enrich "net") | (persist)))
 
-(defn #^{:category :stats} temperature-persist
+(defn ^{:category :stats} temperature-persist
   "Collect CPU temperature (using lm-sensors) and persist (metric collection):
      (temperature-persist hs)
    "
   [hs]
   (run> (zsens/temperature hs) | (enrich "temperature") |  (persist)))
 
-(defn #^{:category :stats} load-persist
+(defn ^{:category :stats} load-persist
   "Read average load and persist is (metrics collection):
      (load-persist hs)
    "
@@ -164,28 +164,28 @@
   [hs m]
   (run> (zpkg/upgrade hs) | (downgrade pkg/upgrade)))
 
-(defn #^{:category :packaging} update
+(defn ^{:category :packaging} update
   "Update the package repository of the hosts:
      (update hs)
   "
   [hs]
   (run (update- hs) | (email (tofrom "package update")) | (enrich "update") | (persist)))
 
-(defn #^{:category :packaging} upgrade
+(defn ^{:category :packaging} upgrade
   "Run package update followed by an upgrade on hosts that were updated successfully:
      (upgrade hs)
     "
   [hs]
   (run (update- hs) | (pick successful) | (upgrade-) | (pretty "upgrade") | (email (tofrom "package upgrade")) | (enrich "upgrade") | (persist)))
 
-(defn #^{:category :packaging} install
+(defn ^{:category :packaging} install
   "Install a package on hosts:
      (install hs \"openjdk8-jre\")
   "
   [hs pkg]
   (run (zpkg/install hs pkg) | (downgrade pkg/install [pkg]) | (pretty "package install")))
 
-(defn #^{:category :packaging} pakage-fix
+(defn ^{:category :packaging} pakage-fix
   "Attempt to fix a broken package provider (like apt) by applying common known fixes.
      (package-fix hs)
    "
@@ -193,7 +193,7 @@
   (run (zpkg/fix hs) | (zpkg/kill) | (pretty "package provider fix")))
 
 ; Reconf
-(defn #^{:category :reconf} provision
+(defn ^{:category :reconf} provision
   "Sync Reconf source code into the remote machine and apply it:
      (provision hs {:src \"base-sandbox\"})
   "
@@ -202,7 +202,7 @@
   (let [dest (<< "/tmp/~(fs/base-name src)")]
     (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (apply-recipes dest (or args "")) | (pretty "provision"))))
 
-(defn #^{:category :puppet} puppet-run
+(defn ^{:category :puppet} puppet-run
   "Sync Puppet source code into the remote machine and apply it:
      (provision hs {:src \"base-sandbox\"})
   "
@@ -211,7 +211,7 @@
   (let [dest (<< "/tmp/~(fs/base-name src)")]
     (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (apply-module dest (or args "")) | (pretty "provision"))))
 
-(defn #^{:category :serverspec} spec
+(defn ^{:category :serverspec} spec
   "Run spec test against hosts
      (spec hs \"/home/foo/base-sandbox\" \"minimal\")
   "
@@ -220,7 +220,7 @@
   (run (spc/spec hs src target) |  (pretty "spec")))
 
 ; Re-gent
-(defn #^{:category :re-gent} deploy
+(defn ^{:category :re-gent} deploy
   "Deploy re-gent and setup .curve remotely:
      (deploy hs \"re-gent/target/re-gent\")"
   [{:keys [auth] :as hs} bin]
@@ -229,13 +229,13 @@
     (run (kill-agent hs) | (pretty "kill agent"))
     (run> (scp hs bin home) | (pick successful) | (start-agent home) | (pretty "scp"))))
 
-(defn #^{:category :re-gent} kill
+(defn ^{:category :re-gent} kill
   "Kill a re-gent process on all of the hosts:
      (kill hs)"
   [hs]
   (run (kill-agent hs) | (pretty "kill agent")))
 
-(defn #^{:category :re-gent} launch
+(defn ^{:category :re-gent} launch
   "Start a re-gent process on hosts:
      (launch hs)
   "
@@ -268,7 +268,7 @@
   [hs]
   (run (tst/listdir hs "/") | (pick successful) | (tst/fail) | (pretty "failing")))
 
-(defn #^{:category :shell} listing
+(defn ^{:category :shell} listing
   "List directories under / on the remote hosts:
      (listing hs)"
   [hs]
