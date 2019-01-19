@@ -36,7 +36,7 @@
       (send-message (conf/get! :re-mote :smtp) message)
       [this m]))
 
-  (riemann [this {:keys [success failure] :as m} f]
+  (riemann [this {:keys [success failure] :as m}]
     (doseq [e success]
       (send-event (assoc e :tags ["success"])))
     (doseq [[code es] failure]
