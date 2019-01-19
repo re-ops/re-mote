@@ -18,13 +18,13 @@
      (merge {:service k :time timestamp :metric v}
             (select-keys m #{:tags :code :type :host}))) (stats type)))
 
-(defmethod into-events
+(defmulti into-events
   (fn [{:keys [type]}] (keyword type)))
 
-(defmulti into-events :cpu [m]
+(defmethod into-events :cpu [m]
   (stat-events m))
 
-(defmulti into-events :default [m] m)
+(defmethod into-events :default [m] m)
 
 (defn send-event [e]
   (r/send-event riemann e))
