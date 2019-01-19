@@ -15,22 +15,28 @@
 (defn stat-events [{:keys [type stats timestamp] :as m}]
   (map
    (fn [[k v]]
-     (merge {:service k :time timestamp :metric v}
-            (select-keys m #{:tags :code :type :host}))) (stats type)))
+     (merge {:service (name k) :time timestamp :metric v}
+            (select-keys m #{:tags :code :type :host}))) (stats (keyword type))))
 
 (defmulti into-events
   (fn [{:keys [type]}] (keyword type)))
 
-(defmethod into-events :cpu [m]
+(defmethod into-events :cpu cpu-events [m]
   (stat-events m))
 
-(defmethod into-events :ram [m]
+(defmethod into-events :load load-events [m]
   (stat-events m))
 
-(defmethod into-events :net [m]
+(defmethod into-events :temperature tmp-events [m]
   (stat-events m))
 
-(defmethod into-events :default [m] m)
+(defmethod into-events :free free-events [m]
+  (stat-events m))
+
+(defmethod into-events :net network-events [m]
+  (stat-events m))
+
+(defmethod into-events :default [m] [m])
 
 (defn send-event [e]
   (r/send-event riemann e))
