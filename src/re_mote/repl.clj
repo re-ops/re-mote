@@ -125,28 +125,28 @@
      (ram-persist hs)
   "
   [hs]
-  (run> (free hs) | (enrich "free") | (persist)))
+  (run> (free hs) | (enrich "free") | (persist) | (riemann)))
 
 (defn ^{:category :stats} net-persist
   "Collect networking in/out kbps and persist (metric collection):
      (net-persist hs)
   "
   [hs]
-  (run> (net hs) | (enrich "net") | (persist)))
+  (run> (net hs) | (enrich "net") | (persist) | (riemann)))
 
 (defn ^{:category :stats} temperature-persist
   "Collect CPU temperature (using lm-sensors) and persist (metric collection):
      (temperature-persist hs)
    "
   [hs]
-  (run> (zsens/temperature hs) | (enrich "temperature") |  (persist)))
+  (run> (zsens/temperature hs) | (enrich "temperature") | (persist) | (riemann)))
 
 (defn ^{:category :stats} load-persist
   "Read average load and persist is (metrics collection):
      (load-persist hs)
    "
   [hs]
-  (run> (load-avg hs) | (enrich "load") | (persist)))
+  (run> (load-avg hs) | (enrich "load") | (persist) | (riemann)))
 
 (defn tofrom
   "Email configuration used to send emails"
