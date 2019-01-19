@@ -14,7 +14,7 @@
    [mount.core :as mount]
    [re-mote.zero.cycle :refer (zero)]
    [re-mote.persist.es :as es :refer (elastic)]
-   [re-mote.publish.riemann :refer (riemann)]
+   [re-mote.publish.riemann :as r]
    [re-share.schedule :as sc]
    ; zero
    [re-mote.zero.management :refer (refer-zero-manage)]
@@ -36,7 +36,7 @@
   (setup-logging)
   (k/create-server-keys ".curve")
   (conf/load (fn [_] {}))
-  (mount/start #'elastic #'zero #'riemann)
+  (mount/start #'elastic #'zero #'r/riemann)
   (es/initialize))
 
 (defn stop []
