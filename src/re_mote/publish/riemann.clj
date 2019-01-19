@@ -24,6 +24,12 @@
 (defmethod into-events :cpu [m]
   (stat-events m))
 
+(defmethod into-events :ram [m]
+  (stat-events m))
+
+(defmethod into-events :net [m]
+  (stat-events m))
+
 (defmethod into-events :default [m] m)
 
 (defn send-event [e]
