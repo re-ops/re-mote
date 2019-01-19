@@ -3,7 +3,7 @@
    ; publishing
    [postal.core :as p :refer (send-message)]
    [re-mote.publish.email :refer (template)]
-   [re-mote.publish.riemann :refer (send-event)]
+   [re-mote.publish.riemann :refer (send-event into-events)]
    [re-share.config :as conf]
    [clojure.java.io :refer (file)]
    [clojure.core.strint :refer (<<)]
@@ -37,8 +37,9 @@
       [this m]))
 
   (riemann [this {:keys [success failure] :as m}]
-    (doseq [e success]
-      (send-event (assoc e :tags ["success"])))
+    (doseq [v success]
+      (doseq [e (into-events v)]
+        (send-event (assoc e :tags ["success"]))))
     (doseq [[code es] failure]
       (doseq [e es]
         (send-event (merge e {:tags ["failure"] :code code}))))
