@@ -39,4 +39,4 @@
 (defmethod into-events :default [m] [m])
 
 (defn send-event [e]
-  (r/send-event riemann e))
+  (-> riemann (r/send-event e) (deref 10000 ::timeout)))
