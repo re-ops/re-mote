@@ -27,7 +27,6 @@
      ; repl
      [com.palletops/stevedore "0.8.0-beta.7"]
      [io.aviso/pretty "0.1.36"]
-     [com.bhauman/rebel-readline "0.1.1"]
 
      ; serialization
      [serializable-fn "1.1.4"]
