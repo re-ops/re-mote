@@ -23,12 +23,15 @@
 (def default-user "root")
 (def default-port 22)
 
-(def ^:dynamic timeout (* 1000 60 10))
+(def ^:dynamic operation-timeout (* 1000 60 10))
+
+(def ^:dynamic connection-timeout (* 1000 2))
 
 (defn sshj-client []
   (doto (SSHClient.)
     (.addHostKeyVerifier (PromiscuousVerifier.))
-    (.setTimeout timeout)))
+    (.setConnectTimeout connection-timeout)
+    (.setTimeout operation-timeout)))
 
 (defn ssh-strap [{:keys [host ssh-port ssh-key user]}]
   (doto (sshj-client)
