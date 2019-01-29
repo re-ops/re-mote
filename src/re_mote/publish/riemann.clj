@@ -1,6 +1,7 @@
 (ns re-mote.publish.riemann
   "Riemann publish metrics"
   (:require
+   [clojure.core.strint :refer  (<<)]
    [re-share.config :as conf]
    [clj-time.core :refer (now)]
    [clj-time.coerce :as c]
@@ -15,8 +16,8 @@
 (defn stat-events [{:keys [type stats timestamp] :as m}]
   (map
    (fn [[k v]]
-     (merge {:service (name k) :time timestamp :metric v}
-            (select-keys m #{:tags :code :type :host}))) (stats (keyword type))))
+     (merge {:service (<< "~{type}/~(name k)") :time timestamp :metric v}
+            (select-keys m #{:tags :code :host}))) (stats (keyword type))))
 
 (defmulti into-events
   (fn [{:keys [type]}] (keyword type)))
