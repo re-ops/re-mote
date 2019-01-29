@@ -12,6 +12,7 @@
    [re-mote.persist.es :refer (refer-es-persist)]
    [re-mote.repl.desktop :refer (refer-desktop)]
    [re-mote.repl.zfs :refer (refer-zfs)]
+   [re-mote.repl.stress :refer (refer-stress)]
    [re-mote.repl.output :refer (refer-out)]
    [re-mote.repl.publish :refer (refer-publish)]
    [re-mote.repl.puppet :refer (refer-puppet)]
@@ -57,6 +58,7 @@
 (refer-git)
 (refer-es-persist)
 (refer-desktop)
+(refer-stress)
 
 (defn setup
   "Setup Re-mote environment as a part of the Reload workflow"
