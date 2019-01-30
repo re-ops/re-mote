@@ -257,11 +257,17 @@
   [hs f]
   (run (os-info hs) | (pick (partial results-filter f)) | (pretty "filter hosts")))
 
-(defn host-info
+(defn host-os-info
   "Hosts information using oshi:
     (host-info hs)"
   [hs]
   (run> (os-info hs) | (pretty "filter hosts")))
+
+(defn host-hardware-info
+  "Hosts information using oshi:
+    (host-info hs)"
+  [hs]
+  (run> (hardware-info hs) | (pretty "filter hosts")))
 
 ; sanity testing
 (defn failing
