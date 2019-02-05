@@ -19,7 +19,7 @@
 (defn stat-events [{:keys [type stats timestamp] :as m}]
   (map
    (fn [[k v]]
-     (merge {:service (<< "~{type}/~(name k)") :time timestamp :metric v}
+     (merge {:ttl 60 :service (<< "~{type}/~(name k)") :time timestamp :metric v}
             (select-keys m #{:tags :code :host}))) (stats (keyword type))))
 
 (defmulti into-events
@@ -28,8 +28,10 @@
 (defmethod into-events :cpu cpu-events [m]
   (stat-events m))
 
-(defmethod into-events :load load-events [m]
-  (stat-events m))
+(defmethod into-events :load load-events [{:keys [type stats timestamp] :as m}]
+  (let [cores (select-keys (stats (keyword type)) #{:cores})]
+    (map
+     (fn [e] (merge e cores)) (stat-events m))))
 
 (defmethod into-events :temperature tmp-events [m]
   (stat-events m))
