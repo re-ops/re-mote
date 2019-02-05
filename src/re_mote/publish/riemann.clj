@@ -1,6 +1,7 @@
 (ns re-mote.publish.riemann
   "Riemann publish metrics"
   (:require
+   [taoensso.timbre :refer  (refer-timbre)]
    [clojure.core.strint :refer  (<<)]
    [re-share.config :as conf]
    [clj-time.core :refer (now)]
@@ -8,6 +9,8 @@
    [riemann.client :as r]
    [clojure.set :refer (rename-keys)]
    [mount.core :as mount :refer (defstate)]))
+
+(refer-timbre)
 
 (defstate riemann
   :start (r/tcp-client (conf/get! :riemann))
@@ -40,4 +43,7 @@
 (defmethod into-events :default [m] [m])
 
 (defn send-event [e]
-  (-> riemann (r/send-event e) (deref 10000 ::timeout)))
+  (try
+    (-> riemann (r/send-event e) (deref 10000 ::timeout))
+    (catch java.io.IOException e
+      (error "publish to riemann failed"))))
