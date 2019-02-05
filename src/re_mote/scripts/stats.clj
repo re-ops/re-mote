@@ -27,7 +27,9 @@
 
 (defn load-script []
   (script
-   (pipe ("uptime") ("awk" "-F" "'[, ]*'" "'NR==1 { print $(NF-2) \" \" $(NF-1) \" \" $(NF)}'"))))
+   (set! CORES @("nproc" "--all"))
+   (set! LOADS @(pipe ("uptime") ("awk" "-F" "'[, ]*'" "'NR==1 { print $(NF-2) \" \" $(NF-1) \" \" $(NF)}'")))
+   ("echo" "$LOADS $CORES")))
 
 (defn du-script []
   (script
