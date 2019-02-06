@@ -8,6 +8,7 @@
    [clj-time.coerce :as c]
    [riemann.client :as r]
    [clojure.set :refer (rename-keys)]
+   [com.rpl.specter :refer (transform ALL MAP-VALS)]
    [mount.core :as mount :refer (defstate)]))
 
 (refer-timbre)
@@ -43,7 +44,8 @@
   (stat-events m))
 
 (defmethod into-events :du disk-usage-events [m]
-  (stat-events m))
+  #_(transform [ALL :stats :du ALL]
+    (fn [d] (select-keys d #{:perc :type :mount})) m))
 
 (defmethod into-events :default [m] [m])
 
