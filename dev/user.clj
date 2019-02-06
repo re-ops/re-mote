@@ -9,7 +9,6 @@
    [re-share.log :refer (refer-share-logging)]
    [rubber.core :refer :all :exclude (call)]
    [clojure.tools.namespace.repl :refer (refresh refresh-all)]
-   [re-mote.zero.stats :refer (disk-breach)]
    ; components
    [mount.core :as mount]
    [re-mote.zero.cycle :refer (zero)]

@@ -44,7 +44,6 @@
   (free [this] [this m])
   (load-avg [this] [this m])
   (collect [this m])
-  (detect [this m f])
   (sliding [this m f k]))
 
 (def readings (atom {}))
@@ -88,10 +87,6 @@
 
 (def timeout [5 :second])
 
-(defn disk-breach [limit]
-  (fn [{:keys [host stats]}]
-    [host (filter (fn [{:keys [perc]}] (> (safe-dec (subs perc 0 (- (.length perc) 1))) limit)) (stats :du))]))
-
 (extend-type Hosts
   Stats
   (du
@@ -127,10 +122,6 @@
      (into-dec (zip this (run-hosts this shell (args load-script) timeout) :stats :load :one :five :fifteen :cores)))
     ([this _]
      (free this)))
-
-  (detect [this {:keys [success] :as m} f]
-    (let [breaches (filter (fn [[h bs]] (not (empty? bs))) (map f success)) detected (mapv first breaches)]
-      [(Hosts. (:auth this) detected) (merge m {:hosts detected :breaches breaches})]))
 
   (collect [this {:keys [success] :as m}]
     (doseq [{:keys [host stats]} success]
@@ -177,7 +168,7 @@
     (apply mapcat avg-data-point (select [ATOM MAP-VALS r k] readings))))
 
 (defn refer-stats []
-  (require '[re-mote.zero.stats :as stats :refer (load-avg net cpu free du detect disk-breach collect sliding setup-stats)]))
+  (require '[re-mote.zero.stats :as stats :refer (load-avg net cpu free du collect sliding setup-stats)]))
 
 (comment
   (reset! readings {}))

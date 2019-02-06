@@ -99,21 +99,15 @@
   [hs]
   (run> (rules hs) | (pick (fn [success failure hosts] (mapv :host (failure 1))))))
 
-; alerting
-
-(defn ^{:category :detection} low-disk
-  "Detect machines with low available disk space:
-     (low-disk (fn [p] TODO))"
-  [hs f]
-  (run> (du hs) | (detect f)))
 
 ; persistent stats
+
 
 (defn ^{:category :stats} du-persist
   "Collect disk usage with persist (metrics collection):
      (du-persist hs)"
   [hs]
-  (run> (du hs) | (enrich "du") | (persist)))
+  (run> (du hs) | (enrich "du") | (persist) | (riemann)))
 
 (defn ^{:category :stats} cpu-persist
   "Collect CPU and idle usage with persistence (metrics collection):

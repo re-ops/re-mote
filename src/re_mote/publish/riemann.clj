@@ -42,6 +42,9 @@
 (defmethod into-events :net network-events [m]
   (stat-events m))
 
+(defmethod into-events :du disk-usage-events [m]
+  (stat-events m))
+
 (defmethod into-events :default [m] [m])
 
 (defn send-event [e]
