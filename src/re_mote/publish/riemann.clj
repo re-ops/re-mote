@@ -45,7 +45,7 @@
 
 (defmethod into-events :du disk-usage-events [m]
   #_(transform [ALL :stats :du ALL]
-    (fn [d] (select-keys d #{:perc :type :mount})) m))
+               (fn [d] (select-keys d #{:perc :type :mount})) m))
 
 (defmethod into-events :default [m] [m])
 
