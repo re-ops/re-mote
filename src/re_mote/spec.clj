@@ -61,7 +61,7 @@
 
 (s/def ::operation-result
   (s/keys
-   :req-un [::success ::failure ::hosts ::hosts]))
+   :req-un [::success ::failure ::hosts]))
 
 (s/def ::ssh-key string?)
 
