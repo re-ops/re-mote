@@ -99,7 +99,6 @@
   [hs]
   (run> (rules hs) | (pick (fn [success failure hosts] (mapv :host (failure 1))))))
 
-
 ; persistent stats
 
 

@@ -51,7 +51,7 @@
 
 (defn registered-hosts []
   (let [formatter (format-columns [:right 20] "  " [:right 10] "  " :none)]
-    (write-rows *out* formatter [:hostname :uid :out] (vals @zmq-hosts))))
+    (write-rows formatter [:hostname :uid :out] (vals @zmq-hosts))))
 
 (defn into-zmq-hosts
   "Get ZMQ addresses from Hosts"

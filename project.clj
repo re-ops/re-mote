@@ -1,4 +1,4 @@
-(defproject re-mote "0.10.3"
+(defproject re-mote "0.10.4"
   :description "A live remote operations environment"
   :url "https://github.com/re-ops/re-mote"
   :license  {:name "Apache License, Version 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
@@ -24,9 +24,11 @@
      [com.fzakaria/slf4j-timbre "0.3.8"]
      [org.clojure/tools.trace "0.7.9"]
 
-     ; repl
+     ; clojure to bash
      [com.palletops/stevedore "0.8.0-beta.7"]
-     [io.aviso/pretty "0.1.36"]
+
+     ; pretty printing
+     [io.aviso/pretty "0.1.37"]
 
      ; serialization
      [serializable-fn "1.1.4"]
@@ -65,14 +67,13 @@
 
      ; monitoring
      [riemann-clojure-client "0.5.0"]
-     ]
+    ]
 
   :exclusions [org.clojure/clojure]
 
   :plugins  [[jonase/eastwood "0.3.3"]
              [lein-tag "0.1.0"]
              [lein-kibit "0.1.6"]
-             [mvxcvi/whidbey "1.3.1"]
              [lein-codox "0.10.3"]
              [lein-ancient "0.6.15" :exclusions [org.clojure/clojure]]
              [lein-set-version "0.3.0"]
@@ -124,16 +125,4 @@
   :target-path "target/"
 
   :signing {:gpg-key "narkisr@gmail.com"}
-
-  :whidbey {
-    :width 180
-    :map-delimiter ""
-    :extend-notation true
-    :print-meta true
-    :color-scheme {
-      :delimiter [:blue]
-       :tag [:bold :red]
-    }
-  }
-
 )

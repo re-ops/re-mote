@@ -21,7 +21,7 @@
 
 (defn pretty [rs]
   (let [formatter (format-columns [:right 10] "  " [:right 4] "  " :none)]
-    (write-rows *out* formatter [:host :code :out]
+    (write-rows formatter [:host :code :out]
                 (map (comp color-host pretify)  rs))))
 
 (defn last-run []
