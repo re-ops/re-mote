@@ -8,7 +8,7 @@
    [clj-time.coerce :as c]
    [riemann.client :as r]
    [clojure.set :refer (rename-keys)]
-   [com.rpl.specter :refer (transform ALL MAP-VALS)]
+   [com.rpl.specter :refer (transform ALL MAP-VALS select multi-path filterer)]
    [mount.core :as mount :refer (defstate)]))
 
 (refer-timbre)
@@ -43,9 +43,19 @@
 (defmethod into-events :net network-events [m]
   (stat-events m))
 
-(defmethod into-events :du disk-usage-events [m]
-  #_(transform [ALL :stats :du ALL]
-               (fn [d] (select-keys d #{:perc :type :mount})) m))
+(defn fs? [{:keys [type]}]
+  (#{:ext4 :zfs :ext2 :ext3} (keyword type)))
+
+(defn pick-disks [m]
+  (first (select [:stats :du (filterer fs?)] m)))
+
+(defmethod into-events :du disk-usage-events [{:keys [timestamp] :as m}]
+  (map
+   (fn [{:keys [mount type perc]}]
+     (merge
+      {:ttl 60 :service "disk-usage" :mount mount :time timestamp
+       :type type :metric (Integer/valueOf (.replace perc "%" ""))}
+      (select-keys m #{:tags :code :host}))) (pick-disks m)))
 
 (defmethod into-events :default [m] [m])
 
