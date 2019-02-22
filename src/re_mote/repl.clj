@@ -197,15 +197,6 @@
   (let [dest (<< "/tmp/~(fs/base-name src)")]
     (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (apply-recipes dest (or args "")) | (pretty "provision"))))
 
-(defn ^{:category :puppet} puppet-run
-  "Sync Puppet source code into the remote machine and apply it:
-     (provision hs {:src \"base-sandbox\"})
-  "
-  [hs {:keys [src args]}]
-  {:pre [src]}
-  (let [dest (<< "/tmp/~(fs/base-name src)")]
-    (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (apply-module dest (or args "")) | (pretty "provision"))))
-
 (defn ^{:category :serverspec} spec
   "Run spec test against hosts
      (spec hs \"/home/foo/base-sandbox\" \"minimal\")
