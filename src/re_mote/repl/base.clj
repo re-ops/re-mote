@@ -166,13 +166,15 @@
     (sync- this src target))
 
   (sync- [{:keys [auth hosts] :as this} src target]
-    [this (sh-hosts this (fn [host] (safe "bash" "-c" (rsync src target host auth))))])
+    [this (sh-hosts this (fn [host] (safe "sh" "-c" (rsync src target host auth))))])
 
   (sync-2 [this _ src target]
     (sync-2 this src target))
 
   (sync-2 [{:keys [auth hosts] :as this} src target]
-    [this (run-hosts this (script ("rsync" "--delete" "-a" ~src ~target)))]) Tracing
+    [this (run-hosts this (script ("rsync" "--delete" "-a" ~src ~target)))])
+
+  Tracing
   (ping [this target]
     [this (run-hosts this (script ("ping" "-c" 1 ~target)))]))
 
