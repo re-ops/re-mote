@@ -60,6 +60,11 @@
      ; common utilities and shared functions
      [re-share "0.9.14"]
      [re-scan "0.2.1"]
+
+     ; persistency
+     [rubber "0.3.4"]
+
+     ; fs utilities
      [me.raynes/fs "1.4.6"]
 
      ; wiring
