@@ -78,7 +78,7 @@
   []
   (es/initialize :re-mote types true)
   (when-not (template-exists? "re-mote-result")
-    (add-template "re-mote-result" ["re-mote*"] {:number_of_shards 1} {:_doc (types :result)})))
+    (add-template "re-mote-result" ["re-mote*"] {:number_of_shards 1} types)))
 
 (defn refer-es-persist []
   (require '[re-mote.persist.es :as es :refer (persist enrich split by-hosts nested)]))
