@@ -9,6 +9,7 @@
    [re-share.es.common :as es :refer (day-index get-es!)]
    [rubber.core :refer (create)]
    [rubber.node :as node]
+   [rubber.template :refer (template-exists? add-template)]
    [mount.core :as mount :refer (defstate)]
    [taoensso.timbre :refer (refer-timbre)])
   (:import [re_mote.repl.base Hosts]))
@@ -75,7 +76,9 @@
 (defn initialize
   "setup Elasticsearch types and mappings for re-mote"
   []
-  (es/initialize :re-mote types true))
+  (es/initialize :re-mote types true)
+  (when-not (template-exists? "re-mote-result")
+    (add-template "re-mote-result" ["re-mote*"] {:number_of_shards 1} {:_doc (types :result)})))
 
 (defn refer-es-persist []
   (require '[re-mote.persist.es :as es :refer (persist enrich split by-hosts nested)]))
