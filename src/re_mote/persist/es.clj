@@ -1,10 +1,7 @@
 (ns re-mote.persist.es
   "Persisting results into Elasticsearch"
   (:require
-   re-mote.repl.base
    [clj-time.core :as t]
-   [re-mote.log :refer (gen-uuid)]
-   [qbits.spandex :as s]
    [com.rpl.specter :refer (transform ALL MAP-VALS multi-path)]
    [re-share.es.common :as es :refer (day-index get-es!)]
    [rubber.core :refer (create)]

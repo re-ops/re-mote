@@ -34,7 +34,6 @@
 (defn start []
   (setup-logging)
   (k/create-server-keys ".curve")
-  (conf/load (fn [_] {}))
   (mount/start #'elastic #'zero #'r/riemann)
   (es/initialize))
 
