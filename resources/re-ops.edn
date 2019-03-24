@@ -1,0 +1,65 @@
+{
+ :re-core {
+   :port 8082
+   :https-port 8443
+   :log {
+     :level :info
+     :path "re-core.log"
+   }
+
+  :hypervisor {
+   :dev {
+
+    ;;:aws {
+    ;;   :access-key ""
+    ;;   :secret-key ""
+         ;;:ostemplates {
+          ;; :ubuntu-12.04 {:ami "" :flavor :debian}
+        ;;}
+    ;;}
+
+    :digital-ocean {
+      :token ""
+      :ssh-key ""
+      :ostemplates {
+         :ubuntu-16.04  {:image "ubuntu-16-04-x64" :flavor :debian}
+      }
+     }
+
+    :kvm  {
+       :nodes {
+          :remote {
+            :username "ronen" :host "localhost" :port 22
+            :pools  {
+               :default {:path "/var/lib/libvirt/images/"}
+            }
+          }
+        }
+       :ostemplates {
+          :ubuntu-18.04 {:template "ubuntu-18.04" :flavor :debian}
+        }
+     }
+
+    :physical { }
+   }
+  }
+
+  :elasticsearch {
+    :index "re-core"
+  }
+ }
+
+
+ :shared {
+  :elasticsearch {
+    :default {
+       :hosts ["http://127.0.0.1:9200"]
+    }
+  }
+
+  :ssh {
+    :private-key-path "/home/ronen/.ssh/id_rsa"
+  }
+
+ }
+}
