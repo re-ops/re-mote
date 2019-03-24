@@ -76,7 +76,7 @@
 
   :exclusions [org.clojure/clojure]
 
-  :plugins  [[jonase/eastwood "0.3.3"]
+  :plugins  [[jonase/eastwood "0.3.5"]
              [lein-tag "0.1.0"]
              [lein-kibit "0.1.6"]
              [lein-codox "0.10.3"]
