@@ -76,8 +76,7 @@
 
   :exclusions [org.clojure/clojure]
 
-  :plugins  [[jonase/eastwood "0.3.5"]
-             [lein-tag "0.1.0"]
+  :plugins  [[lein-tag "0.1.0"]
              [lein-kibit "0.1.6"]
              [lein-codox "0.10.3"]
              [lein-ancient "0.6.15" :exclusions [org.clojure/clojure]]
@@ -117,7 +116,7 @@
 
   :aliases {
      "travis" [
-      "with-profile" "test"  "do" "clean," "compile," "cljfmt" "check," "eastwood" "{:exclude-namespaces [re-mote.zero.worker re-mote.zero.server re-mote.zero.common re-mote.spec] :exclude-linters [:redefd-vars]}"
+      "with-profile" "test"  "do" "clean," "compile," "cljfmt" "check"
      ]
      "docs" [
          "with-profile" "codox" "do" "codox"
