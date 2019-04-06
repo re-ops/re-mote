@@ -27,6 +27,7 @@
    [re-mote.repl.re-gent :refer (refer-regent)]
    [re-share.schedule :refer (watch seconds)]
    [re-mote.zero.facts :refer (refer-facts)]
+   [re-mote.zero.osquery :refer (refer-osquery)]
    [re-mote.zero.process :refer (refer-process)]
    [re-mote.zero.git :refer (refer-git)]
    [re-mote.zero.test :as tst]
@@ -59,6 +60,7 @@
 (refer-es-persist)
 (refer-desktop)
 (refer-stress)
+(refer-osquery)
 
 (defn setup
   "Setup Re-mote environment as a part of the Reload workflow"

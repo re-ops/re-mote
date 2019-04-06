@@ -73,6 +73,11 @@
   (s/fn []
     (parse-string (:out (sh "facter" "--json")) true)))
 
+; osquery
+(def ^{:doc "Run an osquery query"} osquery
+  (s/fn [query]
+    (parse-string (:out (sh "/usr/bin/osqueryi" "--json" query)) true)))
+
 ; shell
 (def ^{:doc "Excute a script using bash"} shell
   (s/fn [sum script]
