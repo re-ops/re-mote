@@ -6,7 +6,6 @@
    [clansi.core :refer (style)]
    [io.aviso.columns :refer  (format-columns write-rows)]
    [io.aviso.ansi :refer :all]
-   [clojure.core.strint :refer (<<)]
    [taoensso.timbre :refer (refer-timbre)])
   (:import [org.joda.time DateTimeConstants DateTimeZone DateTime]))
 

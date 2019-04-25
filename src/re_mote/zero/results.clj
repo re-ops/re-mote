@@ -2,7 +2,7 @@
   "results collection and analyais"
   (:require
    [taoensso.timbre :refer  (refer-timbre)]
-   [hara.data.map :refer (dissoc-in)]
+   [clojure.core.incubator :refer (dissoc-in)]
    [puget.printer :as puget]))
 
 (refer-timbre)

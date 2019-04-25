@@ -42,17 +42,10 @@
 
      ; model
      [clj-time/clj-time "0.15.1"]
-     [im.chit/hara.data.map "2.5.10"]
-
-     ; API
-     [compojure "1.6.1"]
-     [http-kit "2.3.0" :exclusions [ring/ring-jetty-adapter]]
-     [ring "1.7.1"]
-     [ring/ring-defaults "0.3.2"]
-     [ring/ring-json  "0.4.0"]
 
      ; email
      [com.draines/postal "2.0.3"]
+     [hiccup "1.0.5"]
 
      ; configuration
      [formation "0.2.0"]
@@ -77,7 +70,6 @@
   :exclusions [org.clojure/clojure]
 
   :plugins  [[lein-tag "0.1.0"]
-             [lein-kibit "0.1.6"]
              [lein-codox "0.10.3"]
              [lein-ancient "0.6.15" :exclusions [org.clojure/clojure]]
              [lein-set-version "0.3.0"]

@@ -6,7 +6,7 @@
    [clojure.tools.trace :as t]
    [clojure.java.io :refer (reader file)]
    [taoensso.timbre :refer (refer-timbre)]
-   [hara.data.map :refer (dissoc-in)]
+   [clojure.core.incubator :refer (dissoc-in)]
    [re-mote.ssh.pipeline :refer (run-hosts upload-hosts)]
    [re-mote.spec :refer (pipeline!)]
    [pallet.stevedore.bash]
