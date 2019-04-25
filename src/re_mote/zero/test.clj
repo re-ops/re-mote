@@ -1,9 +1,9 @@
 (ns re-mote.zero.test
   "basic operation like ls/fail etc.. (mainly for testing)"
   (:require
-   [taoensso.timbre :refer  (refer-timbre)]
    [re-mote.zero.pipeline :refer (run-hosts)]
-   [re-mote.zero.functions :as fns])
+   [re-mote.zero.functions :as fns]
+   re-mote.repl.base)
   (:import [re_mote.repl.base Hosts]))
 
 (defprotocol Test

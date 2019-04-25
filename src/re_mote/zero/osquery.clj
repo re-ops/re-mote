@@ -1,8 +1,8 @@
 (ns re-mote.zero.osquery
   (:require
-   [taoensso.timbre :refer  (refer-timbre)]
    [re-mote.zero.pipeline :refer (run-hosts)]
-   [re-mote.zero.functions :refer (osquery)])
+   [re-mote.zero.functions :refer (osquery)]
+   re-mote.repl.base)
   (:import [re_mote.repl.base Hosts]))
 
 (defprotocol Query

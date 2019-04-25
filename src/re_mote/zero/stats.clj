@@ -13,7 +13,8 @@
    [clj-time.coerce :refer (to-long)]
    [re-mote.zero.shell :refer (args)]
    [re-mote.zero.functions :refer (shell)]
-   [re-share.schedule :refer (watch seconds)])
+   [re-share.schedule :refer (watch seconds)]
+   re-mote.repl.base)
   (:import re_mote.repl.base.Hosts))
 
 (refer-timbre)

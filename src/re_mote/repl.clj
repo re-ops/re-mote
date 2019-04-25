@@ -15,7 +15,6 @@
    [re-mote.repl.stress :refer (refer-stress)]
    [re-mote.repl.output :refer (refer-out)]
    [re-mote.repl.publish :refer (refer-publish)]
-   [re-mote.repl.puppet :refer (refer-puppet)]
    [re-mote.repl.re-conf :refer (refer-reconf)]
    [re-mote.repl.spec :refer (refer-spec)]
    [re-mote.repl.octo :refer (refer-octo)]
@@ -25,7 +24,6 @@
    [re-mote.repl.sensors :refer (refer-sensors)]
    [re-mote.zero.sensors :refer (refer-zero-sensors)]
    [re-mote.repl.re-gent :refer (refer-regent)]
-   [re-share.schedule :refer (watch seconds)]
    [re-mote.zero.facts :refer (refer-facts)]
    [re-mote.zero.osquery :refer (refer-osquery)]
    [re-mote.zero.process :refer (refer-process)]
@@ -34,7 +32,7 @@
    [re-mote.zero.pkg :refer (refer-zero-pkg)]
    [re-mote.repl.pkg :refer (refer-pkg)]
    [re-mote.log :refer (setup-logging)]
-   [clojure.java.io :refer (file)])
+   re-mote.repl.base)
   (:import [re_mote.repl.base Hosts]))
 
 (refer-timbre)
@@ -49,7 +47,6 @@
 (refer-pkg)
 (refer-zero-pkg)
 (refer-reconf)
-(refer-puppet)
 (refer-spec)
 (refer-zfs)
 (refer-publish)

@@ -4,7 +4,8 @@
   (:require
    [taoensso.timbre :refer  (refer-timbre)]
    [re-mote.zero.pipeline :refer (run-hosts)]
-   [re-mote.zero.functions :refer (refer-zero-fns)])
+   [re-mote.zero.functions :refer (refer-zero-fns)]
+   re-mote.repl.base)
   (:import [re_mote.repl.base Hosts]))
 
 (refer-timbre)

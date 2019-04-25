@@ -3,7 +3,8 @@
   (:require
    [re-mote.ssh.pipeline :refer (map-async)]
    [clojure.core.strint :refer (<<)]
-   [clojure.java.shell :refer [sh with-sh-dir]])
+   [clojure.java.shell :refer [sh with-sh-dir]]
+   re-mote.repl.base)
   (:import [re_mote.repl.base Hosts]))
 
 (defprotocol Spec

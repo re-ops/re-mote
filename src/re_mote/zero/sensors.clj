@@ -7,7 +7,8 @@
    [com.rpl.specter :as s :refer (transform select MAP-VALS ALL multi-path)]
    [re-mote.zero.functions :refer (shell)]
    [re-mote.zero.pipeline :refer (run-hosts)]
-   [re-mote.scripts.sensors :refer (temp-script)])
+   [re-mote.scripts.sensors :refer (temp-script)]
+   re-mote.repl.base)
   (:import [re_mote.repl.base Hosts]))
 
 (defn parse-line

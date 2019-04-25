@@ -8,7 +8,8 @@
    [rubber.node :as node]
    [rubber.template :refer (template-exists? add-template)]
    [mount.core :as mount :refer (defstate)]
-   [taoensso.timbre :refer (refer-timbre)])
+   [taoensso.timbre :refer (refer-timbre)]
+   re-mote.repl.base)
   (:import [re_mote.repl.base Hosts]))
 
 (refer-timbre)

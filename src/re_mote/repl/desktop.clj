@@ -5,7 +5,8 @@
    [clojure.core.strint :refer (<<)]
    [re-mote.repl.base :refer (refer-base)]
    [re-mote.repl.publish :refer (email)]
-   [pallet.stevedore :refer (script)])
+   [pallet.stevedore :refer (script)]
+   re-mote.repl.base)
   (:import [re_mote.repl.base Hosts]))
 
 (defprotocol Desktop

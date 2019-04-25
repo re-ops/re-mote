@@ -3,11 +3,9 @@
    [me.raynes.conch :as c]
    [clojure.java.io :as io :refer (reader output-stream)]
    [clojure.string :refer (join split)]
-   [clojure.java.shell :refer [sh]]
    [clojure.core.strint :refer (<<)]
    [taoensso.timbre :refer (refer-timbre)]
-   [re-mote.log :refer (log-output)]
-   [clojure.string :refer (split)])
+   [re-mote.log :refer (log-output)])
   (:import
    clojure.lang.ExceptionInfo
    (java.util.concurrent TimeUnit)
@@ -36,7 +34,7 @@
 (defn ssh-strap [{:keys [host ssh-port ssh-key user]}]
   (doto (sshj-client)
     (.connect host (or ssh-port default-port))
-    (.authPublickey user #^"[Ljava.lang.String;" (into-array [(or ssh-key default-key)]))))
+    (.authPublickey user ^"[Ljava.lang.String;" (into-array [(or ssh-key default-key)]))))
 
 (defmacro with-ssh [remote & body]
   `(let [~'ssh (ssh-strap ~remote)]

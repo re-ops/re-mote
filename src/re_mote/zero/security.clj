@@ -1,14 +1,13 @@
 (ns re-mote.zero.security
   "Security data collection detection"
   (:require
-   [com.rpl.specter :as s :refer (transform MAP-VALS ALL keypath)]
-   [clojure.core.strint :refer (<<)]
    [re-mote.zero.pipeline :refer (run-hosts)]
    [taoensso.timbre :refer (refer-timbre)]
    [re-mote.zero.shell :refer (args)]
    [re-mote.zero.stats :refer (zip comma)]
    [re-mote.scripts.security :refer (ufw-script)]
-   [re-mote.zero.functions :refer (shell scan-hosts scan-ports)])
+   [re-mote.zero.functions :refer (shell scan-hosts scan-ports)]
+   re-mote.repl.base)
   (:import [re_mote.repl.base Hosts]))
 
 (refer-timbre)

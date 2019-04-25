@@ -4,7 +4,8 @@
    [re-mote.zero.shell :refer (args)]
    [re-mote.zero.functions :refer (shell)]
    [re-mote.zero.pipeline :refer (run-hosts)]
-   [pallet.stevedore :refer (script)])
+   [pallet.stevedore :refer (script)]
+   re-mote.repl.base)
   (:import [re_mote.repl.base Hosts]))
 
 (defprotocol Git

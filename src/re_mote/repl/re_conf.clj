@@ -3,7 +3,8 @@
   (:require
    [clojure.string :refer (join)]
    [re-mote.ssh.pipeline :refer (run-hosts)]
-   [pallet.stevedore :refer (script)])
+   [pallet.stevedore :refer (script)]
+   re-mote.repl.base)
   (:import [re_mote.repl.base Hosts]))
 
 (defprotocol ReConf

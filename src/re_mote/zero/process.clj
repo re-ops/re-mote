@@ -1,10 +1,9 @@
 (ns re-mote.zero.process
   "Process query and manipulation"
   (:require
-   [com.rpl.specter :refer (transform ALL)]
-   [taoensso.timbre :refer  (refer-timbre)]
    [re-mote.zero.pipeline :refer (run-hosts)]
-   [re-mote.zero.functions :refer (all-processes processes-by named)])
+   [re-mote.zero.functions :refer (all-processes processes-by named)]
+   re-mote.repl.base)
   (:import [re_mote.repl.base Hosts]))
 
 (defprotocol Processes

@@ -4,7 +4,8 @@
    [com.rpl.specter :refer (transform ALL)]
    [taoensso.timbre :refer  (refer-timbre)]
    [re-mote.zero.pipeline :refer (run-hosts)]
-   [re-mote.zero.functions :refer (hardware operating-system)])
+   [re-mote.zero.functions :refer (hardware operating-system)]
+   re-mote.repl.base)
   (:import [re_mote.repl.base Hosts]))
 
 (refer-timbre)

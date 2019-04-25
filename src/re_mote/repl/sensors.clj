@@ -3,7 +3,8 @@
   (:require
    [re-mote.ssh.pipeline :refer (run-hosts)]
    [re-mote.scripts.sensors :refer (temp-script)]
-   [re-mote.zero.sensors :refer (assoc-stats into-dec)])
+   [re-mote.zero.sensors :refer (assoc-stats into-dec)]
+   re-mote.repl.base)
   (:import
    [re_mote.repl.base Hosts]))
 

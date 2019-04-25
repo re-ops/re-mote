@@ -2,8 +2,8 @@
   (:require
    [re-mote.log :refer (get-logs)]
    [clansi.core :refer (style)]
-   [clojure.string :as s]
-   [taoensso.timbre :refer (info)])
+   [taoensso.timbre :refer (info)]
+   re-mote.repl.base)
   (:import [re_mote.repl.base Hosts]))
 
 (defprotocol Report
