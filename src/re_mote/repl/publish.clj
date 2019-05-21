@@ -4,7 +4,7 @@
    [postal.core :as p :refer (send-message)]
    [re-mote.publish.email :refer (template)]
    [re-mote.publish.riemann :refer (send-event into-events)]
-   [re-share.config :as conf]
+   [re-share.config.core :as conf]
    [clojure.java.io :refer (file)]
    [clojure.core.strint :refer (<<)]
    [taoensso.timbre :refer (refer-timbre)]

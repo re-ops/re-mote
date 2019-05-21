@@ -3,7 +3,7 @@
   (:require
    [taoensso.timbre :refer  (refer-timbre)]
    [clojure.core.strint :refer  (<<)]
-   [re-share.config :as conf]
+   [re-share.config.core :as conf]
    [clj-time.core :refer (now)]
    [clj-time.coerce :as c]
    [riemann.client :as r]
