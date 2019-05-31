@@ -70,7 +70,7 @@
   :exclusions [org.clojure/clojure]
 
   :plugins  [[lein-tag "0.1.0"]
-             [lein-codox "0.10.3"]
+             [lein-codox "0.10.7"]
              [lein-ancient "0.6.15" :exclusions [org.clojure/clojure]]
              [lein-set-version "0.3.0"]
              [lein-cljfmt "0.5.6"]]
