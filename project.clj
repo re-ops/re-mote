@@ -51,7 +51,7 @@
      [formation "0.2.0"]
 
      ; common utilities and shared functions
-     [re-share "0.11.0"]
+     [re-share "0.11.2"]
      [re-scan "0.2.1"]
 
      ; persistency
