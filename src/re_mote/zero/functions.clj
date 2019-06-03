@@ -2,7 +2,6 @@
   (:require
    [taoensso.timbre :refer  (refer-timbre)]
    [cheshire.core :refer (parse-string)]
-   [re-share.oshi :refer (read-metrics os get-processes)]
    [re-scan.core :refer [into-ports into-hosts nmap]]
    [re-mote.zero.send :refer (send-)]
    [re-mote.log :refer (gen-uuid)]
@@ -11,62 +10,6 @@
    [me.raynes.fs :refer (list-dir tmpdir exists? file)]))
 
 (refer-timbre)
-
-; Package manager
-(def ^{:doc "update package manager"} pkg-update
-  (s/fn []
-    (case (os)
-      :Ubuntu (sh "sudo" "apt" "update")
-      :FreeBSD (sh "sudo" "pkg" "update")
-      (throw (ex-info "not supported" {:os (os)})))))
-
-(def ^{:doc "upgrade all packages"} pkg-upgrade
-  (s/fn []
-    (case (os)
-      :Ubuntu (sh "sudo" "apt" "upgrade" "-y")
-      :FreeBSD (sh "sudo" "pkg" "upgrade" "-y")
-      (throw (ex-info "not supported" {:os (os)})))))
-
-(def ^{:doc "install a package"} pkg-install
-  (s/fn [pkg]
-    (case (os)
-      :Ubuntu (sh "sudo" "apt" "install" pkg "-y")
-      :FreeBSD (sh "sudo" "pkg" "install" pkg "-y")
-      (throw (ex-info "not supported" {:os (os)})))))
-
-(def ^{:doc "Fix package provider"} pkg-fix
-  (s/fn []
-    (case (os)
-      :Ubuntu (sh "sudo" "rm" "/var/lib/dpkg/lock" "/var/cache/apt/archives/lock")
-      (throw (ex-info "not supported" {:os (os)})))))
-
-(def ^{:doc "kill package provider"} pkg-kill
-  (s/fn []
-    (case (os)
-      :Ubuntu (sh "sudo" "killall" "apt")
-      (throw (ex-info "not supported" {:os (os)})))))
-
-; OSHI
-(def ^{:doc "Get all processes"} all-processes
-  (s/fn []
-    (get-processes)))
-
-(def ^{:doc "Filter process by name"} named
-  (fn [target]
-    (s/fn [proc] (= (proc :name) target))))
-
-(def ^{:doc "Get processes by fn"} processes-by
-  (s/fn [f]
-    (let [f' (eval f)]
-      (filter f' (get-processes)))))
-
-(def ^{:doc "Getting all OS information using oshi"} operating-system
-  (s/fn []
-    (get-in (read-metrics) [:operatingSystem])))
-
-(def ^{:doc "Getting all Hardware information using oshi"} hardware
-  (s/fn []
-    (get-in (read-metrics) [:hardware])))
 
 ; Puppet/Facter
 (def ^{:doc "Puppet facter facts"} facter
@@ -85,6 +28,7 @@
       (when-not (exists? f)
         (spit f script))
       (sh "bash" (.getPath f)))))
+
 ; Misc
 (def ^{:doc "list dir"} listdir
   (s/fn [d]

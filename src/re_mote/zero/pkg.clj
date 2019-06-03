@@ -4,12 +4,11 @@
   (:require
    [taoensso.timbre :refer  (refer-timbre)]
    [re-mote.zero.pipeline :refer (run-hosts)]
-   [re-mote.zero.functions :refer (refer-zero-fns)]
+   [re-cog.resources.package :refer (pkg-update pkg-upgrade pkg-install pkg-fix pkg-kill)]
    re-mote.repl.base)
   (:import [re_mote.repl.base Hosts]))
 
 (refer-timbre)
-(refer-zero-fns)
 
 (defprotocol Pkg
   (update

@@ -2,7 +2,7 @@
   "Process query and manipulation"
   (:require
    [re-mote.zero.pipeline :refer (run-hosts)]
-   [re-mote.zero.functions :refer (all-processes processes-by named)]
+   [re-cog.facts.oshi :refer (all-processes processes-by named)]
    re-mote.repl.base)
   (:import [re_mote.repl.base Hosts]))
 

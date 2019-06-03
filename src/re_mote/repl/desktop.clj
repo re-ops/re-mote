@@ -14,12 +14,12 @@
     [this url]
     [this m url]))
 
-(defn firefox-script
+(defn chrome-script
   "Launch Firefox"
   [url]
   (script
    ("export" (set! DISPLAY ":0"))
-   ("nohup" "sh" "-c" "'/usr/bin/firefox" ~url "&'")))
+   ("nohup" "sh" "-c" "'/usr/bin/google-chrome" "--start-fullscreen" ~url "&'")))
 
 (extend-type Hosts
   Desktop
@@ -27,7 +27,7 @@
     ([this url]
      (browse this nil url))
     ([this _ url]
-     [this (run-hosts this (firefox-script url))])))
+     [this (run-hosts this (chrome-script url))])))
 
 (defn refer-desktop []
   (require '[re-mote.repl.desktop :as dsk :refer (browse)]))
