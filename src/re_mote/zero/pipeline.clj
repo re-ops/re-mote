@@ -63,7 +63,7 @@
      {:hosts (keys hosts) :success (grouped 0) :failure (add-error (dissoc grouped 0))})))
 
 (defn refer-zero-pipe []
-  (require '[re-mote.zero.pipeline :as zpipe :refer (collect)]))
+  (require '[re-mote.zero.pipeline :as zpipe :refer (collect run-hosts)]))
 
 (comment
   (send- (send-socket @ctx) {:address 1234 :content {:request :execute}}))
