@@ -1,6 +1,7 @@
 (ns re-mote.zero.management
   "Managing client protocol"
   (:require
+   [table.core :refer (table)]
    [re-share.core :refer (error-m)]
    [re-mote.zero.functions :as fns :refer (fn-meta)]
    [re-mote.zero.results :refer (add-result)]
@@ -50,8 +51,7 @@
       (error-m e))))
 
 (defn registered-hosts []
-  (let [formatter (format-columns [:right 20] "  " [:right 10] "  " :none)]
-    (write-rows formatter [:hostname :uid :out] (vals @zmq-hosts))))
+  (table (vals @zmq-hosts) :style :borderless))
 
 (defn into-zmq-hosts
   "Get ZMQ addresses from Hosts"
