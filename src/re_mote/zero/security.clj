@@ -6,7 +6,8 @@
    [re-mote.zero.shell :refer (args)]
    [re-mote.zero.stats :refer (zip comma)]
    [re-mote.scripts.security :refer (ufw-script)]
-   [re-mote.zero.functions :refer (shell scan-hosts scan-ports)]
+   [re-cog.resources.exec :refer (shell)]
+   [re-cog.facts.security :refer (scan-hosts scan-ports)]
    re-mote.repl.base)
   (:import [re_mote.repl.base Hosts]))
 

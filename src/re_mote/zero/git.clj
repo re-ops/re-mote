@@ -2,7 +2,7 @@
   "Git actions"
   (:require
    [re-mote.zero.shell :refer (args)]
-   [re-mote.zero.functions :refer (shell)]
+   [re-cog.resources.exec :refer (shell)]
    [re-mote.zero.pipeline :refer (run-hosts)]
    [pallet.stevedore :refer (script)]
    re-mote.repl.base)

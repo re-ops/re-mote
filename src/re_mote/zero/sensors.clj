@@ -5,7 +5,7 @@
    [re-mote.zero.shell :refer (args)]
    [re-mote.zero.stats :refer (safe-dec)]
    [com.rpl.specter :as s :refer (transform select MAP-VALS ALL multi-path)]
-   [re-mote.zero.functions :refer (shell)]
+   [re-cog.resources.exec :refer (shell)]
    [re-mote.zero.pipeline :refer (run-hosts)]
    [re-mote.scripts.sensors :refer (temp-script)]
    re-mote.repl.base)
