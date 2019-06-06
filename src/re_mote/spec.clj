@@ -12,7 +12,7 @@
 (defn length [l]
   (fn [s] (>= (.length s) l)))
 
-(s/def ::code integer?)
+(s/def ::code (s/and integer? #(and (>= % -1) (<= % 256))))
 
 (s/def ::exit integer?)
 
@@ -25,7 +25,7 @@
 (s/def ::time number?)
 
 (s/def ::shell-output
-  (s/keys :opt-un [::out ::exit ::err]))
+  (s/keys :req-un [::out]))
 
 (s/def ::fn-output
   (s/* map?))
@@ -91,18 +91,3 @@
     (let [exp (s/explain-data ::pipeline v)]
       (throw (ex-info (<< "function output is not valid ~{exp}") {:explain exp})))
     v))
-
-(comment
-  (def ok
-    [{:auth {:ssh-key "foo" :user "bar"} :hosts ["one" "two"]}
-     {:failure {-1
-                [{:code -1 :error {:out "host re-gent not connected"} :host "one" :result {:r :failed} :uuid "87551290cd984ad9b4acfc9e24c4af80"}]}
-      :hosts '("one" "two")
-      :success '({:code 0
-                  :host "two"
-                  :result {:r {:err "" :exit 0 :out "2.01 1.51 96.48\n"} :t 1.014162418}
-                  :stats {:cpu {:idle 96.48M :sys 1.51M :usr 2.01M}}
-                  :uuid "87551290cd984ad9b4acfc9e24c4af80"})}])
-
-  (s/valid? ::pipeline ok)
-  (s/explain ::pipeline ok))
