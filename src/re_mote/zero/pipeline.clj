@@ -18,10 +18,14 @@
 (refer-zero-results)
 
 (defn codes [v]
-  "Mapping result to exit code, code are used in order keep compatible output to ssh.
-   Since we are running a distributed function we return 256 to signaify that this isn't a bash script failure."
+  "Mapping result to exit code, keeping compatible with ssh pipeline:
+    1. if exit status is present we use that (function terminated with exit code)
+    2. we return 256 in a case that an exception was thrown from the function (to keep compatible output)
+    Else we return 0 (success)"
+  (println v)
   (match [v]
-    [{:result {:out _}}] 256
+    [{:result {:exit e}}] e
+    [{:result {:out _ :exception _}}] 256
     :else 0))
 
 (defn with-codes
