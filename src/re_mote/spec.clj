@@ -4,6 +4,7 @@
    [clojure.core.strint :refer (<<)]
    [puget.printer :as puget]
    [taoensso.timbre :refer  (refer-timbre)]
+   [expound.alpha :as expound]
    [clojure.spec.alpha :as s]))
 
 (refer-timbre)
@@ -37,20 +38,18 @@
    :req-un [::time]))
 
 (s/def ::success
-  (s/nilable
-   (s/coll-of
-    (s/keys
-     :opt-un [::stats ::uuid ::profile ::result]
-     :req-un [::code ::host]))))
+  (s/coll-of
+   (s/keys
+    :opt-un [::stats ::uuid ::profile ::result]
+    :req-un [::code ::host])))
 
 (s/def ::error
   (s/keys :req-un [::out]))
 
 (s/def ::fails
-  (s/nilable
-   (s/coll-of
-    (s/keys
-     :req-un [::code ::host ::uuid ::error]))))
+  (s/coll-of
+   (s/keys
+    :req-un [::code ::host ::uuid ::error])))
 
 (s/def ::failure
   (s/map-of integer? ::fails))
@@ -80,8 +79,8 @@
 
 (defn valid? [s v]
   (if-not (s/valid? s v)
-    (let [e (s/explain-data s v)]
-      (info "spec failed:" e)
+    (let [e (expound/expound s v)]
+      (error "spec failed:" e)
       (puget/cprint e))
     true))
 

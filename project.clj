@@ -47,9 +47,6 @@
      [com.draines/postal "2.0.3"]
      [hiccup "1.0.5"]
 
-     ; configuration
-     [formation "0.2.0"]
-
      ; common utilities and shared functions
      [re-share "0.11.2"]
      [re-cog "0.1.0"]
@@ -66,6 +63,9 @@
 
      ; monitoring
      [riemann-clojure-client "0.5.0"]
+
+     ; spec
+     [expound "0.7.2"]
     ]
 
   :exclusions [org.clojure/clojure]
