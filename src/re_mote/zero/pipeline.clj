@@ -8,7 +8,8 @@
    [com.rpl.specter :refer (transform MAP-VALS ALL VAL)]
    [re-mote.zero.management :refer (refer-zero-manage)]
    [re-mote.zero.results :refer (refer-zero-results)]
-   [re-mote.zero.functions :as fns :refer (fn-meta call)]
+   [re-mote.zero.functions :refer (call)]
+   [re-cog.core :refer (fn-meta)]
    [re-mote.zero.cycle :refer (ctx)]
    [re-share.core :refer (wait-for)]))
 
@@ -18,7 +19,7 @@
 
 (defn codes [v]
   (match [v]
-    [{:result :failed}] -1
+    [{:result {:out _}}] -1
     [{:result {:exit e}}] e
     :else 0))
 
@@ -34,7 +35,8 @@
               (fn [] (get-results hosts uuid)) "Failed to collect all hosts")
     (catch Exception e
       (warn "Failed to get results"
-            (merge (ex-data e) {:missing (missing-results hosts uuid) :k k :uuid uuid}))))
+            (merge (ex-data e)
+                   {:missing (missing-results hosts uuid) :k k :uuid uuid}))))
   (let [rs (with-codes (get-results hosts uuid) uuid)]
     (clear-results uuid)
     rs))
@@ -59,8 +61,10 @@
          uuid (call f args hosts)
          results (collect (keys hosts) (-> f fn-meta :name keyword) uuid timeout)
          down (non-reachable hs hosts uuid)
-         grouped (group-by :code (vals (merge results down)))]
-     {:hosts (keys hosts) :success (grouped 0) :failure (add-error (dissoc grouped 0))})))
+         grouped (group-by :code (vals (merge results down)))
+         success (or (grouped 0) [])
+         failure (add-error (dissoc grouped 0))]
+     {:hosts (keys hosts) :success success :failure failure})))
 
 (defn refer-zero-pipe []
   (require '[re-mote.zero.pipeline :as zpipe :refer (collect run-hosts)]))
