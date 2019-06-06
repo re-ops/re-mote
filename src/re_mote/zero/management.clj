@@ -3,12 +3,9 @@
   (:require
    [table.core :refer (table)]
    [re-share.core :refer (error-m)]
-   [re-mote.zero.functions :as fns :refer (fn-meta)]
    [re-mote.zero.results :refer (add-result)]
-   [io.aviso.columns :refer  (format-columns write-rows)]
    [taoensso.timbre :refer  (refer-timbre)]
-   [clojure.core.match :refer [match]]
-   [taoensso.nippy :as nippy :refer (freeze thaw)])
+   [clojure.core.match :refer [match]])
   (:import
    [org.zeromq ZMQ ZMsg]))
 
@@ -31,21 +28,23 @@
   (swap! zmq-hosts assoc hostname address)
   (ack address {:request :register}))
 
-(defn unregister [{:keys [hostname uid] :as address}]
+(defn unregister [{:keys [hostname uid]}]
   (debug "unregister" hostname uid)
   (swap! zmq-hosts dissoc hostname))
 
 (defn process
   "Process a message from a client"
-  [{:keys [hostname uid] :as address} request]
+  [{:keys [hostname] :as address} request]
   (try
     (debug "got" address request)
     (match [request]
       [{:request :register}] (register address)
       [{:request :unregister}] (unregister address)
+      [{:reply :execute :result :failed :name name :uuid id :error e}] (add-result hostname id e)
       [{:reply :execute :result r :time t :name name :uuid id}] (add-result hostname id r t)
-      [{:reply :execute :result :failed :name name :uuid id :error {:result r}}] (add-result hostname id r)
-      :else (fail request "no handling clause found for request"))
+      :else (do
+              (error "no handling clause found for request" request)
+              (fail request "no handling clause found for request")))
     (catch Exception e
       (fail request e)
       (error-m e))))
@@ -63,3 +62,4 @@
 
 (defn refer-zero-manage []
   (require '[re-mote.zero.management :as zerom :refer (registered-hosts into-zmq-hosts clear-registered all-hosts)]))
+
