@@ -18,9 +18,10 @@
 (refer-zero-results)
 
 (defn codes [v]
+  "Mapping result to exit code, code are used in order keep compatible output to ssh.
+   Since we are running a distributed function we return 256 to signaify that this isn't a bash script failure."
   (match [v]
-    [{:result {:out _}}] -1
-    [{:result {:exit e}}] e
+    [{:result {:out _}}] 256
     :else 0))
 
 (defn with-codes
