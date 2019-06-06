@@ -15,7 +15,7 @@
             out (join "\n" (get-log uuid))]
         (if-not (= code 0)
           {:host host :code code :uuid uuid :error {:out out}}
-          {:host host :code code :uuid uuid :result {:out out :exit code}}))
+          {:host host :code code :uuid uuid :result {:out out :code code}}))
       (catch Throwable e
         {:host host :code -1 :error {:out (.getMessage e)} :uuid uuid}))))
 
