@@ -38,11 +38,11 @@
     (throw (ex-info (<< "missing source file to upload ~{src}") {:src src})))
   (let [results (map-async (partial host-upload auth src dest) hosts)
         grouped (group-by :code results)]
-    {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
+    {:hosts hosts :success (or (grouped 0) []) :failure (dissoc grouped 0)}))
 
 (defn run-hosts [{:keys [auth hosts]} script]
   {:post [(valid? ::re-spec/operation-result %)]}
   (let [results (map-async (partial execute-uuid auth script) hosts)
         grouped (group-by :code results)]
-    {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
+    {:hosts hosts :success (or (grouped 0) []) :failure (dissoc grouped 0)}))
 
