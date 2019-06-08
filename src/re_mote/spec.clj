@@ -28,7 +28,7 @@
   (s/keys :req-un [::out]))
 
 (s/def ::fn-output
-  (s/* map?))
+  (s/or :maps (s/* map?) :map map?))
 
 (s/def ::result
   (s/or :shell ::shell-output :fn ::fn-output))
