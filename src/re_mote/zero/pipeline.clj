@@ -9,7 +9,7 @@
    [re-mote.zero.management :refer (refer-zero-manage)]
    [re-mote.zero.results :refer (refer-zero-results)]
    [re-mote.zero.functions :refer (call)]
-   [re-cog.core :refer (fn-meta)]
+   [re-cog.meta :refer (fn-meta)]
    [re-mote.zero.cycle :refer (ctx)]
    [re-share.core :refer (wait-for)]))
 
@@ -22,7 +22,6 @@
     1. if exit status is present we use that (function terminated with exit code)
     2. we return 256 in a case that an exception was thrown from the function (to keep compatible output)
     Else we return 0 (success)"
-  (println v)
   (match [v]
     [{:result {:exit e}}] e
     [{:result {:out _ :exception _}}] 256

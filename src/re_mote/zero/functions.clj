@@ -4,7 +4,7 @@
    [re-mote.zero.send :refer (send-)]
    [re-mote.log :refer (gen-uuid)]
    [clojure.java.shell :refer [sh]]
-   [re-cog.core :refer (fn-meta)]
+   [re-cog.meta :refer (fn-meta)]
    [serializable.fn :as s]
    [me.raynes.fs :refer (list-dir tmpdir exists? file)]))
 
