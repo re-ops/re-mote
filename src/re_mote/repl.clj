@@ -179,13 +179,6 @@
   [hs pkg]
   (run (zpkg/install hs pkg) | (downgrade pkg/install [pkg]) | (pretty "package install")))
 
-(defn ^{:category :packaging} pakage-fix
-  "Attempt to fix a broken package provider (like apt) by applying common known fixes.
-     (package-fix hs)
-   "
-  [hs]
-  (run (zpkg/fix hs) | (zpkg/kill) | (pretty "package provider fix")))
-
 ; Reconf
 (defn ^{:category :reconf} provision
   "Sync Reconf source code into the remote machine and apply it:
