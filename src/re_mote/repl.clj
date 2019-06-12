@@ -5,6 +5,7 @@
   (:require
    [me.raynes.fs :as fs]
    [clojure.core.strint :refer (<<)]
+   [re-mote.repl.cog :refer (refer-cog)]
    [re-mote.validate :refer (check-entropy check-jce)]
    [clojure.pprint :refer (pprint)]
    [taoensso.timbre :refer (refer-timbre)]
@@ -15,7 +16,6 @@
    [re-mote.repl.stress :refer (refer-stress)]
    [re-mote.repl.output :refer (refer-out)]
    [re-mote.repl.publish :refer (refer-publish)]
-   [re-mote.repl.re-conf :refer (refer-reconf)]
    [re-mote.repl.spec :refer (refer-spec)]
    [re-mote.repl.octo :refer (refer-octo)]
    [re-mote.repl.restic :refer (refer-restic)]
@@ -46,7 +46,6 @@
 (refer-zero-sensors)
 (refer-pkg)
 (refer-zero-pkg)
-(refer-reconf)
 (refer-spec)
 (refer-zfs)
 (refer-publish)
@@ -58,6 +57,7 @@
 (refer-desktop)
 (refer-stress)
 (refer-osquery)
+(refer-cog)
 
 (defn setup
   "Setup Re-mote environment as a part of the Reload workflow"
@@ -181,13 +181,13 @@
 
 ; Reconf
 (defn ^{:category :reconf} provision
-  "Sync Reconf source code into the remote machine and apply it:
-     (provision hs {:src \"base-sandbox\"})
+  "Provision hosts copying local file resources and then applying f:
+     (provision hs {:src src :f f :args args})
   "
-  [hs {:keys [src args]}]
-  {:pre [src]}
+  [hs {:keys [src f args]}]
+  {:pre [src f args]}
   (let [dest (<< "/tmp/~(fs/base-name src)")]
-    (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (apply-recipes dest (or args "")) | (pretty "provision"))))
+    (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (run-inlined f args) | (pretty "provision"))))
 
 (defn ^{:category :serverspec} spec
   "Run spec test against hosts
