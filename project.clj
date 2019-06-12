@@ -17,6 +17,7 @@
      [fipp "0.6.14"]
      [narkisr/clansi "1.2.0"]
      [mvxcvi/puget "1.1.0"]
+     [rm-hull/table "0.7.0"]
 
      ; logging
      [com.taoensso/timbre "4.10.0"]

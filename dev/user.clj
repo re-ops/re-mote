@@ -1,8 +1,9 @@
 (ns user
   (:require
    ; setup
+   [re-share.config.core :as conf]
+   [re-share.config.secret :refer (load-secrets)]
    [re-share.zero.keys :as k]
-   [re-share.config :as conf]
    [clojure.java.io :as io]
    [clojure.repl :refer :all]
    [re-mote.log :refer (refer-logging)]
@@ -32,6 +33,8 @@
 (refer-zero-fns)
 
 (defn start []
+  (load-secrets "secrets" "/tmp/secrets.edn" "keys/secret.gpg")
+  (conf/load-config)
   (setup-logging)
   (k/create-server-keys ".curve")
   (mount/start #'elastic #'zero #'r/riemann)
