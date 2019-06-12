@@ -23,8 +23,7 @@
   (s/fn [] :ok))
 
 (defn refer-zero-fns []
-  (require '[re-mote.zero.functions :as fns :refer
-             (listdir call named)]))
+  (require '[re-mote.zero.functions :as fns :refer (listdir call)]))
 
 (defn call
   "Launch a remote clojure serializable functions on zeromq hosts"
