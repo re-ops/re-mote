@@ -12,7 +12,8 @@
   ReCog
   (run-inlined
     ([this _ f args]
-     [this (run-hosts this f args)])))
+     (let [f' (deref (resolve (symbol f)))]
+       [this (run-hosts this f' args)]))))
 
 (defn refer-cog []
   (require '[re-mote.repl.cog :as cog :refer (run-inlined)]))
