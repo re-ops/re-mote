@@ -88,6 +88,6 @@
   "assert pipeline function output"
   [v]
   (if-not (s/valid? ::pipeline v)
-    (let [exp (s/explain-data ::pipeline v)]
+    (let [exp (expound/expound ::pipeline v)]
       (throw (ex-info (<< "function output is not valid ~{exp}") {:explain exp})))
     v))
