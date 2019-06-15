@@ -1,5 +1,6 @@
 (ns re-mote.repl.base
   (:require
+   [re-mote.log :refer (gen-uuid)]
    [clojure.java.shell :refer [sh]]
    [clojure.core.strint :refer (<<)]
    [clojure.edn :as edn]
@@ -46,7 +47,7 @@
     (debug out))
   (when-not (zero? exit)
     (error err exit))
-  {:code exit :out out :error err})
+  {:code exit :error {:out out} :uuid (gen-uuid)})
 
 (def safe (comp safe-output sh))
 
