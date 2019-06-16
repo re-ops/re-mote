@@ -179,23 +179,17 @@
   [hs pkg]
   (run (zpkg/install hs pkg) | (downgrade pkg/install [pkg]) | (pretty "package install")))
 
-; Reconf
-(defn ^{:category :reconf} provision
+; Re-cog
+(defn ^{:category :re-cog} provision
   "Provision hosts copying local file resources and then applying f:
-     (provision hs {:src src :f f :args args})
+     (provision hs into-hostnames {:src src :f f :args args})
+
+   * into-hostnames - A function that maps result Hosts ips into hostnames
   "
-  [hs {:keys [src f args]}]
+  [hs into-hostnames {:keys [src f args]}]
   {:pre [src f args]}
   (let [dest (<< "/tmp/~(fs/base-name src)")]
-    (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (run-inlined f args) | (pretty "provision"))))
-
-(defn ^{:category :serverspec} spec
-  "Run spec test against hosts
-     (spec hs \"/home/foo/base-sandbox\" \"minimal\")
-  "
-  [hs src target]
-  {:pre [src]}
-  (run (spc/spec hs src target) |  (pretty "spec")))
+    (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (convert into-hostnames) | (run-inlined f args) | (pretty "provision"))))
 
 ; Re-gent
 (defn ^{:category :re-gent} deploy

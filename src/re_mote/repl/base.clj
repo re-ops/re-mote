@@ -93,6 +93,9 @@
     [this f]
     [this m f]))
 
+(defprotocol Transform
+  (convert [this m f]))
+
 (defn rsync [src target host {:keys [user ssh-key]}]
   (let [opts (if ssh-key (<< "-ae 'ssh -i ~{ssh-key}'") "-a")
         dest (<< "~{user}@~{host}:~{target}")]
@@ -129,6 +132,10 @@
       (if-not (empty? failed)
         [this (merge-results (apply f (Hosts. auth failed) args) m)]
         [this m])))
+
+  Transform
+  (convert [{:keys [auth hosts]} m f]
+    [(Hosts. auth (mapv f hosts)) m])
 
   Shell
   (ls [this target flags]
@@ -184,13 +191,8 @@
   [success _ hs]
   (filter (set (map :host success)) hs))
 
-(defn into-hosts
-  "builds hosts from an edn file"
-  [f]
-  (let [{:keys [auth hosts]} (edn/read-string (slurp (file f)))]
-    (Hosts. auth hosts)))
-
 (defn refer-base []
-  (require '[re-mote.repl.base :as base :refer (run> run | initialize pick successful ping ls into-hosts
-                                                     exec scp extract rm nohup mkdir sync- sync-2 downgrade null)]))
+  (require '[re-mote.repl.base :as base :refer
+             (run> run | initialize pick successful ping ls convert
+                   exec scp extract rm nohup mkdir sync- sync-2 downgrade null)]))
 
