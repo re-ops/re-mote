@@ -13,7 +13,7 @@
   (run-inlined
     ([this _ f args]
      (let [f' (deref (resolve (symbol f)))]
-       [this (run-hosts this f' args)]))))
+       [this (run-hosts this f' args [5 :minute])]))))
 
 (defn refer-cog []
   (require '[re-mote.repl.cog :as cog :refer (run-inlined)]))
