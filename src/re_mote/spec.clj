@@ -89,5 +89,5 @@
   [v]
   (if-not (s/valid? ::pipeline v)
     (let [exp (expound/expound ::pipeline v)]
-      (throw (ex-info (<< "function output is not valid ~{exp}") {:explain exp})))
+      (throw (ex-info (<< "function output is not valid ~{exp}") {:explain exp :value v})))
     v))
