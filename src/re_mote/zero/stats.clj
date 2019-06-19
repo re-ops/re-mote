@@ -11,7 +11,7 @@
    [com.rpl.specter :as s :refer (transform select MAP-VALS ALL ATOM keypath multi-path)]
    [clj-time.core :as t]
    [clj-time.coerce :refer (to-long)]
-   [re-mote.zero.shell :refer (args)]
+   [re-cog.scripts.common :refer (shell-args)]
    [re-cog.resources.exec :refer (shell)]
    [re-share.schedule :refer (watch seconds)]
    re-mote.repl.base)
@@ -94,7 +94,7 @@
     ([this]
      (into-dec (multi-nav :blocks :used :available)
                (zip this
-                    (run-hosts this shell (args du-script) timeout)
+                    (run-hosts this shell (shell-args du-script) timeout)
                     :stats :du :filesystem :type :blocks :used :available :perc :mount)))
     ([this _]
      (du this)))
@@ -104,23 +104,23 @@
      (net this))
     ([this]
      (into-dec
-      (zip this (run-hosts this shell (args net-script) timeout)
+      (zip this (run-hosts this shell (shell-args net-script) timeout)
            :stats :net :rxpck/s :txpck/s :rxkB/s :txkB/s :rxcmp/s :txcmp/s :rxmcst/s :ifutil))))
   (cpu
     ([this]
-     (into-dec (zip this (run-hosts this shell (args cpu-script) timeout) :stats :cpu :usr :sys :idle)))
+     (into-dec (zip this (run-hosts this shell (shell-args cpu-script) timeout) :stats :cpu :usr :sys :idle)))
     ([this _]
      (cpu this)))
 
   (free
     ([this]
-     (into-dec (zip this (run-hosts this shell (args free-script) timeout) :stats :free :total :used :free :shared :buff-cache :available)))
+     (into-dec (zip this (run-hosts this shell (shell-args free-script) timeout) :stats :free :total :used :free :shared :buff-cache :available)))
     ([this _]
      (free this)))
 
   (load-avg
     ([this]
-     (into-dec (zip this (run-hosts this shell (args load-script) timeout) :stats :load :one :five :fifteen :cores)))
+     (into-dec (zip this (run-hosts this shell (shell-args load-script) timeout) :stats :load :one :five :fifteen :cores)))
     ([this _]
      (free this)))
 

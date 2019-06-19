@@ -2,7 +2,7 @@
   "Sensors monitoring using agent"
   (:require
    [clojure.string :refer (split)]
-   [re-mote.zero.shell :refer (args)]
+   [re-cog.scripts.common :refer (shell-args)]
    [re-mote.zero.stats :refer (safe-dec)]
    [com.rpl.specter :as s :refer (transform select MAP-VALS ALL multi-path)]
    [re-cog.resources.exec :refer (shell)]
@@ -40,7 +40,7 @@
 (extend-type Hosts
   Sensors
   (temperature [this]
-    (let [{:keys [success failure] :as res} (run-hosts this shell (args temp-script) timeout)]
+    (let [{:keys [success failure] :as res} (run-hosts this shell (shell-args temp-script) timeout)]
       (into-dec [this (assoc res :success (map assoc-stats success))]))))
 
 (defn refer-zero-sensors []

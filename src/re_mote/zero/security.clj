@@ -3,7 +3,7 @@
   (:require
    [re-mote.zero.pipeline :refer (run-hosts)]
    [taoensso.timbre :refer (refer-timbre)]
-   [re-mote.zero.shell :refer (args)]
+   [re-cog.scripts.common :refer (shell-args)]
    [re-mote.zero.stats :refer (zip comma)]
    [re-mote.scripts.security :refer (ufw-script)]
    [re-cog.resources.exec :refer (shell)]
@@ -29,7 +29,7 @@
     [this (run-hosts this scan-hosts ["/usr/bin/" flags network] [5 :minute])])
   (rules
     ([this]
-     (zip this (run-hosts this shell (args ufw-script) timeout) :security :rules :from :action :to comma))))
+     (zip this (run-hosts this shell (shell-args ufw-script) timeout) :security :rules :from :action :to comma))))
 
 (defn refer-security []
   (require '[re-mote.zero.security :as security :refer (rules open-ports)]))

@@ -27,13 +27,17 @@
     [this pkg]
     [this m pkg]))
 
+(def update-script
+  (script
+   (set! DEBIAN_FRONTEND "noninteractive")
+   ("sudo" "apt" "update")))
 (extend-type Hosts
   Pkg
   (update [this _]
     (update this))
 
   (update [this]
-    [this (run-hosts this (script ("sudo" "apt" "update")))])
+    [this (run-hosts this update-script)])
 
   (upgrade [this _]
     (upgrade this))

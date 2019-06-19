@@ -27,7 +27,7 @@
     ([this _]
      (update this))
     ([this]
-     [this (run-hosts this pkg/update [] [2 :minute])]))
+     [this (run-hosts this pkg/update- [] [2 :minute])]))
 
   (upgrade
     ([this _]

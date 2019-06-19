@@ -1,7 +1,7 @@
 (ns re-mote.repl.re-gent
   "Copy .curve server public key and run agent remotly"
   (:require
-   [re-mote.zero.shell :refer (validate!)]
+   [re-cog.scripts.common :refer (validate!)]
    [clojure.java.shell :refer (sh with-sh-dir)]
    [pallet.stevedore :refer (script chained-script)]
    [clojure.core.strint :refer (<<)]
