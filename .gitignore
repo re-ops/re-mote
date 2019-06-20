@@ -25,3 +25,5 @@ tty.gif
 .ruby-gemset
 .ruby-version
 .eastwood
+secrets
+keys
