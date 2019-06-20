@@ -3,14 +3,11 @@
    [re-mote.log :refer (gen-uuid)]
    [clojure.java.shell :refer [sh]]
    [clojure.core.strint :refer (<<)]
-   [clojure.edn :as edn]
-   [clojure.tools.trace :as t]
-   [clojure.java.io :refer (reader file)]
    [taoensso.timbre :refer (refer-timbre)]
    [clojure.core.incubator :refer (dissoc-in)]
    [re-mote.ssh.pipeline :refer (run-hosts upload-hosts)]
    [re-mote.spec :refer (pipeline!)]
-   [pallet.stevedore.bash]
+   [re-cog.common :refer (bind-bash)]
    [pallet.stevedore :refer (script)]))
 
 (refer-timbre)
@@ -22,7 +19,7 @@
         grouped (group-by :code results)]
     {:hosts hosts :success (grouped 0) :failure (dissoc grouped 0)}))
 
-(.bindRoot #'pallet.stevedore/*script-language* :pallet.stevedore.bash/bash)
+(bind-bash)
 
 (defmacro | [source fun & funs]
   (let [f (first fun) args (rest fun)]
