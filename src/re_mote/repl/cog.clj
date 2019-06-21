@@ -10,10 +10,9 @@
 
 (extend-type Hosts
   ReCog
-  (run-inlined
-    ([this _ f args]
-     (let [f' (deref (resolve (symbol f)))]
-       [this (run-hosts this f' args [5 :minute])]))))
+  (run-inlined [this _ f args]
+    (let [f' (deref (resolve (symbol f)))]
+      [this (run-hosts this f' args [5 :minute])])))
 
 (defn refer-cog []
   (require '[re-mote.repl.cog :as cog :refer (run-inlined)]))
