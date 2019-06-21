@@ -189,7 +189,7 @@
   [hs into-hostnames {:keys [src f args]}]
   {:pre [src f args]}
   (let [dest (<< "/tmp/~(fs/base-name src)")]
-    (run (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (convert into-hostnames) | (run-inlined f args) | (pretty "provision"))))
+    (run> (rm hs dest "-rf") | (sync- src dest) | (pick successful) | (convert into-hostnames) | (run-inlined f args) | (pretty "provision"))))
 
 ; Re-gent
 (defn ^{:category :re-gent} deploy
