@@ -57,4 +57,7 @@
     (debug "server proxy shutdown called")
     (reset! front-port nil)))
 
-(defn used-port [] @front-port)
+(defn used-port
+  {:post [(comp not nil?)]}
+  []
+  @front-port)
