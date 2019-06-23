@@ -32,9 +32,15 @@
     (.setTimeout operation-timeout)))
 
 (defn ssh-strap [{:keys [host ssh-port ssh-key user]}]
-  (doto (sshj-client)
-    (.connect host (or ssh-port default-port))
-    (.authPublickey user ^"[Ljava.lang.String;" (into-array [(or ssh-key default-key)]))))
+  (try
+    (doto (sshj-client)
+      (.connect host (or ssh-port default-port))
+      (.authPublickey user ^"[Ljava.lang.String;" (into-array [(or ssh-key default-key)])))
+    (catch Exception e
+      (if-let [m (some-> e .getCause .getMessage)]
+        (when (.contains m "Problem getting public")
+          (throw (ex-info "Cannot load public key (new OPENSSH format keys aren't supported by sshj)" {:ssh-key ssh-key})))
+        (throw e)))))
 
 (defmacro with-ssh [remote & body]
   `(let [~'ssh (ssh-strap ~remote)]
