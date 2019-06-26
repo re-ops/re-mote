@@ -54,7 +54,7 @@
      [re-scan "0.2.1"]
 
      ; persistency
-     [rubber "0.3.4"]
+     [rubber "0.3.5"]
 
      ; fs utilities
      [me.raynes/fs "1.4.6"]
