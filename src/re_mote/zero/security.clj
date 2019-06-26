@@ -5,7 +5,7 @@
    [taoensso.timbre :refer (refer-timbre)]
    [re-cog.scripts.common :refer (shell-args)]
    [re-mote.zero.stats :refer (zip comma)]
-   [re-mote.scripts.security :refer (ufw-script)]
+   [re-cog.scripts.security :refer (ufw-script)]
    [re-cog.resources.exec :refer (shell)]
    [re-cog.facts.security :refer (scan-hosts scan-ports)]
    re-mote.repl.base)

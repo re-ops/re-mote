@@ -2,7 +2,7 @@
   "General machine stats"
   (:require
    [re-mote.repl.base]
-   [re-mote.scripts.stats :refer (net-script cpu-script free-script load-script du-script)]
+   [re-cog.scripts.stats :refer (net-script cpu-script free-script load-script du-script)]
    [clojure.core.strint :refer (<<)]
    [clojure.string :refer (split split-lines)]
    [clojure.tools.trace :as tr]

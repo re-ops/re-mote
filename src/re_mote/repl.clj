@@ -21,7 +21,6 @@
    [re-mote.repl.restic :refer (refer-restic)]
    [re-mote.zero.stats :refer (refer-stats)]
    [re-mote.zero.security :refer (refer-security)]
-   [re-mote.repl.sensors :refer (refer-sensors)]
    [re-mote.zero.sensors :refer (refer-zero-sensors)]
    [re-mote.repl.re-gent :refer (refer-regent)]
    [re-mote.zero.facts :refer (refer-facts)]
@@ -42,7 +41,6 @@
 (refer-out)
 (refer-stats)
 (refer-security)
-(refer-sensors)
 (refer-zero-sensors)
 (refer-pkg)
 (refer-zero-pkg)
