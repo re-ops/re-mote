@@ -1,5 +1,4 @@
-(ns ^{:clojure.tools.namespace.repl/load false
-      :clojure.tools.namespace.repl/unload false}
+(ns
  re-mote.zero.cycle
   (:require
    [taoensso.timbre :refer  (refer-timbre)]
