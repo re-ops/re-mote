@@ -40,6 +40,9 @@
 (defmethod into-events :free free-events [m]
   (stat-events m))
 
+(defmethod into-events :entropy entropy-events [m]
+  (stat-events m))
+
 (defmethod into-events :net network-events [m]
   (stat-events m))
 
