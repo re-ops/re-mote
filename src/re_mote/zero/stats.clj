@@ -2,7 +2,7 @@
   "General machine stats"
   (:require
    [re-mote.repl.base]
-   [re-cog.scripts.stats :refer (net-script cpu-script free-script load-script du-script)]
+   [re-cog.scripts.stats :refer (net-script cpu-script free-script load-script du-script entropy-script)]
    [clojure.core.strint :refer (<<)]
    [clojure.string :refer (split split-lines)]
    [clojure.tools.trace :as tr]
@@ -40,6 +40,7 @@
 
 (defprotocol Stats
   (du [this] [this m])
+  (entropy [this] [this m])
   (net [this] [this m])
   (cpu [this] [this m])
   (free [this] [this m])
@@ -98,6 +99,12 @@
                     :stats :du :filesystem :type :blocks :used :available :perc :mount)))
     ([this _]
      (du this)))
+
+  (entropy
+    ([this]
+     (into-dec (zip this (run-hosts this shell (shell-args entropy-script) timeout) :stats :entropy :available)))
+    ([this _]
+     (entropy this)))
 
   (net
     ([this _]
@@ -169,7 +176,7 @@
     (apply mapcat avg-data-point (select [ATOM MAP-VALS r k] readings))))
 
 (defn refer-stats []
-  (require '[re-mote.zero.stats :as stats :refer (load-avg net cpu free du collect sliding setup-stats)]))
+  (require '[re-mote.zero.stats :as stats :refer (load-avg net cpu free du entropy collect sliding setup-stats)]))
 
 (comment
   (reset! readings {}))

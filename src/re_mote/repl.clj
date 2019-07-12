@@ -112,6 +112,13 @@
   [hs]
   (run> (cpu hs) | (enrich "cpu") | (persist) | (riemann)))
 
+(defn ^{:category :stats} entropy-persist
+  "Collect Available entropy with persistence (metrics collection):
+     (entropy-persist hs)
+  "
+  [hs]
+  (run> (entropy hs) | (enrich "entropy") | (persist) | (riemann)))
+
 (defn ^{:category :stats} ram-persist
   "Collect free and used RAM usage with persistence (metrics collection):
      (ram-persist hs)
