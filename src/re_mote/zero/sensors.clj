@@ -1,47 +1,51 @@
 (ns re-mote.zero.sensors
   "Sensors monitoring using agent"
   (:require
-   [clojure.string :refer (split)]
+   [clojure.spec.alpha :as s]
+   [clojure.string :refer (split join trim replace-first)]
    [re-cog.scripts.common :refer (shell-args)]
    [re-mote.zero.stats :refer (safe-dec)]
-   [com.rpl.specter :as s :refer (transform select MAP-VALS ALL multi-path)]
+   [com.rpl.specter :refer (transform select MAP-VALS ALL multi-path)]
    [re-cog.resources.exec :refer (shell)]
    [re-mote.zero.pipeline :refer (run-hosts)]
    [re-cog.scripts.sensors :refer (temp-script)]
    re-mote.repl.base)
   (:import [re_mote.repl.base Hosts]))
 
-(defn parse-line
-  [line]
-  (let [[f s] (split line #"\(")
-        corentemp #"(.*)\:\s*\+(\d*\.\d*)"
-        [dev r] (rest (re-find corentemp  f))
-        limitntemp #"(\w*)\s*\=\s*\+(\d*\.\d*)"
-        keywordize (fn [[k v]] [(keyword k) v])
-        limits (mapv (fn [l] (keywordize (rest (re-find limitntemp l)))) (split s #"\,"))]
-    {:device dev :temp r :limits (into {} limits)}))
+(defn into-map
+  "Convert key value pairs into a map"
+  [ps]
+  (into {}
+        (map
+         (fn [p]
+           (let [[k v] (split p #"\:\s")]
+             [(keyword (replace-first (trim k) #".*\_" "")) (safe-dec v)])) ps)))
 
-(defn parse-lines [lines]
-  (mapv parse-line (filter (fn [line] (.contains line "Core")) lines)))
+(defn process-section [[parent & metrics]]
+  (letfn [(into-key [s] (join "" (drop-last s)))]
+    (let [sub-sections (partition 2 (partition-by (fn [line] (re-matches #".*\:$" line)) metrics))]
+      {(keyword parent)
+       (mapv
+        (fn [[[k] pairs]]
+          (let [device (into-key k)]
+            (merge {:device device} (into-map pairs)))) sub-sections)})))
 
 (defn assoc-stats [{:keys [host result] :as m}]
-  (let [sections (filter (comp empty? (partial filter empty?)) (partition-by empty? (split (result :out) #"\n")))
-        ms (apply merge (mapv (fn [[f & rs]] {(keyword f) (parse-lines rs)}) sections))]
-    (assoc-in m [:stats :temperatures] ms)))
+  (let [lines (split (result :out) #"\n")
+        sections (filter (comp empty? (partial filter empty?)) (partition-by empty? lines))]
+    (assoc-in m [:stats :temperature] (into {} (map process-section sections)))))
 
 (defprotocol Sensors
   (temperature [this]))
 
 (def timeout [2 :second])
 
-(defn into-dec [[this readings]]
-  [this (transform [:success ALL :stats MAP-VALS MAP-VALS ALL (multi-path [:limits MAP-VALS] :temp)] safe-dec readings)])
-
 (extend-type Hosts
   Sensors
   (temperature [this]
     (let [{:keys [success failure] :as res} (run-hosts this shell (shell-args temp-script) timeout)]
-      (into-dec [this (assoc res :success (map assoc-stats success))]))))
+      [this (assoc res :success (map assoc-stats success))])))
 
 (defn refer-zero-sensors []
   (require '[re-mote.zero.sensors :as zsens]))
+

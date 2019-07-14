@@ -21,7 +21,9 @@
    [re-mote.zero.results :refer (pretty-result)]
    [re-mote.zero.functions :refer (refer-zero-fns)]
    [re-mote.zero.facts :refer (refer-facts)]
-   [re-mote.repl :refer :all])
+   [re-mote.repl :refer :all]
+   ; testing
+   [clojure.test])
   (:import
    java.io.File
    re_mote.repl.base.Hosts))
@@ -46,14 +48,6 @@
 
 (declare go)
 
-(defn refesh-on [ctx {:keys [kind]}]
-  (when (= kind :create)
-    (binding [*ns* (find-ns 'user)]
-      (refresh)
-      (stop)
-      (go)))
-  ctx)
-
 (defn go
   []
   (start)
@@ -63,6 +57,13 @@
 (defn reset []
   (stop)
   (refresh :after 'user/go))
+
+(defn require-tests []
+  (require 're-mote.test.sensors))
+
+(defn run-tests []
+  (clojure.test/run-tests
+    're-mote.test.sensors))
 
 (defn clrs
   "clean repl"
