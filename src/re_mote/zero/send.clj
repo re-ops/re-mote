@@ -1,10 +1,7 @@
 (ns re-mote.zero.send
   "Queue for sending back responses to the agents"
   (:require
-   [clojure.core.strint :refer  (<<)]
-   [taoensso.timbre :refer  (refer-timbre)]
-   [taoensso.nippy :as nippy :refer (freeze thaw)]
-   [re-share.zero.common :refer (close)])
+   [taoensso.timbre :refer  (refer-timbre)])
   (:import
    [java.util.concurrent TimeUnit]
    [org.zeromq ZMQ ZMsg]))
