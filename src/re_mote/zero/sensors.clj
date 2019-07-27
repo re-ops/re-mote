@@ -33,16 +33,16 @@
 (defn assoc-stats [{:keys [host result] :as m}]
   (let [lines (split (result :out) #"\n")
         sections (filter (comp empty? (partial filter empty?)) (partition-by empty? lines))]
-    (assoc-in m [:stats :temperature] (into {} (map process-section sections)))))
+    (assoc-in m [:stats :sensor] (into {} (map process-section sections)))))
 
 (defprotocol Sensors
-  (temperature [this]))
+  (sensor [this]))
 
 (def timeout [2 :second])
 
 (extend-type Hosts
   Sensors
-  (temperature [this]
+  (sensor [this]
     (let [{:keys [success failure] :as res} (run-hosts this shell (shell-args temp-script) timeout)]
       [this (assoc res :success (map assoc-stats success))])))
 

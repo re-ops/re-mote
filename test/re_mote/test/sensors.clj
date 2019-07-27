@@ -78,20 +78,20 @@ temp1:
 (def arm-output "39704")
 
 (def expected-intel
-  {:temperature {:coretemp-isa-0000 [{:device "Package id 0", :input 55.000M, :max 87.000M, :crit 105.000M, :alarm 0.000M}
-                                     {:device "Core 0", :input 55.000M, :max 87.000M, :crit 105.000M, :alarm 0.000M}
-                                     {:device "Core 1", :input 55.000M, :max 87.000M, :crit 105.000M, :alarm 0.000M}
-                                     {:device "Core 2", :input 50.000M, :max 87.000M, :crit 105.000M, :alarm 0.000M}
-                                     {:device "Core 3", :input 53.000M, :max 87.000M, :crit 105.000M, :alarm 0.000M}]}})
+  {:sensor {:coretemp-isa-0000 [{:device "Package id 0", :input 55.000M, :max 87.000M, :crit 105.000M, :alarm 0.000M}
+                                {:device "Core 0", :input 55.000M, :max 87.000M, :crit 105.000M, :alarm 0.000M}
+                                {:device "Core 1", :input 55.000M, :max 87.000M, :crit 105.000M, :alarm 0.000M}
+                                {:device "Core 2", :input 50.000M, :max 87.000M, :crit 105.000M, :alarm 0.000M}
+                                {:device "Core 3", :input 53.000M, :max 87.000M, :crit 105.000M, :alarm 0.000M}]}})
 
 (def expected-amd
-  {:temperature {:w83795adg-i2c-1-2f [{:device "3VSB", :input 3.240M, :min 2.964M, :max 3.630M, :alarm 0.000M}
-                                      {:device "fan1", :input 702.000M, :min 329.000M, :alarm 0.000M}
-                                      {:device "temp1", :input 38.750M, :max 109.000M, :hyst 109.000M, :crit 109.000M, :alarm 0.000M, :type 3.000M}
-                                      {:device "temp2", :input 41.750M, :max 105.000M, :hyst 105.000M, :crit 105.000M, :alarm 0.000M, :type 3.000M}
-                                      {:device "temp5", :input 18.250M, :max 39.000M, :hyst 44.000M, :crit 44.000M, :alarm 0.000M, :type 4.000M}
-                                      {:device "intrusion0", :alarm 0.000M}]
-                 :k10temp-pci-00c3 [{:device "temp1", :input 43.000M, :max 70.000M, :crit 100.000M, :hyst 95.000M}]}})
+  {:sensor {:w83795adg-i2c-1-2f [{:device "3VSB", :input 3.240M, :min 2.964M, :max 3.630M, :alarm 0.000M}
+                                 {:device "fan1", :input 702.000M, :min 329.000M, :alarm 0.000M}
+                                 {:device "temp1", :input 38.750M, :max 109.000M, :hyst 109.000M, :crit 109.000M, :alarm 0.000M, :type 3.000M}
+                                 {:device "temp2", :input 41.750M, :max 105.000M, :hyst 105.000M, :crit 105.000M, :alarm 0.000M, :type 3.000M}
+                                 {:device "temp5", :input 18.250M, :max 39.000M, :hyst 44.000M, :crit 44.000M, :alarm 0.000M, :type 4.000M}
+                                 {:device "intrusion0", :alarm 0.000M}]
+            :k10temp-pci-00c3 [{:device "temp1", :input 43.000M, :max 70.000M, :crit 100.000M, :hyst 95.000M}]}})
 
 (deftest sensors-parsing
   (is (= (:stats (assoc-stats {:host "foo" :result {:out intel-output}})) expected-intel))

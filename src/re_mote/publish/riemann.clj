@@ -34,8 +34,13 @@
     (map
      (fn [e] (merge e cores)) (stat-events m))))
 
-(defmethod into-events :temperature tmp-events [m]
-  (stat-events m))
+(defmethod into-events :sensor tmp-events [{:keys [type stats timestamp] :as m}]
+  (let [common (select-keys m #{:code :host})]
+    (mapcat
+     (fn [[k vs]]
+       (map
+        (fn [{:keys [input device] :as v}]
+          (merge {:ttl 60 :service (<< "sensor/~{device}") :time timestamp :metric input} v common)) vs)) (stats (keyword type)))))
 
 (defmethod into-events :free free-events [m]
   (stat-events m))

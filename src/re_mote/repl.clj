@@ -133,12 +133,12 @@
   [hs]
   (run> (net hs) | (enrich "net") | (persist) | (riemann)))
 
-(defn ^{:category :stats} temperature-persist
-  "Collect CPU temperature (using lm-sensors) and persist (metric collection):
-     (temperature-persist hs)
+(defn ^{:category :stats} sensor-persist
+  "Collect Sensor data (using lm-sensors) and persist (metric collection):
+     (sensor-persist hs)
    "
   [hs]
-  (run> (zsens/temperature hs) | (enrich "temperature") | (persist) | (riemann)))
+  (run> (zsens/sensor hs) | (enrich "sensor") | (persist) | (riemann)))
 
 (defn ^{:category :stats} load-persist
   "Read average load and persist is (metrics collection):
