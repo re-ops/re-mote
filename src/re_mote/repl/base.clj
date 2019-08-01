@@ -1,6 +1,6 @@
 (ns re-mote.repl.base
   (:require
-   [re-mote.log :refer (gen-uuid)]
+   [re-share.core :refer (gen-uuid)]
    [clojure.java.shell :refer [sh]]
    [clojure.core.strint :refer (<<)]
    [taoensso.timbre :refer (refer-timbre)]

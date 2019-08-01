@@ -2,7 +2,7 @@
   (:require
    [taoensso.timbre :refer  (refer-timbre)]
    [re-mote.zero.send :refer (send-)]
-   [re-mote.log :refer (gen-uuid)]
+   [re-share.core :refer (gen-uuid)]
    [clojure.java.shell :refer [sh]]
    [re-cog.meta :refer (fn-meta)]
    [serializable.fn :as s]

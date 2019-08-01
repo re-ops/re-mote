@@ -70,9 +70,6 @@
   [s]
   (watch :collected-logs-purge (seconds s) (fn [] (trace "purging logs at" (t/now)) (purge))))
 
-(defn gen-uuid []
-  (.replace (str (java.util.UUID/randomUUID)) "-" ""))
-
 (defn setup-logging
   "Sets up logging configuration:
     - stale logs removale interval

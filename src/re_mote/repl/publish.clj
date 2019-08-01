@@ -8,7 +8,8 @@
    [clojure.java.io :refer (file)]
    [clojure.core.strint :refer (<<)]
    [taoensso.timbre :refer (refer-timbre)]
-   [re-mote.log :refer (gen-uuid get-logs)]
+   [re-share.core :refer (gen-uuid)]
+   [re-mote.log :refer (get-logs)]
    [re-mote.repl.base :refer (refer-base)])
   (:import [re_mote.repl.base Hosts]))
 

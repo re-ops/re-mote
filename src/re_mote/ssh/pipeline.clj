@@ -1,11 +1,12 @@
 (ns re-mote.ssh.pipeline
   (:require
+   [re-share.core :refer (gen-uuid)]
    [clojure.string :refer (join)]
    [re-mote.spec :as re-spec :refer (valid?)]
    [clojure.core.strint :refer (<<)]
    [me.raynes.fs :as fs]
    [re-mote.ssh.transport :refer (execute upload)]
-   [re-mote.log :refer (collect-log get-log gen-uuid)]
+   [re-mote.log :refer (collect-log get-log)]
    [clojure.core.async :refer (<!! thread-call) :as async]))
 
 (defn- execute-uuid [auth script host]
