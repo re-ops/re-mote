@@ -4,10 +4,7 @@
    [taoensso.timbre :refer  (refer-timbre)]
    [clojure.core.strint :refer  (<<)]
    [re-share.config.core :as conf]
-   [clj-time.core :refer (now)]
-   [clj-time.coerce :as c]
    [riemann.client :as r]
-   [clojure.set :refer (rename-keys)]
    [com.rpl.specter :refer (transform ALL MAP-VALS select multi-path filterer)]
    [mount.core :as mount :refer (defstate)]))
 
