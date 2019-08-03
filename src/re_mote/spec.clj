@@ -40,7 +40,7 @@
 (s/def ::success
   (s/coll-of
    (s/keys
-    :opt-un [::stats ::uuid ::profile ::result]
+    :opt-un [::uuid ::profile ::result]
     :req-un [::code ::host])))
 
 (s/def ::error
@@ -93,3 +93,7 @@
     (let [exp (expound/expound ::pipeline v)]
       (throw (ex-info (<< "Pipline function output does not conform to the spec ~{exp}") {:explain exp :value v})))
     v))
+
+(comment
+  (require '[clojure.spec.gen.alpha :as gen])
+  (gen/generate (s/gen ::pipeline)))
