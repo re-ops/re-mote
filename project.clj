@@ -67,6 +67,7 @@
 
      ; spec
      [expound "0.7.2"]
+     [org.clojure/test.check "0.9.0"]
     ]
 
   :exclusions [org.clojure/clojure]
