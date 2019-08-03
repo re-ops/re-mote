@@ -63,7 +63,7 @@
 
 (defn run-tests []
   (clojure.test/run-tests
-    're-mote.test.sensors))
+   're-mote.test.sensors))
 
 (defn clrs
   "clean repl"
