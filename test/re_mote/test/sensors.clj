@@ -1,5 +1,6 @@
 (ns re-mote.test.sensors
-  (:require [re-mote.zero.sensors :refer (assoc-stats)])
+  (:require
+   [re-mote.zero.sensors :refer (assoc-stats)])
   (:use clojure.test))
 
 (def intel-output
