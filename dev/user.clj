@@ -59,10 +59,13 @@
   (refresh :after 'user/go))
 
 (defn require-tests []
-  (require 're-mote.test.sensors))
+  (require 
+    're-mote.test.cog
+    're-mote.test.sensors))
 
 (defn run-tests []
   (clojure.test/run-tests
+    're-mote.test.cog
    're-mote.test.sensors))
 
 (defn clrs

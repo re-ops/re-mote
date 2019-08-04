@@ -11,18 +11,30 @@
   (run-inlined [this _ f args])
   (run-plan [this _ p args]))
 
-(defn combine-success [{:keys [success failure] :as acc} f curr-success]
-  (if success
-    (let [host-results (into {} (map (fn [{:keys [result host]}] {host {f result}}) curr-success))]
-      (mapv (fn [{:keys [host] :as v}] (update v :result (partial merge (host-results host)))) success))
-    (transform [ALL :result] (fn [v] {f v}) curr-success)))
+(defn purge-errors
+  "Purge failing hosts from the success list (they had previouse successes and now they failed"
+  [{:keys [success failure] :as m}]
+  (let [failing-hosts (into #{} (select [MAP-VALS ALL :host] failure))]
+    (update m :success (partial filter (comp not failing-hosts :host)))))
 
-(defn combine-results [f {:keys [hosts] :as m} {:keys [failure success]}]
+(defn combine-success
+  "Combine the current run success output with the accumulated success value"
+  [f {:keys [success failure] :as curr-run}]
+  (fn [combined-success]
+    (if combined-success
+      (let [host-results (into {} (map (fn [{:keys [result host]}] {host {f result}}) success))]
+        (mapv (fn [{:keys [host] :as v}] (update v :result (partial merge (host-results host)))) combined-success))
+      (transform [ALL :result] (fn [v] {f v}) success))))
+
+(defn combine-results
+  "Combine current run result with the accumulated values"
+  [f {:keys [hosts] :as m} {:keys [failure] :as curr-run}]
   (let [failing (into #{} (select [MAP-VALS ALL :host] failure))]
     (->  m
-         (combine-success f success)
-         (update :failure (fn [v] (merge-with conj (or v {}) failure)))
-         (assoc :hosts (filter (comp not failing) hosts)))))
+         (update :success (combine-success f curr-run))
+         (update :failure (fn [v] (merge-with into (or v {}) failure)))
+         (assoc :hosts (filter (comp not failing) hosts))
+         purge-errors)))
 
 (defn run-recipe [args]
   "We run a recipe function and merge its results into the accumulated results which include:
