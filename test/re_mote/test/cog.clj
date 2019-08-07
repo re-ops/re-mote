@@ -56,3 +56,7 @@
     (is (= (map :host success) '("d")))
     (is (= (map :profile success) '({:time 4.7})))))
 
+(comment
+  (let [initial {:hosts ["a" "b" "c" "d"]}]
+    (reduce
+     (fn [acc [f o]] (combine-results f acc o)) initial  [['re-cog.recipes.build/packer output-1] ['re-cog.recipes.build/lein output-2]])))
