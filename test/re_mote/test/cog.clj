@@ -24,7 +24,7 @@
                           :uuid "4847d752d2b24cf28c57ffc06e569a7e"}
                          {:code 0
                           :host "d"
-                          :profile {:time 0.091009881}
+                          :profile {:time 1.5}
                           :result {:profile #{{:end 975525241689
                                                :result false
                                                :start 975525185967
@@ -40,7 +40,7 @@
                :hosts ["c" "d"]
                :success [{:code 0
                           :host "d"
-                          :profile {:time 10}
+                          :profile {:time 3.2}
                           :result {:profile #{{:end 975525241689
                                                :result {:out "download ok"}
                                                :start 975525185969
@@ -51,7 +51,8 @@
 
 (deftest single-host-sucessful
   (let [initial {:hosts ["a" "b" "c" "d"]}
-        f 're-cog.recipes.osquery/install
-        {:keys [success]} (reduce (partial combine-results f) initial [output-1 output-2])]
-    (is (= (map :host success) '("d")))))
+        runs [['re-cog.recipes.build/packer output-1] ['re-cog.recipes.build/lein output-2]]
+        {:keys [success]} (reduce (fn [acc [f out]] (combine-results f acc out)) initial runs)]
+    (is (= (map :host success) '("d")))
+    (is (= (map :profile success) '({:time 4.7})))))
 
