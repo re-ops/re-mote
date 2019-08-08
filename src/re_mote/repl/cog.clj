@@ -27,9 +27,9 @@
          (fn [{:keys [host] :as v}]
            (let [{:keys [result profile]} (last-result host)]
              (-> v
-                 (update :result (partial merge {f result}))
+                 (update :result (fn [r] (conj r (assoc result :f f))))
                  (update :profile (partial merge-with + profile))))) combined-success))
-      (transform [ALL :result] (fn [v] {f v}) success))))
+      (transform [ALL :result] (fn [v] [(assoc v :f f)]) success))))
 
 (defn combine-results
   "Combine current run result with the accumulated values"
@@ -48,7 +48,7 @@
     * A combined success result per hosts with all of its results merged per recipe function
   "
   (fn [results f]
-    (combine-results f results (run-hosts (results :hosts) (deref (resolve (symbol f))) args [5 :minute]))))
+    (combine-results (keyword (symbol f)) results (run-hosts results (deref (resolve (symbol f))) args [5 :minute]))))
 
 (extend-type Hosts
   ReCog
@@ -59,7 +59,7 @@
     (let [namespaces (deref (resolve (symbol p)))]
       (doseq [n namespaces]
         (require n))
-      [this (reduce (run-recipe args) {:succesful (this :hosts)} (execution-plan namespaces))])))
+      [this (reduce (run-recipe args) {:hosts (:hosts this)} (execution-plan namespaces))])))
 
 (defn refer-cog []
   (require '[re-mote.repl.cog :as cog :refer (run-inlined run-plan)]))
