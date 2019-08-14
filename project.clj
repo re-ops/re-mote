@@ -35,7 +35,8 @@
      [serializable-fn "1.1.4"]
      [org.clojure/data.codec "0.1.1"]
      [com.taoensso/nippy "2.14.0"]
-     [cheshire "5.8.1"]
+     [cheshire "5.9.0"]
+     [com.mikesamuel/json-sanitizer "1.2.0"]
 
      ; remote execution
      [com.hierynomus/sshj "0.26.0" :exclusions [org.slf4j/slf4j-api]]
