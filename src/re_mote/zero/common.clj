@@ -1,6 +1,6 @@
 (ns re-mote.zero.common
   (:require
-   [taoensso.nippy :as nippy :refer (freeze thaw)]
+   [taoensso.nippy :as nippy :refer (freeze)]
    [taoensso.timbre :refer  (refer-timbre)]
    [re-share.core :refer (error-m)]
    [clojure.core.strint :refer  (<<)])

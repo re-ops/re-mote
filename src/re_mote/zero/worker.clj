@@ -2,12 +2,15 @@
   (:require
    [re-mote.zero.send :refer (take-)]
    [taoensso.timbre :refer  (refer-timbre)]
-   [taoensso.nippy :as nippy :refer (freeze thaw)]
+   [clojure.data.codec.base64 :as b64]
+   [cheshire.core :refer (parse-string)]
    [re-mote.zero.common :refer (send-)]
    [re-share.zero.common :refer (close)]
    [re-share.core :refer (error-m)]
+   [taoensso.nippy :refer (thaw)]
    [re-mote.zero.management :refer (process)])
   (:import
+   [com.google.json JsonSanitizer]
    [org.zeromq ZMQ ZMsg]))
 
 (refer-timbre)
@@ -21,13 +24,20 @@
     (.setLinger 0)
     (.connect "inproc://backend")))
 
+(defn decode-message
+  [bs]
+  (parse-string (JsonSanitizer/sanitize (String. (b64/decode bs))) true))
+
+(defn decode [msg]
+  (-> msg (.pop) (.getData) decode-message))
+
 (defn unpack [msg]
   (-> msg (.pop) (.getData) thaw))
 
 (defn handle-incomming [socket]
   (try
     (when-let [msg (ZMsg/recvMsg socket ZMQ/DONTWAIT)]
-      (let [address (unpack msg) content (unpack msg)
+      (let [address (unpack msg) content (decode msg)
             {:keys [hostname uid] :as m} address]
         (debug "got message from" hostname "uid" uid)
         (when-let [reply (:reply (process m content))]
