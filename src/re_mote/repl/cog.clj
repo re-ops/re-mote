@@ -8,7 +8,6 @@
   (:import [re_mote.repl.base Hosts]))
 
 (defprotocol ReCog
-  (run-inlined [this _ f args])
   (run-plan [this _ p args]))
 
 (defn purge-failing
@@ -52,9 +51,6 @@
 
 (extend-type Hosts
   ReCog
-  (run-inlined [this _ f args]
-    (let [f' (deref (resolve (symbol f)))]
-      [this (run-hosts this f' args [5 :minute])]))
   (run-plan [this _ p args]
     (let [namespaces (deref (resolve (symbol p)))]
       (doseq [n namespaces]
@@ -62,5 +58,5 @@
       [this (reduce (run-recipe args) {:hosts (:hosts this)} (execution-plan namespaces))])))
 
 (defn refer-cog []
-  (require '[re-mote.repl.cog :as cog :refer (run-inlined run-plan)]))
+  (require '[re-mote.repl.cog :as cog :refer (run-plan)]))
 
