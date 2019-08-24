@@ -24,14 +24,34 @@
 
 (s/def ::time number?)
 
-(s/def ::shell-output
-  (s/keys :req-un [::out]))
+(s/def ::ssh-script
+  (s/keys :req-un [::out ::code]))
 
-(s/def ::fn-output
-  (s/or :maps (s/* map?) :map map?))
+(s/def ::single-fn
+  (s/keys :req-un [::err ::out ::exit]))
+
+(s/def ::end number?)
+
+(s/def ::start number?)
+
+(s/def ::type string?)
+
+(s/def ::resource
+  (s/merge (s/keys :req-un [::end ::start ::type ::uuid ::time]) ::single-fn))
+
+(s/def ::resources
+  (s/coll-of ::resource))
+
+(s/def ::f keyword?)
+
+(s/def ::plan
+  (s/coll-of (s/keys :req-un [::resources])))
+
+(s/def ::recipe
+  (s/keys :req-un [::resources]))
 
 (s/def ::result
-  (s/or :shell ::shell-output :fn ::fn-output))
+  (s/or :ssh ::ssh-script :zero ::single-fn :cog ::recipe :cog ::plan))
 
 (s/def ::profile
   (s/keys
@@ -81,7 +101,8 @@
   (if-not (s/valid? s v)
     (let [e (expound/expound s v)]
       (error "spec failed:" e)
-      (puget/cprint e))
+      (puget/cprint e)
+      false)
     true))
 
 (defn pipeline!
