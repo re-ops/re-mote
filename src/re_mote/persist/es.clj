@@ -37,7 +37,7 @@
 (defn by-hosts
   "split results by host"
   [{:keys [result] :as m}]
-  (mapv (fn [[host r]] (assoc m :host host :result r)) result))
+  (mapv (fn [[host r]] (assoc m :host (name host) :result r)) result))
 
 (defn nested
   "split nested"
