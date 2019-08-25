@@ -1,11 +1,14 @@
 (ns re-mote.repl.cog
   "Running re-cog functions on hosts"
   (:require
+   [taoensso.timbre :refer (refer-timbre)]
    [com.rpl.specter :refer (ALL MAP-VALS transform select multi-path filterer)]
    [re-mote.zero.pipeline :refer (run-hosts)]
    [re-cog.plan :refer (execution-plan)]
    re-mote.repl.base)
   (:import [re_mote.repl.base Hosts]))
+
+(refer-timbre)
 
 (defprotocol ReCog
   (run-plan [this _ p args]))
@@ -47,6 +50,7 @@
     * A combined success result per hosts with all of its results merged per recipe function
   "
   (fn [results f]
+    (debug "running" f)
     (combine-results (keyword (symbol f)) results (run-hosts results (deref (resolve (symbol f))) args [5 :minute]))))
 
 (extend-type Hosts
