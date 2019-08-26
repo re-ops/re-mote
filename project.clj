@@ -1,4 +1,4 @@
-(defproject re-mote "0.13.0"
+(defproject re-mote "0.13.1"
   :description "A live remote operations environment"
   :url "https://github.com/re-ops/re-mote"
   :license  {:name "Apache License, Version 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
@@ -40,7 +40,7 @@
 
      ; remote execution
      [com.hierynomus/sshj "0.26.0" :exclusions [org.slf4j/slf4j-api]]
-     [org.zeromq/jeromq "0.4.3"]
+     [org.zeromq/jeromq "0.5.1"]
 
      ; model
      [clj-time/clj-time "0.15.1"]

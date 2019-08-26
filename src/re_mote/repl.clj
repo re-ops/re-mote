@@ -27,7 +27,6 @@
    [re-mote.zero.osquery :refer (refer-osquery)]
    [re-mote.zero.process :refer (refer-process)]
    [re-mote.zero.git :refer (refer-git)]
-   [re-mote.zero.test :as tst]
    [re-mote.zero.pkg :refer (refer-zero-pkg)]
    [re-mote.repl.pkg :refer (refer-pkg)]
    [re-mote.log :refer (setup-logging)]
@@ -243,19 +242,6 @@
     (host-info hs)"
   [hs]
   (run> (hardware-info hs) | (pretty "filter hosts")))
-
-; sanity testing
-(defn failing
-  "A workflow that always fail:
-     (failing hs)"
-  [hs]
-  (run (tst/listdir hs "/") | (pick successful) | (tst/fail) | (pretty "failing")))
-
-(defn ^{:category :shell} listing
-  "List directories under / on the remote hosts:
-     (listing hs)"
-  [hs]
-  (run (ls hs "/" "-la") | (pretty "listing")))
 
 ; basic tasks
 (defn copy-file

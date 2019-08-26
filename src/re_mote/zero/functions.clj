@@ -11,24 +11,16 @@
 (refer-timbre)
 
 ; Misc
-(def ^{:doc "list dir"} listdir
-  (s/fn [d]
-    (map str (list-dir d))))
-
-(def ^{:doc "always fails"} fails
-  (s/fn []
-    (sh "fail")))
-
 (def ^{:doc "A liveliness ping"} ping
   (s/fn [] :ok))
 
 (defn refer-zero-fns []
-  (require '[re-mote.zero.functions :as fns :refer (listdir call)]))
+  (require '[re-mote.zero.functions :as fns]))
 
 (defn call
   "Launch a remote clojure serializable functions on zeromq hosts"
   [f args zhs]
-  {:pre [(not (nil? zhs)) (-> f fn-meta :name)]}
+  {:pre [(not (nil? zhs)) (or (= f ping) (-> f fn-meta :name))]}
   (let [uuid (gen-uuid)]
     (doseq [[hostname address] zhs]
       (send- address {:request :execute :uuid  uuid :fn f :args args :name (-> f fn-meta :name keyword)}))
