@@ -51,7 +51,7 @@
 
      ; common utilities and shared functions
      [re-share "0.11.8"]
-     [re-cog "0.1.4"]
+     [re-cog "0.2.0"]
      [re-scan "0.2.1"]
 
      ; persistency
