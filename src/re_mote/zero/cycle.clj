@@ -44,6 +44,6 @@
   (res/clear-results)
   (mgmt/clear-registered))
 
-(defstate zero
+(defstate ^{:on-reload :noop} zero
   :start (start)
   :stop (stop))
