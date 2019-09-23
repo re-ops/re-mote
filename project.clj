@@ -124,5 +124,5 @@
 
   :target-path "target/"
 
-  :signing {:gpg-key "narkisr@gmail.com"}
+  :signing {:gpg-key "1580E2D948AE3EFE598ED1127083BA46F0B2460C"}
 )
