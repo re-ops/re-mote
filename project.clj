@@ -50,7 +50,7 @@
      [hiccup "1.0.5"]
 
      ; common utilities and shared functions
-     [re-share "0.11.8"]
+     [re-share "0.11.9"]
      [re-cog "0.2.0"]
      [re-scan "0.2.1"]
 
