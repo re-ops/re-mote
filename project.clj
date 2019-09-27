@@ -1,9 +1,9 @@
-(defproject re-mote "0.13.3"
+(defproject re-mote "0.3.14"
   :description "A live remote operations environment"
   :url "https://github.com/re-ops/re-mote"
   :license  {:name "Apache License, Version 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
   :dependencies [
-     [org.clojure/clojure "1.10.0"]
+     [org.clojure/clojure "1.10.1"]
      [org.clojure/core.incubator "0.1.4"]
      [me.raynes/conch "0.8.0"]
      [org.clojure/core.async "0.3.443"]
@@ -55,7 +55,7 @@
      [re-scan "0.2.1"]
 
      ; persistency
-     [rubber "0.3.6"]
+     [rubber "0.3.7"]
 
      ; fs utilities
      [me.raynes/fs "1.4.6"]
