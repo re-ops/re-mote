@@ -50,8 +50,23 @@
 (s/def ::recipe
   (s/keys :req-un [::resources]))
 
+; nmap
+
+(defn port? [s]
+  (let [p (Integer/parseInt s)]
+    (and (>= p 1) (<= p 65536))))
+
+(s/def ::portid (s/and string? port?))
+
+(s/def ::state #{"open" "close" "filtered" "unfiltered" "open/filtered" "close/filtered"})
+
+(s/def ::ports
+  (s/coll-of (s/keys :req-un [::portid ::state])))
+
+(s/def ::scan (s/map-of keyword? ::ports))
+
 (s/def ::result
-  (s/or :ssh ::ssh-script :zero ::single-fn :cog ::recipe :cog ::plan))
+  (s/or :ssh ::ssh-script :zero ::single-fn :cog ::recipe :cog ::plan :nmap ::scan))
 
 (s/def ::profile
   (s/keys
