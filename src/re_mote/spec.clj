@@ -56,17 +56,28 @@
   (let [p (Integer/parseInt s)]
     (and (>= p 1) (<= p 65536))))
 
-(s/def ::portid (s/and string? port?))
+(s/def :nmap/portid (s/and string? port?))
 
-(s/def ::state #{"open" "close" "filtered" "unfiltered" "open/filtered" "close/filtered"})
+(s/def :nmap/state #{"open" "close" "filtered" "unfiltered" "open/filtered" "close/filtered"})
 
-(s/def ::ports
-  (s/coll-of (s/keys :req-un [::portid ::state])))
+(s/def :nmap/single-port
+  (s/keys :req-un [:nmap/portid :nmap/state]))
 
-(s/def ::scan (s/map-of keyword? ::ports))
+(s/def :nmap/ports
+  (s/coll-of (s/keys :req-un [:nmap/portid :nmap/state])))
+
+(s/def :nmap/scan (s/map-of keyword? :nmap/ports))
 
 (s/def ::result
-  (s/or :ssh ::ssh-script :zero ::single-fn :cog ::recipe :cog ::plan :nmap ::scan))
+  (s/or
+   :ssh ::ssh-script
+   :zero ::single-fn
+   :cog ::recipe
+   :cog ::plan
+   ; nmap transformations
+   :nmap/raw :nmap/scan
+   :nmap/split-hosts :nmap/ports
+   :nmap/split-nested :nmap/single-port))
 
 (s/def ::profile
   (s/keys
