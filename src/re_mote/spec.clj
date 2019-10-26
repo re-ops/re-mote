@@ -58,7 +58,7 @@
 
 (s/def :nmap/portid (s/and string? port?))
 
-(s/def :nmap/state #{"open" "close" "filtered" "unfiltered" "open/filtered" "close/filtered"})
+(s/def :nmap/state #{"open" "closed" "filtered" "unfiltered" "open/filtered" "closed/filtered"})
 
 (s/def :nmap/single-port
   (s/keys :req-un [:nmap/portid :nmap/state]))
