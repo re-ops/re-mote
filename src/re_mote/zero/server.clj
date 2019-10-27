@@ -1,6 +1,7 @@
 (ns re-mote.zero.server
   "An orchestration re-mote server using ZeroMq router socket"
   (:require
+   [re-share.config.core :as conf]
    [re-share.core :refer  (find-port)]
    [clojure.core.strint :refer  (<<)]
    [taoensso.timbre :refer  (refer-timbre)]
@@ -37,7 +38,7 @@
 
 (defn start [ctx private]
   (future
-    (let [port 9000
+    (let [port (conf/get! :re-mote :port)
           backend (backend-socket ctx)
           frontend (router-socket ctx private port)
           control (control-sub-socket ctx)]
