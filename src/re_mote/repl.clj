@@ -95,6 +95,12 @@
   [hs]
   (run> (rules hs) | (pick (fn [success failure hosts] (mapv :host (failure 1))))))
 
+(defn ^{:category :security} ssh-sessions
+  "List active ssh sessions per host:
+     (ssh-sessions hs)"
+  [hs]
+  (run> (security/ssh-sessions hs) | (pretty "ssh-sesions")))
+
 ; persistent stats
 
 
