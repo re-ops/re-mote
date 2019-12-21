@@ -15,11 +15,14 @@
     [this m url]))
 
 (defn chrome-script
-  "Launch Firefox"
+  "Launch chrome in full screen"
   [url]
   (script
    ("export" (set! DISPLAY ":0"))
-   ("nohup" "sh" "-c" "'/usr/bin/google-chrome" "--start-fullscreen" ~url "&'")))
+   ("/usr/bin/pgrep" "chrome" ">/dev/null" "2>&1")
+   (if (= "$?" 0)
+     ("nohup" "sh" "-c" "\"/usr/bin/google-chrome" "'" ~url "'" "&\"")
+     ("nohup" "sh" "-c" "\"/usr/bin/google-chrome" "--start-fullscreen" "'" ~url "'" "&\""))))
 
 (extend-type Hosts
   Desktop
