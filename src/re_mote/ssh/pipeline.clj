@@ -25,13 +25,16 @@
   [f ms]
   (<!! (async/into [] (async/merge (map #(thread-call (bound-fn []  (f %))) ms)))))
 
-(defn- host-upload [auth src dest h]
+(defn- host-upload
+  "Upload a single file"
+  [auth src dest h]
+  {:pre [(fs/file? src)]}
   (let [uuid (gen-uuid)]
     (try
       (upload src dest (merge {:host h} auth))
       {:host h :code 0 :uuid uuid}
       (catch Throwable e
-        {:host h :code 1 :error {:out (.getMessage e)} :uuid uuid}))))
+        {:host h :code 1 :error {:out (or (.getMessage e) (str e))} :uuid uuid}))))
 
 (defn upload-hosts [{:keys [auth hosts]} src dest]
   {:post [(valid? ::re-spec/operation-result %)]}
