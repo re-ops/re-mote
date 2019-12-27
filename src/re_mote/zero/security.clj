@@ -29,7 +29,7 @@
     [this (run-hosts this scan-hosts ["/usr/bin/" flags network] [5 :minute])])
   (ssh-sessions
     ([this]
-     (zip this (run-hosts this shell (shell-args ssh-connections)) :security :ssh :proto :rcv-q :snd-q :local :remote :state :pid-name)))
+     (zip this (run-hosts this shell (shell-args ssh-connections)) :security :ssh :proto :rcv-q :snd-q :local/host :local/port :remote/host :remote/port :state :pid-name)))
   (rules
     ([this]
      (zip this (run-hosts this shell (shell-args ufw-script) timeout) :security :rules :from :action :to comma))))

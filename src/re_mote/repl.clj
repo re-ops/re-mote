@@ -99,7 +99,7 @@
   "List active ssh sessions per host:
      (ssh-sessions hs)"
   [hs]
-  (run> (security/ssh-sessions hs) | (pretty "ssh-sesions")))
+  (run> (security/ssh-sessions hs) | (enrich "ssh-sessions") | (persist)))
 
 ; persistent stats
 
