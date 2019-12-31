@@ -71,7 +71,7 @@
 ; cpu-vulns
 
 (defn cpu-vuln? [s]
-  (re-matches #"^(Mitigation:|Vulnerable:|Not affected|KVM:).*\n$" s))
+  (re-matches #"^(Mitigation:|Vulnerable|Not affected|KVM:).*\n$" s))
 
 (s/def ::cpu-vulns (s/and string? cpu-vuln?))
 
