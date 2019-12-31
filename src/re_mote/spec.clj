@@ -68,12 +68,23 @@
 
 (s/def :nmap/scan (s/map-of keyword? :nmap/ports))
 
+; cpu-vulns
+
+(defn cpu-vuln? [s]
+  (re-matches #"^(Mitigation:|Vulnerable:|Not affected|KVM:).*\n$" s))
+
+(s/def ::cpu-vulns (s/and string? cpu-vuln?))
+
+(s/def :security/cpu-vulns
+  (s/map-of keyword? ::cpu-vulns))
+
 (s/def ::result
   (s/or
    :ssh ::ssh-script
    :zero ::single-fn
    :cog ::recipe
    :cog ::plan
+   :security :security/cpu-vulns
    ; nmap transformations
    :nmap/raw :nmap/scan
    :nmap/split-hosts :nmap/ports
