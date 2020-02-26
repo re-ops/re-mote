@@ -24,7 +24,7 @@
     Else we return 0 (success)"
   (match [v]
     [{:result {:exit e}}] e
-    [{:result {:out _ :exception _}}] 256
+    [{:result {:out _ :exception e}}] (do (info e) 256)
     :else 0))
 
 (defn with-codes

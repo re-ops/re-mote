@@ -78,6 +78,15 @@
 (s/def :security/cpu-vulns
   (s/map-of keyword? ::cpu-vulns))
 
+(s/def :datalog/fact
+  (s/or :string string? :number number?))
+
+(s/def :datalog/facts
+  (s/coll-of :datalog/fact))
+
+(s/def :datalog/result
+  (s/or :check boolean? :facts (s/coll-of :datalog/facts)))
+
 (s/def ::result
   (s/or
    :ssh ::ssh-script
@@ -85,6 +94,7 @@
    :cog ::recipe
    :cog ::plan
    :security :security/cpu-vulns
+   :datalog :datalog/result
    ; nmap transformations
    :nmap/raw :nmap/scan
    :nmap/split-hosts :nmap/ports
@@ -97,7 +107,7 @@
 (s/def ::success
   (s/coll-of
    (s/keys
-    :opt-un [::uuid ::profile ::result]
+    :opt-un [::uuid ::profile ::result ::f]
     :req-un [::code ::host])))
 
 (s/def ::error

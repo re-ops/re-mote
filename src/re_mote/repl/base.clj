@@ -7,8 +7,10 @@
    [clojure.core.incubator :refer (dissoc-in)]
    [re-mote.ssh.pipeline :refer (run-hosts upload-hosts)]
    [re-mote.spec :refer (pipeline!)]
-   [re-cog.common :refer (bind-bash)]
+   [re-cog.scripts.common :refer (bind-bash)]
    [pallet.stevedore :refer (script)]))
+
+(require '[re-cog.scripts.common :refer (shell-args)])
 
 (refer-timbre)
 

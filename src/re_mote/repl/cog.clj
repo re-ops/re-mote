@@ -51,7 +51,9 @@
   "
   (fn [results f]
     (debug "running" f)
-    (combine-results (keyword (symbol f)) results (run-hosts results (deref (resolve (symbol f))) args [5 :minute]))))
+    (if-let [f-var (deref (resolve (symbol f)))]
+      (combine-results (keyword (symbol f)) results (run-hosts results f-var args [5 :minute]))
+      (throw (ex-info "Re-Cog function not found" {:f f})))))
 
 (extend-type Hosts
   ReCog
